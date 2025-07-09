@@ -9,6 +9,11 @@ print("\nwjjjr冲突行1")
 print("\nwjjjr冲突行2")
 print("\nwjjjr冲突行3")
 print("\nwjjjr冲突行4")
+print("\n冲突行5")
+print("\n冲突行6")
+print("\n冲突行7")
+print("\n冲突行8")
+
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
