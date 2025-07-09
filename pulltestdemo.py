@@ -5,10 +5,10 @@ from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.statespace.dynamic_factor import DynamicFactor
 from sklearn.preprocessing import StandardScaler
 
-print("\n冲突行1")
-print("\n冲突行2")
-print("\n冲突行3")
-print("\n冲突行4")
+print("\nwjjjr冲突行1")
+print("\nwjjjr冲突行2")
+print("\nwjjjr冲突行3")
+print("\nwjjjr冲突行4")
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
