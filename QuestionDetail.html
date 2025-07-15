@@ -54,8 +54,7 @@
 <!-- 底部导航 -->
 <div class="d-flex justify-content-between px-3 py-2 bg-white fixed-bottom border-top">
   <button class="btn btn-outline-secondary" onclick="prev()" style="margin-left: 500px ;">上一题</button>
-  <button class="btn btn-outline-secondary" onclick="next()">下一题</button>
-  <button class="btn btn-outline-primary" onclick="showReport()" style="margin-right: 500px;">查看报告</button>
+  <button class="btn btn-outline-secondary" onclick="next()" style="margin-right: 500px;">下一题</button>
 </div>
 
 <!-- 报告弹窗 -->
@@ -78,7 +77,8 @@ const questions = [
       'C. 勾勒 蕴含 体察 窥见',
       'D. 叙写 贴近 关怀 透视'
     ],
-    answer:2   // C
+    answer:2  , // C
+     classRate:'62.3%' 
   },
   {
     stem:`算法歧视是以算法为手段实施的歧视，主要指在大数据背景下、依靠机器计算的自动决策系统在对数据主体做出决策分析时，由于数据和算法本身不具有中立性或者隐含错误、被人为操控等原因，对数据主体进行差别对待，造成歧视性后果。根据上述定义，下列属于算法歧视的是：`,
@@ -88,29 +88,42 @@ const questions = [
       'C. 某医院按病情严重程度排队',
       'D. 某银行随机抽选客户赠礼'
     ],
-    answer:0  // A
+    answer:0 , // A
+    classRate:'45.7%' 
   },
   {
-    stem:`<img src="https://via.placeholder.com/120x60?text=图1" class="img-fluid me-1"><img src="https://via.placeholder.com/120x60?text=图2" class="img-fluid me-1"><img src="https://via.placeholder.com/120x60?text=图3" class="img-fluid me-1">（&nbsp;&nbsp;）`,
-    options:['A. 12','B. 14','C. 16','D. 18'],
-    answer:1  // B
+    stem:`公民、法人或者其他组织认为行政机关的具体行政行为所依据的规定不合法，在对具体行政行为申请行政复议时，可以一并向行政复议机关提出对（ ）的审查申请。`,
+    options:[
+    'A. 国务院部门的规定',
+    'B. 国务院的规定',
+    'C. 国务院部门规章',
+    'D. 地方人民政府规章'
+  ],
+    answer:0,  // A
+    classRate:'78.9%'
   },
   {
-    stem:`<img src="https://via.placeholder.com/120x60?text=图A" class="img-fluid">14<img src="https://via.placeholder.com/120x60?text=图B" class="img-fluid">（&nbsp;&nbsp;）`,
-    options:['A. 12','B. 13','C. 14','D. 15'],
-    answer:2  // C
+    stem:`短期来看，日趋激烈的竞争必将导致相应区域的主题公园________ ；而从中长期来看， ________了国内外主题公园精粹的集群区域将更有助于吸引来自国内外的增量游客，这对身处其中的本土主题公园而言，将是难得的机遇。`,
+    options:[
+    'A. 此消彼长 会聚',
+    'B. 弱肉强食 荟萃',
+    'C. 优胜劣汰 聚集',
+    'D. 物竞天择 融汇'
+    ],
+    answer:2 , // C
+     classRate:'53.1%'
   }
 ];
 
 /* ========== 状态 ========== */
-let currentIndex = 0;                     // 当前题号
+let currentIndex = Number(new URLSearchParams(location.search).get('id') || 1) - 1;
 const userAnswers = Array(questions.length).fill(null); // 每题用户答案
 const correctFlags = Array(questions.length).fill(false); // 每题是否正确
 
 /* ========== 渲染题目 ========== */
-function renderQuestion(idx){
-  const q = questions[idx];
-  document.getElementById('counter').textContent = `第 ${idx+1} 题 / 共 ${questions.length} 题`;
+function renderQuestion(currentIndex){
+  const q = questions[currentIndex];
+  document.getElementById('counter').textContent = `第 ${currentIndex+1} 题 / 共 ${questions.length} 题`;
   const box = document.getElementById('questionBox');
   box.innerHTML = `
     <div class="mb-3"><span class="badge bg-primary me-2">单选题</span></div>
@@ -123,13 +136,13 @@ function renderQuestion(idx){
   q.options.forEach((opt,i)=>{
     const div = document.createElement('div');
     div.className='option-block';
-    div.dataset.idx=i;
+    div.dataset.currentIndex=i;
     div.innerHTML=opt;
     div.onclick = ()=> selectAnswer(i);
     optionArea.appendChild(div);
   });
 
-  if(userAnswers[idx]!==null){
+  if(userAnswers[currentIndex]!==null){
     markOptions();
   }else{
     document.getElementById('resultBar').style.display='none';
@@ -163,12 +176,13 @@ function markOptions(){
 function showResult(){
   const bar = document.getElementById('resultBar');
   const q = questions[currentIndex];
-  const myLetter   = String.fromCharCode(65 + userAnswers[currentIndex]);   // A/B/C/D
+  const myLetter   = String.fromCharCode(65 + userAnswers[currentIndex]);
   const trueLetter = String.fromCharCode(65 + q.answer);
 
   bar.innerHTML =
-    `我的答案：<span class="${correctFlags[currentIndex]?'correct':'wrong'}">${myLetter}</span>`+
-    `  正确答案：<span class="correct">${trueLetter}</span>`;
+    `我的答案：<span class="${correctFlags[currentIndex]?'correct':'wrong'}">${myLetter}</span>` +
+    `  正确答案：<span class="correct">${trueLetter}</span>` +
+    `  全班正确率：<span class="text-primary">${q.classRate}</span>`;
 
   bar.style.display='block';
 }

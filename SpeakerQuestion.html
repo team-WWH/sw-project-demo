@@ -104,16 +104,19 @@ const questions = [
   {
     type: '单选题',
     time: '2025-07-13 11:21:19',
-    title: '<img src="https://via.placeholder.com/100x50?text=图1" class="img-fluid me-1"><img src="https://via.placeholder.com/100x50?text=图2" class="img-fluid me-1"><img src="https://via.placeholder.com/100x50?text=图3" class="img-fluid me-1">（&nbsp;&nbsp;）',
+    title: '公民、法人或者其他组织认为行政机关的具体行政行为所依据的规定不合法，在对具体行政行为申请行政复议时，可以一并向行政复议机关提出对（ ）的审查申请。',
     url: 'QuestionDetail.html?id=3'
   },
   {
     type: '单选题',
     time: '2025-07-13 11:21:19',
-    title: '<img src="https://via.placeholder.com/100x50?text=图A" class="img-fluid me-1">14<img src="https://via.placeholder.com/100x50?text=图B" class="img-fluid ms-1">（&nbsp;&nbsp;）',
+    title: '短期来看，日趋激烈的竞争必将导致相应区域的主题公园________ ；而从中长期来看， ________了国内外主题公园精粹的集群区域将更有助于吸引来自国内外的增量游客，这对身处其中的本土主题公园而言，将是难得的机遇。',
     url: 'QuestionDetail.html?id=4'
   }
 ];
+const id = Number(new URLSearchParams(location.search).get('id')) || 1;
+const currentIndex = id - 1;          // 下标
+const q = questions[currentIndex];    // 当前题
 
 /* 渲染函数 */
 function render(list){
