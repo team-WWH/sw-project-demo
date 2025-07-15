@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>听众列表 - 泰拉演讲团</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        body{display:flex;height:100vh;background:#f5f5f5}
+        /* 左侧菜单 */
+        .sidebar{width:200px;background:#001529;color:#fff;display:flex;flex-direction:column}
+        .sidebar h3{padding:16px;font-size:16px;border-bottom:1px solid #333}
+        .menu{flex:1;padding:8px 0}
+        .menu li{list-style:none;padding:12px 16px;cursor:pointer}
+        .menu li:hover{background:#1890ff}
+        .menu li.active{background:#1890ff}
+        /* 右侧区域 */
+        .main{flex:1;display:flex;flex-direction:column}
+        /* 面包屑 */
+        .breadcrumb{background:#fff;padding:12px 20px;border-bottom:1px solid #e8e8e8;font-size:14px}
+        /* 内容区 */
+        .content{flex:1;padding:20px;overflow:auto}
+        .card{background:#fff;border-radius:4px;padding:20px}
+        .toolbar{display:flex;gap:12px;margin-bottom:16px}
+        .toolbar input,.toolbar button{padding:6px 12px}
+        table{width:100%;border-collapse:collapse}
+        th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left;font-size:14px}
+        th{background:#fafafa}
+        .avatar{width:32px;height:32px;border-radius:50%}
+        .btn{padding:4px 8px;margin-right:4px;border:none;border-radius:2px;cursor:pointer;font-size:12px}
+        .btn-primary{background:#1890ff;color:#fff}
+        .btn-danger{background:#ff4d4f;color:#fff}
+    </style>
+</head>
+<body>
+
+<!-- 左侧菜单 -->
+<aside class="sidebar">
+    <h3>泰拉演讲团</h3>
+    <ul class="menu">
+        <li>个人中心</li>
+        <li class="active">听众管理</li>
+        <li>教师管理</li>
+        <li>课程分类管理</li>
+        <li>课程信息管理</li>
+        <li>课程练习管理</li>
+        <li>试题管理</li>
+        <li>在线测评管理</li>
+        <li>考试管理</li>
+        <li>系统管理</li>
+    </ul>
+</aside>
+
+<!-- 右侧主体 -->
+<div class="main">
+    <!-- 面包屑 -->
+    <div class="breadcrumb">
+        泰拉演讲团 / 学生管理 / 学生列表
+    </div>
+    <!-- 卡片内容 -->
+    <div class="content">
+        <div class="card">
+            <!-- 搜索栏 -->
+            <div class="toolbar">
+                <input id="keyword" placeholder="请输入学号 / 学生姓名">
+                <button class="btn btn-primary" onclick="search()">查询</button>
+                <button class="btn btn-primary" style="margin-left:auto" onclick="alert('添加学生')">添加</button>
+            </div>
+            <!-- 表格 -->
+            <table>
+                <thead>
+                <tr>
+                    <th>学号</th><th>头像</th><th>学生姓名</th><th>性别</th>
+                    <th>手机号码</th><th>邮箱</th><th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                <!-- 数据行 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// 模拟数据
+const students = [
+    {id:'学号1',name:'学生姓名1',gender:'男',phone:'13823888881',mail:'773890001@qq.com',avatar:'https://via.placeholder.com/32'},
+    {id:'学号2',name:'学生姓名2',gender:'男',phone:'13823888882',mail:'773890002@qq.com',avatar:'https://via.placeholder.com/32'},
+    {id:'学号3',name:'学生姓名3',gender:'男',phone:'13823888883',mail:'773890003@qq.com',avatar:'https://via.placeholder.com/32'},
+    {id:'学号4',name:'学生姓名4',gender:'男',phone:'13823888884',mail:'773890004@qq.com',avatar:'https://via.placeholder.com/32'},
+    {id:'学号5',name:'学生姓名5',gender:'男',phone:'13823888885',mail:'773890005@qq.com',avatar:'https://via.placeholder.com/32'},
+    {id:'学号6',name:'学生姓名6',gender:'男',phone:'13823888886',mail:'773890006@qq.com',avatar:'https://via.placeholder.com/32'}
+];
+
+function render(list){
+    const tbody=document.getElementById('tbody');
+    tbody.innerHTML='';
+    list.forEach(stu=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+            <td>${stu.id}</td>
+            <td><img class="avatar" src="${stu.avatar}" alt=""></td>
+            <td>${stu.name}</td>
+            <td>${stu.gender}</td>
+            <td>${stu.phone}</td>
+            <td>${stu.mail}</td>
+            <td>
+                <button class="btn btn-primary" onclick="view('${stu.id}')">查看</button>
+                <button class="btn btn-primary" onclick="edit('${stu.id}')">修改</button>
+                <button class="btn btn-danger" onclick="del('${stu.id}')">删除</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function search(){
+    const kw=document.getElementById('keyword').value.trim().toLowerCase();
+    if(!kw){render(students);return;}
+    const res=students.filter(s=>s.id.toLowerCase().includes(kw)||s.name.toLowerCase().includes(kw));
+    render(res);
+}
+function view(id){alert('查看 '+id);}
+function edit(id){alert('修改 '+id);}
+function del(id){
+    if(confirm('确认删除 '+id+' ?')){
+        const idx=students.findIndex(s=>s.id===id);
+        students.splice(idx,1);
+        render(students);
+    }
+}
+
+render(students);
+</script>
+</body>
+</html>
