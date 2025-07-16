@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <title>演讲练习- 泰拉演讲团</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+         *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        body{background:#f5f5f5;color:#333}
+        header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
+        header .brand{font-size:18px;font-weight:bold;margin-right:40px}
+        header nav a{color:#fff;margin-right:20px;text-decoration:none;font-size:14px}
+        header nav a.active{color:#1890ff}
+        .sub-nav{background:#fff;border-bottom:1px solid #e8e8e8;padding:12px 20px;font-size:14px}
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .card{background:#fff;border-radius:4px;padding:20px}
+        .toolbar{display:flex;align-items:center;margin-bottom:16px}
+        .toolbar input{width:240px;padding:6px 10px;border:1px solid #d9d9d9;border-radius:2px;margin-right:12px}
+        .btn{padding:6px 14px;border:none;border-radius:2px;font-size:14px;cursor:pointer}
+        .btn-primary{background:#1890ff;color:#fff}
+        .btn-danger{background:#ff4d4f;color:#fff}
+        table{width:100%;border-collapse:collapse;font-size:14px}
+        th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
+        th{background:#fafafa}
+        .header-bar {
+            background:#f8f9fa;
+            border-bottom:1px solid #dee2e6;
+            padding:12px 0;
+            position:sticky;
+            top:0;
+            z-index:1000;
+        }
+        .filter-group .btn{
+            margin-right:6px;
+        }
+        .question-card{
+            margin-bottom:1rem;
+            cursor:pointer;
+            transition:background .2s;
+        }
+        .question-card:hover{
+            background:#f1f3f5;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部主导航 -->
+<header>
+    <div class="brand">泰拉演讲团</div>
+    <nav>
+        <a href="SpeakerHomepage.html">首页</a>
+        <a href="History.html">历史演讲</a>
+        <a href="#">个人信息</a>
+    </nav>
+</header>
+<!-- 顶部导航 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">演讲练习</span>
+        <div>
+            <button class="btn btn-outline-secondary btn-sm me-2">我的错题</button>
+            <button class="btn btn-outline-secondary btn-sm me-2">我的收藏</button>
+            <button class="btn btn-outline-secondary btn-sm me-2">我的笔记</button>
+            <button class="btn btn-outline-secondary btn-sm">设置</button>
+        </div>
+    </div>
+</nav>
+
+<!-- 筛选栏 -->
+<div class="container-fluid header-bar">
+    <div class="row">
+        <div class="col filter-group">
+            <button class="btn btn-sm btn-primary">按时间</button>
+            <button class="btn btn-sm btn-outline-primary">按考点</button>
+        </div>
+    </div>
+</div>
+
+<!-- 题目列表 -->
+<div class="container mt-3">
+    <div id="questionList">
+        <!-- 题目卡片由 JS 渲染 -->
+    </div>
+</div>
+
+<script>
+/* 题目数据（模拟） */
+const questions = [
+  {
+    type: '单选题',
+    time: '2025-07-13 11:21:19',
+    title: '年度热词大事小情，不仅反映国家大事、时代主旋律，还有对老百姓日常生活的深切____，展现了过去一年的社会变迁和生活万象。而透过“内卷”“躺平”“鸡娃”“双减”“干饭人”等热词，我们还可____当下独特的社会景观。依次填入画横线部分最恰当的一项是：',
+    url: 'QuestionDetail.html?id=1'
+  },
+  {
+    type: '单选题',
+    time: '2025-07-13 11:21:19',
+    title: '算法歧视是以算法为手段实施的歧视，主要指在大数据背景下、依靠机器计算的自动决策系统在对数据主体做出决策分析时，由于数据和算法本身不具有中立性或者隐含错误、被人为操控等原因，对数据主体进行差别对待，造成歧视性后果。根据上述定义，下列属于算法歧视的是：',
+    url: 'QuestionDetail.html?id=2'
+  },
+  {
+    type: '单选题',
+    time: '2025-07-13 11:21:19',
+    title: '公民、法人或者其他组织认为行政机关的具体行政行为所依据的规定不合法，在对具体行政行为申请行政复议时，可以一并向行政复议机关提出对（ ）的审查申请。',
+    url: 'QuestionDetail.html?id=3'
+  },
+  {
+    type: '单选题',
+    time: '2025-07-13 11:21:19',
+    title: '短期来看，日趋激烈的竞争必将导致相应区域的主题公园________ ；而从中长期来看， ________了国内外主题公园精粹的集群区域将更有助于吸引来自国内外的增量游客，这对身处其中的本土主题公园而言，将是难得的机遇。',
+    url: 'QuestionDetail.html?id=4'
+  }
+];
+const id = Number(new URLSearchParams(location.search).get('id')) || 1;
+const currentIndex = id - 1;          // 下标
+const q = questions[currentIndex];    // 当前题
+
+/* 渲染函数 */
+function render(list){
+    const box = document.getElementById('questionList');
+    box.innerHTML = '';
+    list.forEach(q=>{
+        const card = document.createElement('div');
+        card.className = 'card question-card';
+        card.innerHTML = `
+            <div class="card-body">
+                <span class="badge bg-secondary mb-2">${q.type}</span>
+                <small class="text-muted float-end">${q.time}</small>
+                <p class="card-text">${q.title}</p>
+                <button class="btn btn-primary btn-sm" onclick="window.location.href='${q.url}'">
+                    进入
+                </button>
+            </div>
+        `;
+        box.appendChild(card);
+    });
+}
+
+/* 初始化 */
+render(questions);
+</script>
+</body>
+</html>
