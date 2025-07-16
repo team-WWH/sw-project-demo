@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Service
-public class Pdfparser {
+public class   Pdfparser {
     public String parse(File file) throws IOException {
         try (PDDocument document = Loader.loadPDF(new File("C://Users//王镜然//Desktop//任务1代码说明文档.pdf"))) {
             PDFTextStripper stripper = new PDFTextStripper();
