@@ -13,6 +13,23 @@ public class Speech {
     private int SresultsID;//演讲分析ID
     private int ClaconSpeID;//上课数据---演讲ID
     private int Sstatus;//1进行中   0已结束
+    private String Sname;//演讲者名字
+
+    public int getSstatus() {
+        return Sstatus;
+    }
+
+    public void setSstatus(int sstatus) {
+        Sstatus = sstatus;
+    }
+
+    public String getSname() {
+        return Sname;
+    }
+
+    public void setSname(String sname) {
+        Sname = sname;
+    }
 
     public int getSpeechID() {
         return SpeechID;
