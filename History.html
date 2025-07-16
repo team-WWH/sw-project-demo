@@ -29,9 +29,9 @@
 <header>
     <div class="brand">泰拉演讲团</div>
     <nav>
-        <a href="SpeakerHomepage.html">首页</a>
+        <a href="ListenerHomepage.html">首页</a>
         <a href="History.html" class="active">历史演讲</a>
-        <a href="#">个人信息</a>
+        <a href="PersonInfo.html">个人信息</a>
     </nav>
 </header>
 
@@ -45,7 +45,8 @@
         <table>
             <thead>
                 <tr>
-                    <th>名称</th>
+                    <th>序号</th>
+                    <th>演讲者</th>
                     <th>创建时间</th>
                     <th>操作</th>
                 </tr>
@@ -56,29 +57,34 @@
 </div>
 
 <script>
-// 模拟数据
-const list = [
-    { name: '十万个为什么',  createTime: '2022-01-18 09:48:31' },
-    { name: '花儿为什么这样红',  createTime: '2022-01-17 08:48:31' },
-    { name: '未来AI发展趋势',  createTime: '2022-01-16 07:48:31' },
-    { name: '中国海军发展史',  createTime: '2022-01-15 08:48:31' },
-];
+    // 获取正在进行中的演讲数据
+    fetch('http://localhost:8081/speeches/ended')
+        .then(response => response.json())
+        .then(data => {
+            render(data);  // 调用渲染函数将数据展示到页面
+        })
+        .catch(error => console.error('Error fetching speeches:', error));
 
-function render(data){
-    const tbody = document.getElementById('tbody');
-    tbody.innerHTML = '';
-    data.forEach((item, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${item.name}</td>
-            <td>${item.createTime}</td>
+    function render(data) {
+        const tbody = document.getElementById('tbody');
+        tbody.innerHTML = '';  // 清空现有的表格内容
+        data.forEach((item, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td>${item.speechID}</td>
+            <td>${item.sname}</td>
+            <td>${item.otime}</td>
             <td>
                 <button class="btn btn-primary" onclick="view(${idx})">进入</button>
             </td>
         `;
-        tbody.appendChild(tr);
-    });
-}
+            tbody.appendChild(tr);
+        });
+    }
+
+    function view(idx) {
+        alert(`进入第 ${idx + 1} 个演讲`);
+    }
 
 
 function add(){ alert('跳转到“新增在线测评”页面'); }
