@@ -11,7 +11,7 @@
  Target Server Version : 80042 (8.0.42)
  File Encoding         : 65001
 
- Date: 14/07/2025 23:04:59
+ Date: 17/07/2025 23:20:22
 */
 
 SET NAMES utf8mb4;
@@ -133,19 +133,19 @@ CREATE TABLE `listener`  (
   `ListenerID` int NOT NULL AUTO_INCREMENT,
   `Uname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `Password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `
-Mail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
+  `Mail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   `Phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   `Anonymous` int NOT NULL COMMENT '匿名选项1为匿，0不',
   `Sex` int NULL DEFAULT NULL COMMENT '1男  0女',
-  `
-CollectID` int NULL DEFAULT NULL COMMENT '收藏题目库ID',
-  PRIMARY KEY (`ListenerID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+  `CollectID` int NULL DEFAULT NULL COMMENT '收藏题目库ID',
+  PRIMARY KEY (`ListenerID` DESC, `Uname`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of listener
 -- ----------------------------
+INSERT INTO `listener` VALUES (2, '8酷酷酷', '111111', '775275s', '7775', 0, 0, 1);
+INSERT INTO `listener` VALUES (1, '鸡然', '112233', '67777777s', '959423', 1, 1, 2);
 
 -- ----------------------------
 -- Table structure for organizer
@@ -153,17 +153,18 @@ CollectID` int NULL DEFAULT NULL COMMENT '收藏题目库ID',
 DROP TABLE IF EXISTS `organizer`;
 CREATE TABLE `organizer`  (
   `OrganizerID` int NOT NULL AUTO_INCREMENT COMMENT '组织者ID',
-  `Oname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
+  `Oname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `Opassword` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   `Omail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   `Ophone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   `Osex` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
-  PRIMARY KEY (`OrganizerID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`OrganizerID` DESC, `Oname`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of organizer
 -- ----------------------------
+INSERT INTO `organizer` VALUES (1, '零零零零', '111111', '98640', '852410', '1');
 
 -- ----------------------------
 -- Table structure for orgconspe
@@ -220,11 +221,16 @@ CREATE TABLE `queconspe`  (
   `QuestionID` int NULL DEFAULT NULL,
   `SpeechID` int NULL DEFAULT NULL,
   PRIMARY KEY (`QueconSpeID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of queconspe
 -- ----------------------------
+INSERT INTO `queconspe` VALUES (1, 1, 1);
+INSERT INTO `queconspe` VALUES (2, 2, 1);
+INSERT INTO `queconspe` VALUES (3, 3, 1);
+INSERT INTO `queconspe` VALUES (4, 4, 2);
+INSERT INTO `queconspe` VALUES (5, 5, 2);
 
 -- ----------------------------
 -- Table structure for question
@@ -238,15 +244,22 @@ CREATE TABLE `question`  (
   `D` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '选项D',
   `Questioncontent` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '题目内容',
   `QresultsID` int NULL DEFAULT NULL COMMENT '题目分析结果ID',
-  `Answer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '答案',
+  `Answer` int NULL DEFAULT NULL COMMENT '答案ABCD',
   `StuconQueID` int NULL DEFAULT NULL COMMENT '学生答案--题目链接ID',
-  `ComconQueID` int NULL DEFAULT NULL COMMENT '评论--题目链接ID',
+  `ComconQueID` int UNSIGNED NULL DEFAULT NULL COMMENT '评论--题目链接ID',
+  `Qstatus` int UNSIGNED NOT NULL COMMENT '题目状态1-未结束，2-已结束',
+  `Answercon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '答案解析',
   PRIMARY KEY (`QuestionID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of question
 -- ----------------------------
+INSERT INTO `question` VALUES (1, 'ervHLBOrDX', 'Ar9EiZn2CO', '05r7B0i4oG', 'Us2stHKFIm', 'FTD5svO3fJ', 1, 1, 1, 1, 1, 'Wof23ylmUj');
+INSERT INTO `question` VALUES (2, 'duW6iMBTs8', 'QaAjVYSFwm', 'FUobr6MRW8', 'kiufPGQRJo', '4KYLuaeQFc', 2, 2, 2, 2, 2, 'PhLLHx8m7j');
+INSERT INTO `question` VALUES (3, 'pBYCbAlwyv', '34h1NpsEZ5', 'Fw8E6t1ReH', 'biQPUEcqzt', 'OPkTZNZYrG', 3, 3, 3, 3, 2, 'mnxMWdmdBn');
+INSERT INTO `question` VALUES (4, 'Klg6yxlw3e', 'oR4ShxNO6f', 't8k6QDJF4V', 'tLWoUzyZER', 'Q0gnGYazGV', 4, 4, 4, 4, 2, '46KhVmE7Bf');
+INSERT INTO `question` VALUES (5, 'gRBc5JXXTB', 'uoqcZ5ox0e', 'xHlNXWwyvu', 'VPoWKYac88', 'HynWmW86i7', 5, 1, 5, 5, 2, 'PyHClzrcV3');
 
 -- ----------------------------
 -- Table structure for speaker
@@ -259,12 +272,13 @@ CREATE TABLE `speaker`  (
   `Smail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   `Sphone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   `Ssex` int NULL DEFAULT NULL COMMENT '1男',
-  PRIMARY KEY (`SpeakerID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`SpeakerID` DESC, `Sname` DESC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of speaker
 -- ----------------------------
+INSERT INTO `speaker` VALUES (1, '鸡然', '112233', '鸡然@qq.com', '115511', 1);
 
 -- ----------------------------
 -- Table structure for speech
@@ -280,12 +294,15 @@ CREATE TABLE `speech`  (
   `ClaconSpeID` int NULL DEFAULT NULL COMMENT '上课数据---演讲ID',
   `Otime` datetime NULL DEFAULT NULL COMMENT '开始时间',
   `Stime` datetime NULL DEFAULT NULL COMMENT '结束时间',
+  `Sstatus` int NULL DEFAULT NULL COMMENT '1进行中   0已结束',
   PRIMARY KEY (`SpeechID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of speech
 -- ----------------------------
+INSERT INTO `speech` VALUES (1, 1, 1, 1, 1, 1, 1, '2025-07-16 16:28:14', '2025-07-16 16:28:17', 0);
+INSERT INTO `speech` VALUES (2, 1, 1, 2, 1, 2, 2, '2025-07-16 16:31:46', '2025-07-16 16:31:48', 1);
 
 -- ----------------------------
 -- Table structure for sresults
@@ -311,12 +328,18 @@ CREATE TABLE `stuanswers`  (
   `Sanscontent` int NULL DEFAULT NULL COMMENT '1----A   2----B   3----C   4-----D',
   `QuestionID` int NULL DEFAULT NULL COMMENT '题目ID',
   `State` int NULL DEFAULT NULL COMMENT '1----正确     0---- 错误',
+  `QS` int UNSIGNED NOT NULL COMMENT '0---未抽到   1---抽到，未完成  2---抽到，已完成',
+  `ListenerID` int NULL DEFAULT NULL,
   PRIMARY KEY (`StuanswersID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of stuanswers
 -- ----------------------------
+INSERT INTO `stuanswers` VALUES (1, 1, 1, 1, 2, 1);
+INSERT INTO `stuanswers` VALUES (2, 2, 1, 0, 2, 1);
+INSERT INTO `stuanswers` VALUES (3, 0, 1, 0, 0, 1);
+INSERT INTO `stuanswers` VALUES (4, 0, 1, 0, 1, 1);
 
 -- ----------------------------
 -- Table structure for stuconque
@@ -344,7 +367,7 @@ CREATE TABLE `tresults`  (
   `Trank` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '位次',
   `ListenerID` int NULL DEFAULT NULL COMMENT '听众ID',
   `SpeechID` int NULL DEFAULT NULL COMMENT '演讲ID',
-  `Totalpeo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '总人数',
+  `Totalpeo` int NULL DEFAULT NULL COMMENT '总人数',
   PRIMARY KEY (`TresultsID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
