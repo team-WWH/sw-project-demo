@@ -84,6 +84,16 @@
 </div>
 
 <script>
+    // 获取 URL 中的查询参数        wcy
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // 获取 SpeechID 和 ListenerID      wcy
+    const speechID = urlParams.get('SpeechID');
+    const listenerID = urlParams.get('ListenerID');
+
+    // 在控制台中打印出来检查         wcy
+    console.log('SpeechID:', speechID);
+    console.log('ListenerID:', listenerID);
 /* 题目数据（模拟） */
 const questions = [
   {

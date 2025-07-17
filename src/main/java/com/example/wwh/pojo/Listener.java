@@ -1,11 +1,13 @@
 package com.example.wwh.pojo;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 ///听众
 public class Listener {
     private int ListenerID;
+
     private String Uname;
     private String Password;
+
     private String Mail;
     private String Phone;
     private int Anonymous;//匿名选项1为匿，0不
