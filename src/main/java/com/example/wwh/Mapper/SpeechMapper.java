@@ -25,6 +25,8 @@ public interface SpeechMapper {
                 "WHERE s.Sstatus = 0")
         List<Speech> getEndedSpeeches();
 
+        @Select("SELECT ListenerID FROM lisconspe WHERE SpeechID = #{speechID}")
+        List<Integer> findListenerBySpeechID(Integer speechID);
 
 
 }

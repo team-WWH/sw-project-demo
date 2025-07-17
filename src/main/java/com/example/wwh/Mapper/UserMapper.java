@@ -20,7 +20,8 @@ public interface UserMapper {
     Optional<Listener> findListenerByEmail(String email);
     @Select("SELECT * FROM organizer WHERE Omail = #{email}")
     Optional<Organizer> findOrganizerByEmail(String email);
-
+    @Select("SELECT * FROM listener WHERE  ListenerID = #{id}")
+    Listener findListenerByID(Integer id);
 
 
 }

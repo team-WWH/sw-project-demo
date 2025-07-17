@@ -1,5 +1,6 @@
 package com.example.wwh.Controller;
 
+import com.example.wwh.pojo.Listener;
 import com.example.wwh.pojo.Speech;
 import com.example.wwh.service.SpeechService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,4 +29,11 @@ public class SpeechController {
     public List<Speech> getEndedSpeeches() {
         return speechService.getEndedSpeeches();
     }
+
+    @GetMapping
+    public List<Listener> AllListenerOfSpeech(Integer speechID){
+        return speechService.getAllListenerBySpeech(speechID);
+    }
+
+
 }
