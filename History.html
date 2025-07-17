@@ -57,6 +57,15 @@
 </div>
 
 <script>
+
+
+//wcy改动
+
+
+    const listenerID = 1; // 例如从当前用户的 session 或全局变量获取
+
+
+
     // 获取正在进行中的演讲数据
     fetch('http://localhost:8081/speeches/ended')
         .then(response => response.json())
@@ -75,16 +84,15 @@
             <td>${item.sname}</td>
             <td>${item.otime}</td>
             <td>
-                <button class="btn btn-primary" onclick="view(${idx})">进入</button>
+                <button class="btn btn-primary"
+                onclick="window.location.href='ListenerQuestion.html?SpeechID=${item.speechID}&ListenerID=${listenerID}'">进入</button>
             </td>
         `;
             tbody.appendChild(tr);
         });
     }
 
-    function view(idx) {
-        alert(`进入第 ${idx + 1} 个演讲`);
-    }
+
 
 
 function add(){ alert('跳转到“新增在线测评”页面'); }
