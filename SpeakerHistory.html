@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>历史演讲 - 泰拉演讲团</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        body{background:#f5f5f5;color:#333}
+        header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
+        header .brand{font-size:18px;font-weight:bold;margin-right:40px}
+        header nav a{color:#fff;margin-right:20px;text-decoration:none;font-size:14px}
+        header nav a.active{color:#1890ff}
+        .sub-nav{background:#fff;border-bottom:1px solid #e8e8e8;padding:12px 20px;font-size:14px}
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .card{background:#fff;border-radius:4px;padding:20px}
+        .toolbar{display:flex;align-items:center;margin-bottom:16px}
+        .toolbar input{width:240px;padding:6px 10px;border:1px solid #d9d9d9;border-radius:2px;margin-right:12px}
+        .btn{padding:6px 14px;border:none;border-radius:2px;font-size:14px;cursor:pointer}
+        .btn-primary{background:#1890ff;color:#fff}
+        .btn-danger{background:#ff4d4f;color:#fff}
+        table{width:100%;border-collapse:collapse;font-size:14px}
+        th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
+        th{background:#fafafa}
+    </style>
+</head>
+<body>
+
+<!-- 顶部主导航 -->
+<header>
+    <div class="brand">泰拉演讲团</div>
+    <nav>
+        <a href="SpeakerHomepage.html">首页</a>
+        <a href="SpeakerHistory.html" class="active">历史演讲</a>
+        <a href="SpeakerInfo.html">个人信息</a>
+    </nav>
+</header>
+
+
+<!-- 主体内容 -->
+<div class="container">
+    <div class="card">
+       
+
+        <!-- 列表 -->
+        <table>
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>演讲者</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // 获取正在进行中的演讲数据
+    fetch('http://localhost:8081/speeches/ended')
+        .then(response => response.json())
+        .then(data => {
+            render(data);  // 调用渲染函数将数据展示到页面
+        })
+        .catch(error => console.error('Error fetching speeches:', error));
+
+    function render(data) {
+        const tbody = document.getElementById('tbody');
+        tbody.innerHTML = '';  // 清空现有的表格内容
+        data.forEach((item, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td>${item.speechID}</td>
+            <td>${item.sname}</td>
+            <td>${item.otime}</td>
+            <td>
+                <button class="btn btn-primary" onclick="view(${idx})">进入</button>
+            </td>
+        `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function view(idx) {
+        alert(`进入第 ${idx + 1} 个演讲`);
+    }
+
+
+function add(){ alert('跳转到“新增在线测评”页面'); }
+
+render(list);
+</script>
+</body>
+</html>
