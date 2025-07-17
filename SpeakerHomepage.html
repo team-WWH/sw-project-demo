@@ -21,6 +21,109 @@
         table{width:100%;border-collapse:collapse;font-size:14px}
         th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
         th{background:#fafafa}
+        .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 480px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.close {
+    font-size: 24px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group small {
+    color: #999;
+    font-size: 12px;
+}
+
+.required {
+    color: #e74c3c;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 12px 20px;
+    border-top: 1px solid #eee;
+}
+
+.btn {
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #1890ff;
+    color: white;
+    border: none;
+}
+
+.btn-secondary {
+    background-color: #f7f7f7;
+    color: #666;
+    border: 1px solid #ddd;
+}
     </style>
 </head>
 <body>
@@ -29,9 +132,9 @@
 <header>
     <div class="brand">泰拉演讲团</div>
     <nav>
-        <a href="#">首页</a>
-        <a href="#">历史演讲</a>
-        <a href="#" class="active">个人信息</a>
+        <a href="SpeakerHomepage.html" class="active">首页</a>
+        <a href="SpeakerHistory.html">历史演讲</a>
+        <a href="SpeakerInfo.html" >个人信息</a>
     </nav>
 </header>
 
@@ -49,7 +152,6 @@
             <thead>
                 <tr>
                     <th>名称</th>
-                    <th>考试时长</th>
                     <th>创建时间</th>
                     <th>操作</th>
                 </tr>
@@ -59,12 +161,52 @@
     </div>
 </div>
 
+<!-- 创建演讲弹窗 -->
+<div id="createModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>创建演讲</h3>
+            <span class="close">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+            <form id="createForm">
+                <div class="form-group">
+                    <label>演讲名称<span class="required">*</span></label>
+                    <input type="text" id="speechName" maxlength="28" required>
+                    <small>必填，最多28个字</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>演讲简称</label>
+                    <input type="text" id="speechShort" maxlength="16">
+                    <small>选填，最多16个字</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>演讲类型<span class="required">*</span></label>
+                    <select id="speechType" required>
+                        <option value="">请选择</option>
+                        <option value="中小学">中小学</option>
+                        <option value="高校">高校</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+            <button type="button" class="btn btn-primary" onclick="createSpeech()">确认</button>
+        </div>
+    </div>
+</div>
+
 <script>
 // 模拟数据
 const list = [
-    { name: '十万个为什么', duration: '60分钟', createTime: '2022-01-18 09:48:31' },
-    { name: '小学生安全知识', duration: '30分钟', createTime: '2022-03-12 10:15:22' },
-    { name: '初中数学竞赛', duration: '90分钟', createTime: '2022-05-05 14:30:00' },
+    { name: '十万个为什么',  createTime: '2022-01-18 09:48:31' },
+   
 ];
 
 function render(data){
@@ -74,11 +216,10 @@ function render(data){
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${item.name}</td>
-            <td>${item.duration}</td>
             <td>${item.createTime}</td>
             <td>
-                <button class="btn btn-primary" onclick="view(${idx})">查看</button>
-                <button class="btn btn-primary" onclick="edit(${idx})">编辑</button>
+                <button class="btn btn-primary" onclick="window.location.href='SelectSpeak.html'">上课</button>
+                <button class="btn btn-warning" onclick="edit(${idx})">编辑</button>
                 <button class="btn btn-danger" onclick="del(${idx})">删除</button>
             </td>
         `;
@@ -91,8 +232,57 @@ function search(){
     const res = list.filter(e => e.name.toLowerCase().includes(kw));
     render(res);
 }
-function add(){ alert('跳转到“新增在线测评”页面'); }
-function view(i){ alert('查看：' + list[i].name); }
+
+// 更新原有的add函数
+function add() {
+    document.getElementById('createModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('createModal').style.display = 'none';
+    document.getElementById('createForm').reset();
+}
+
+function createSpeech() {
+    const name = document.getElementById('speechName').value.trim();
+    const shortName = document.getElementById('speechShort').value.trim();
+    const type = document.getElementById('speechType').value;
+    
+    if (!name) {
+        alert('请输入演讲名称');
+        return;
+    }
+    
+    if (!type) {
+        alert('请选择演讲类型');
+        return;
+    }
+    
+    // 创建新演讲
+    const newSpeech = {
+        name: shortName || name,
+        createTime: new Date().toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        }).replace(/\//g, '-')
+    };
+    
+    list.push(newSpeech);
+    render(list);
+    closeModal();
+}
+
+// 点击模态框外部关闭
+window.onclick = function(event) {
+    const modal = document.getElementById('createModal');
+    if (event.target == modal) {
+        closeModal();
+    }
+}
 function edit(i){ alert('编辑：' + list[i].name); }
 function del(i){
     if(confirm('确认删除“' + list[i].name + '”吗？')){
