@@ -1,6 +1,6 @@
 package com.example.wwh.Config;
 
-import com.example.wwh.Config.JwtRequestFilter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,14 +23,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-
+    private JwtAuthFilter jwtRequestFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // 替代 .csrf().disable()
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login").permitAll() // 替代 antMatchers
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/listener/**").hasRole("LISTENER")
+                        .requestMatchers("/speaker/**").hasRole("SPEAKER")
+                        .requestMatchers("/organizer/**").hasRole("ORGANIZER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
@@ -54,14 +56,5 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public UserDetailsService userDetailsService(UserRepository userRepository) {
-//        return username -> userRepository.findByUsername(username)
-//                .map(user -> new CustomUserDetails(
-//                        user.getUsername(),
-//                        user.getPassword(),
-//                        user.getAuthorities()
-//                ))
-//                .orElseThrow(() -> new UsernameNotFoundException("用户未找到"));
-//    }
+
 }
