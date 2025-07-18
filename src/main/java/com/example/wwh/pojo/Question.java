@@ -11,10 +11,27 @@ public class Question {
     private String D;
     private String Questioncontent;//题目内容
     private String QresultsID;//题目分析结果ID
-    private String Answer;//答案
+    private int Answer;//答案ABCD
     private int StuconQueID;//学生答案--题目链接ID
     private int ComconQueID;//评论--题目链接ID
-    private int Qstatus;
+    private int Qstatus;//题目状态1-未完成，2-已结束
+    private String Answercon;//答案解析
+
+    public int getAnswer() {
+        return Answer;
+    }
+
+    public void setAnswer(int answer) {
+        Answer = answer;
+    }
+
+    public String getAnswercon() {
+        return Answercon;
+    }
+
+    public void setAnswercon(String answercon) {
+        Answercon = answercon;
+    }
 
     public int getQuestionID() {
         return QuestionID;
@@ -72,13 +89,7 @@ public class Question {
         QresultsID = qresultsID;
     }
 
-    public String getAnswer() {
-        return Answer;
-    }
 
-    public void setAnswer(String answer) {
-        Answer = answer;
-    }
 
     public int getStuconQueID() {
         return StuconQueID;

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>title</title>
+    <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        body{background:#f5f5f5;color:#333}
+        header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
+        header .brand{font-size:18px;font-weight:bold;margin-right:40px}
+        header nav a{color:#fff;margin-right:20px;text-decoration:none;font-size:14px}
+        header nav a.active{color:#1890ff}
+        .sub-nav{background:#fff;border-bottom:1px solid #e8e8e8;padding:12px 20px;font-size:14px}
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .card{background:#fff;border-radius:4px;padding:20px}
+        .toolbar{display:flex;align-items:center;margin-bottom:16px}
+        .toolbar input{width:240px;padding:6px 10px;border:1px solid #d9d9d9;border-radius:2px;margin-right:12px}
+        .btn{padding:6px 14px;border:none;border-radius:2px;font-size:14px;cursor:pointer}
+        .btn-primary{background:#1890ff;color:#fff}
+        .btn-danger{background:#ff4d4f;color:#fff}
+        table{width:100%;border-collapse:collapse;font-size:14px}
+        th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
+        th{background:#fafafa}
+  </style>
+</head>
+<body>
+<!-- 顶部主导航 -->
+<header>
+    <div class="brand">泰拉演讲团</div>
+    <nav>
+        <a href="ListenerHomepage.html">首页</a>
+        <a href="History.html">历史演讲</a>
+        <a href="PersonInfo.html" >个人信息</a>
+    </nav>
+</header>
+
+<div class="container" style="margin-top: 100px;max-width:600px;">
+    <div class="card p-3">
+        <div class="toolbar mb-2">
+            <h5 style="margin:0">意见反馈</h5>
+        </div>
+
+        <!-- 反馈类型单选 -->
+        <div class="mb-2">
+            <label class="me-3">
+                <input type="radio" name="fbType" value="演讲反馈" required> 演讲反馈
+            </label>
+            <label class="me-3">
+                <input type="radio" name="fbType" value="题目反馈" required> 题目反馈
+            </label>
+            <label class="me-3">
+                <input type="radio" name="fbType" value="环境反馈" required> 环境反馈
+            </label>
+            <label>
+                <input type="radio" name="fbType" value="其他反馈" required> 其他反馈
+            </label>
+        </div>
+
+        <textarea id="feedbackInput"
+                  rows="4"
+                  style="width:100%;height: 250px;padding:10px;border:1px solid #d9d9d9;border-radius:4px;resize:vertical"
+                  placeholder="请留下您的宝贵意见…"></textarea>
+
+        <div style="margin-top:12px;text-align:right">
+            <button class="btn btn-primary" onclick="submitFeedback()">提交反馈</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function submitFeedback(){
+    const type = document.querySelector('input[name="fbType"]:checked');
+    const val  = document.getElementById('feedbackInput').value.trim();
+
+    if(!type){ alert('请选择反馈类型'); return; }
+    if(!val){ alert('请先填写反馈内容');  return; }
+
+    /* 这里可换成 fetch 调用接口保存 */
+    alert(`感谢您的【${type.value}】！`);
+    document.getElementById('feedbackInput').value='';
+    type.checked = false;
+}
+</script>
+</body>
+</html>

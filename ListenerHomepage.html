@@ -29,9 +29,9 @@
 <header>
     <div class="brand">泰拉演讲团</div>
     <nav>
-        <a href="#">首页</a>
-        <a href="#">历史演讲</a>
-        <a href="#" class="active">个人信息</a>
+        <a href="ListenerHomepage.html"class="active">首页</a>
+        <a href="History.html">历史演讲</a>
+        <a href="PersonInfo.html">个人信息</a>
     </nav>
 </header>
 
@@ -39,17 +39,13 @@
 <!-- 主体内容 -->
 <div class="container">
     <div class="card">
-        <!-- 工具栏 -->
-        <div class="toolbar">
-            <button class="btn btn-primary" style="margin-left:auto" onclick="add()">创建演讲</button>
-        </div>
+       
 
         <!-- 列表 -->
         <table>
             <thead>
                 <tr>
                     <th>名称</th>
-                    <th>考试时长</th>
                     <th>创建时间</th>
                     <th>操作</th>
                 </tr>
@@ -62,9 +58,7 @@
 <script>
 // 模拟数据
 const list = [
-    { name: '十万个为什么', duration: '60分钟', createTime: '2022-01-18 09:48:31' },
-    { name: '小学生安全知识', duration: '30分钟', createTime: '2022-03-12 10:15:22' },
-    { name: '初中数学竞赛', duration: '90分钟', createTime: '2022-05-05 14:30:00' },
+    { name: '十万个为什么',  createTime: '2022-01-18 09:48:31' },
 ];
 
 function render(data){
@@ -74,32 +68,18 @@ function render(data){
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${item.name}</td>
-            <td>${item.duration}</td>
             <td>${item.createTime}</td>
             <td>
-                <button class="btn btn-primary" onclick="view(${idx})">查看</button>
-                <button class="btn btn-primary" onclick="edit(${idx})">编辑</button>
-                <button class="btn btn-danger" onclick="del(${idx})">删除</button>
+                <button class="btn btn-primary" onclick="window.location.href='ListenerQuestion.html'">
+                    进入
+                </button>
             </td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-function search(){
-    const kw = document.getElementById('keyword').value.trim().toLowerCase();
-    const res = list.filter(e => e.name.toLowerCase().includes(kw));
-    render(res);
-}
-function add(){ alert('跳转到“新增在线测评”页面'); }
-function view(i){ alert('查看：' + list[i].name); }
-function edit(i){ alert('编辑：' + list[i].name); }
-function del(i){
-    if(confirm('确认删除“' + list[i].name + '”吗？')){
-        list.splice(i, 1);
-        render(list);
-    }
-}
+
 
 render(list);
 </script>

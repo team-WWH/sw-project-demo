@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>选择课程和班级</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;}
+        body{background:#f5f5f5;}
+        .modal-mask{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;}
+        .modal{width:480px;background:#fff;border-radius:6px;padding:24px;}
+        .modal h3{font-size:18px;margin-bottom:20px;color:#333;}
+        .form-row{display:flex;align-items:center;margin-bottom:20px;}
+        .form-row label{width:60px;font-size:14px;color:#666;margin-right:12px;}
+        .select-wrapper{position:relative;flex:1;}
+        .select-wrapper select{width:100%;height:36px;padding:0 10px;border:1px solid #d9d9d9;border-radius:4px;font-size:14px;background:#fff;}
+        .add-btn{display:inline-block;margin-left:8px;font-size:12px;color:#1890ff;cursor:pointer;}
+        .footer{text-align:right;margin-top:24px;}
+        .btn{height:32px;padding:0 16px;border-radius:4px;font-size:14px;cursor:pointer;border:none;}
+        .btn-cancel{background:#f7f7f7;color:#666;margin-right:12px;}
+        .btn-primary{background:#1890ff;color:#fff;}
+        .btn[disabled]{background:#d6d6d6;cursor:not-allowed;}
+        .error-tip{color:#ff4d4f;font-size:12px;margin-top:4px;}
+    </style>
+</head>
+<body>
+
+<!-- 弹窗 -->
+<div class="modal-mask">
+    <div class="modal">
+        <h3>选择课程和班级</h3>
+
+        <!-- 课程 -->
+        <div class="form-row">
+            <label>课程</label>
+            <div class="select-wrapper">
+                <select id="courseSelect">
+                    <option value="">请选择课程</option>
+                    <option value="123">123</option>
+                    <option value="数学">数学</option>
+                </select>
+            </div>
+            <span class="add-btn" onclick="alert('跳转到新增课程页面')">+ 添加</span>
+        </div>
+
+        <!-- 班级 -->
+        <div class="form-row">
+            <label>班级</label>
+            <div class="select-wrapper">
+                <select id="classSelect">
+                    <option value="">请选择班级</option>
+                    <option value="七（1）班">七（1）班</option>
+                    <option value="七（2）班">七（2）班</option>
+                </select>
+            </div>
+            <span class="add-btn" onclick="alert('跳转到新增班级页面')">+ 添加</span>
+        </div>
+
+        <!-- 标题 -->
+        <div class="form-row">
+            <label>标题</label>
+            <input type="text" id="titleInput" maxlength="28" value="7月17日授课" style="flex:1;height:36px;padding:0 10px;border:1px solid #d9d9d9;border-radius:4px;font-size:14px;">
+        </div>
+
+       <!-- 课件” -->
+<div class="form-row">
+    <label>课件</label>
+
+    <!-- 上传区域 -->
+    <div style="flex:1;display:flex;align-items:center;">
+        <!-- 隐藏的原生 input -->
+        <input type="file" id="coursewareFile" style="display:none;" accept=".ppt,.pptx,.pdf,.doc,.docx" onchange="showFileName(this)">
+
+        <!-- 自定义按钮 -->
+        <button type="button" class="btn btn-primary" style="height:36px;" onclick="document.getElementById('coursewareFile').click()">
+            选择课件
+        </button>
+
+        <!-- 文件名显示 -->
+        <span id="fileName" style="margin-left:12px;font-size:14px;color:#333;"></span>
+    </div>
+</div>
+
+        <div class="footer">
+            <button class="btn btn-cancel" onclick="handleCancel()">取消</button>
+            <button class="btn btn-primary" onclick="handleConfirm()">确定</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function handleConfirm() {
+    const course = document.getElementById('courseSelect').value.trim();
+    const cls    = document.getElementById('classSelect').value.trim();
+    const title  = document.getElementById('titleInput').value.trim();
+    const file   = document.getElementById('coursewareFile').files[0];
+
+    if (!course) { alert('请选择课程！'); return; }
+    if (!cls)    { alert('请选择班级！'); return; }
+
+    /* 方案 A：只带参数跳转（最简单） */
+    const params = new URLSearchParams();
+    params.set('course', course);
+    params.set('class', cls);
+    params.set('title',  title);
+    if (file) params.set('fileName', file.name);   // 如果只需文件名
+    window.location.href = 'SpeakDetail.html?' + params.toString();
+
+    /* 方案 B：先上传再跳转（有后端接口时使用）
+    const formData = new FormData();
+    formData.append('course', course);
+    formData.append('class', cls);
+    formData.append('title', title);
+    if (file) formData.append('courseware', file);
+
+    fetch('/api/upload', {        // ← 换成真实接口
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.ok ? res.json() : Promise.reject(res))
+    .then(data => {
+        // 上传成功后跳转
+        window.location.href = 'SpeakDetail.html?id=' + data.id;
+    })
+    .catch(err => alert('上传失败：' + err.statusText));
+    */
+}
+
+function handleCancel() {
+    window.history.back();
+}
+
+/* 回显文件名 */
+document.getElementById('coursewareFile').addEventListener('change', function () {
+    const file = this.files[0];
+    document.getElementById('fileName').textContent = file ? file.name : '';
+});
+
+// 保存所选文件
+let selectedFile = null;
+
+// 选中文件后回显文件名
+function showFileName(input) {
+    if (input.files && input.files[0]) {
+        selectedFile = input.files[0];
+        document.getElementById('fileName').textContent = selectedFile.name;
+    } else {
+        selectedFile = null;
+        document.getElementById('fileName').textContent = '';
+    }
+}
+
+
+
+</script>
+
+</body>
+</html>
