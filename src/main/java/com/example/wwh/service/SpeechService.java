@@ -14,6 +14,12 @@ public class SpeechService {
 
     @Autowired
     private SpeechMapper speechMapper;
+
+
+    // 获取进行中的演讲
+    public List<Speech> getOngoingSpeeches() {
+        return speechMapper.getOngoingSpeeches();
+
     @Autowired
     private UserMapper userMapper;
 
@@ -49,11 +55,14 @@ public class SpeechService {
             speechList.add(speechMapper.getEndedSpeechesByID(i));
         }
         return speechList;
+
     }
 
     // 获取已结束的演讲
     public List<Speech> getEndedSpeeches() {
         return speechMapper.getEndedSpeeches();
+
+
     }
 
     public List<Listener> getAllListenerBySpeech(Integer speechID){
@@ -63,5 +72,6 @@ public class SpeechService {
             ListenerList.add(userMapper.findListenerByID(i));
         }
         return ListenerList;
+
     }
 }
