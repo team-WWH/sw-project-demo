@@ -152,6 +152,7 @@
             <thead>
                 <tr>
                     <th>名称</th>
+                    <th>班级</th>
                     <th>创建时间</th>
                     <th>操作</th>
                 </tr>
@@ -166,7 +167,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3>创建演讲</h3>
-            <span class="close">&times;</span>
+            <span class="close" onclick="closeModal()">&times;</span>
         </div>
         
         <div class="modal-body">
@@ -175,6 +176,12 @@
                     <label>演讲名称<span class="required">*</span></label>
                     <input type="text" id="speechName" maxlength="28" required>
                     <small>必填，最多28个字</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>班级<span class="required">*</span></label>
+                    <input type="text" id="speechClass" maxlength="10" required>
+                    <small>必填，最多10个字</small>
                 </div>
                 
                 <div class="form-group">
@@ -202,12 +209,42 @@
     </div>
 </div>
 
+<!-- 编辑演讲弹窗 -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>编辑演讲</h3>       
+            <span class="close" onclick="closeEditModal()">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+            <form id="editForm">
+                <div class="form-group">
+                    <label>演讲名称<span class="required">*</span></label>
+                    <input type="text" id="editName" maxlength="28" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>班级<span class="required">*</span></label>
+                    <input type="text" id="editClass" maxlength="10" required>
+                </div>
+            </form>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">取消</button>
+            <button type="button" class="btn btn-primary" onclick="saveEdit()">保存</button>
+        </div>
+    </div>
+</div>
+
 <script>
 // 模拟数据
 const list = [
-    { name: '十万个为什么',  createTime: '2022-01-18 09:48:31' },
-   
+    { name: '十万个为什么', class: '三年级二班', createTime: '2022-01-18 09:48:31' },
 ];
+
+let editIndex = -1;
 
 function render(data){
     const tbody = document.getElementById('tbody');
@@ -216,6 +253,7 @@ function render(data){
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${item.name}</td>
+            <td>${item.class}</td>
             <td>${item.createTime}</td>
             <td>
                 <button class="btn btn-primary" onclick="window.location.href='SelectSpeak.html'">上课</button>
@@ -243,13 +281,24 @@ function closeModal() {
     document.getElementById('createForm').reset();
 }
 
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+    document.getElementById('editForm').reset();
+}
+
 function createSpeech() {
     const name = document.getElementById('speechName').value.trim();
     const shortName = document.getElementById('speechShort').value.trim();
     const type = document.getElementById('speechType').value;
+    const className = document.getElementById('speechClass').value.trim();
     
     if (!name) {
         alert('请输入演讲名称');
+        return;
+    }
+    
+    if (!className) {
+        alert('请输入班级');
         return;
     }
     
@@ -261,6 +310,7 @@ function createSpeech() {
     // 创建新演讲
     const newSpeech = {
         name: shortName || name,
+        class: className,
         createTime: new Date().toLocaleString('zh-CN', {
             year: 'numeric',
             month: '2-digit',
@@ -279,11 +329,42 @@ function createSpeech() {
 // 点击模态框外部关闭
 window.onclick = function(event) {
     const modal = document.getElementById('createModal');
+    const editModal = document.getElementById('editModal');
     if (event.target == modal) {
         closeModal();
     }
+    if (event.target == editModal) {
+        closeEditModal();
+    }
 }
-function edit(i){ alert('编辑：' + list[i].name); }
+
+function edit(i){
+    editIndex = i;
+    document.getElementById('editName').value = list[i].name;
+    document.getElementById('editClass').value = list[i].class;
+    document.getElementById('editModal').style.display = 'block';
+}
+
+function saveEdit() {
+    const name = document.getElementById('editName').value.trim();
+    const className = document.getElementById('editClass').value.trim();
+    
+    if (!name) {
+        alert('请输入演讲名称');
+        return;
+    }
+    
+    if (!className) {
+        alert('请输入班级');
+        return;
+    }
+    
+    list[editIndex].name = name;
+    list[editIndex].class = className;
+    render(list);
+    closeEditModal();
+}
+
 function del(i){
     if(confirm('确认删除“' + list[i].name + '”吗？')){
         list.splice(i, 1);
