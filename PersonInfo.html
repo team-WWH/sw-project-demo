@@ -53,89 +53,105 @@
         <a href="PersonInfo.html" class="active">个人信息</a>
     </nav>
 </header>
- <!-- 主卡片          wcy 改动        -->
- <div class="card">
-     <div class="card-header">个人信息</div>
-     <div class="card-body">
-         <!-- 字段 -->
+<!-- 主卡片 -->
+<div class="card">
+    <div class="card-header">DT502</div>
+    <div class="card-body">
+        <!-- 字段 -->
+        <div class="form-item">
+            <label>学号：</label>
+            <span>20231234</span>
+        </div>
+        <div class="form-item">
+            <label>学生姓名：</label>
+            <span>陈红</span>
+        </div>
+        <div class="form-item">
+            <label>性别：</label>
+            <label><input type="radio" name="gender" value="男"> 男</label>
+            <label style="margin-left:15px"><input type="radio" name="gender" value="女" checked> 女</label>
+        </div>
+        <div class="form-item">
+            <label>密码：</label>
+            <button class="btn btn-primary" onclick="openModal()">修改密码</button>
+        </div>
 
-         <div class="form-item">
-             <label>用户名：</label>
-             <span id="studentName"></span>
-         </div>
-         <div class="form-item">
-             <label>性别：</label>
-             <span id="gender"></span>
-         </div>
+        <!-- 头像上传 -->
+        <div class="form-item" style="align-items:flex-start">
+            <label>头像：</label>
+            <div class="avatar-uploader" onclick="document.getElementById('avatarInput').click()">
+                <img id="avatarImg" src="" style="display:none">
+                <div class="icon">+</div>
+            </div>
+            <input id="avatarInput" type="file" accept="image/*" style="display:none" onchange="previewAvatar(this)">
+        </div>
 
-         <div class="form-item">
-             <label>邮箱：</label>
-             <span id="email"></span>
-         </div>
+        <div class="form-item">
+            <button class="btn btn-primary" onclick="alert('保存成功')">保存</button>
+        </div>
+    </div>
+</div>
 
-         <div class="form-item">
-             <label>电话：</label>
-             <span id="phone"></span>
-         </div>
+<!-- 快捷入口 -->
+<div class="mini-cards">
+    <div class="mini-card" onclick="location.href='exam-record.html'">
+        <div class="icon">📄</div>
+        <div>考试记录</div>
+    </div>
+    <div class="mini-card" onclick="location.href='wrong-book.html'">
+        <div class="icon">📓</div>
+        <div>错题本</div>
+    </div>
+</div>
 
-         <div class="form-item">
-             <label>匿名：</label>
-             <span id="anonymous"></span>
-         </div>
+<!-- 修改密码弹窗 -->
+<div class="modal" id="pwdModal">
+    <div class="modal-content">
+        <div class="modal-header">修改密码</div>
+        <div class="form-item"><label>原密码：</label><input type="password" id="oldPwd"></div>
+        <div class="form-item"><label>新密码：</label><input type="password" id="newPwd"></div>
+        <div class="form-item"><label>确认密码：</label><input type="password" id="confirmPwd"></div>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal()">取消</button>
+            <button class="btn btn-primary" onclick="changePwd()">确定</button>
+        </div>
+    </div>
+</div>
 
+<script>
+/* 头像预览 */
+function previewAvatar(input){
+    if(input.files && input.files[0]){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            const img = document.getElementById('avatarImg');
+            img.src = e.target.result;
+            img.style.display = 'block';
+            document.querySelector('.avatar-uploader .icon').style.display='none';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 
-     </div>
- </div>
+/* 弹窗控制 */
+function openModal(){ document.getElementById('pwdModal').style.display='flex'; }
+function closeModal(){ document.getElementById('pwdModal').style.display='none'; }
 
- <!-- 快捷入口          wcy改动          -->
- <div class="mini-cards">
-     <div class="mini-card" onclick="location.href='wrong-book.html?collectID=' + collectID + '&ListenerID=' + listenerID">
-         <div class="icon">📓</div>
-         <div>收藏题库</div>
-     </div>
- </div>
-
- <script>
-
-
-     //wcy  改动
-
-
-     // 获取用户信息并动态填充到页面
-     window.onload = function() {
-         const listenerID = 1; // 假设你已经知道当前用户的 ListenerID
-
-         // 发送 GET 请求到后端 API 获取用户信息
-         fetch(`http://localhost:8081/users/listener/${listenerID}`)
-             .then(response => response.json())
-             .then(data => {
-                 console.log(data);  // 添加这行以检查返回的数据
-                 // 填充页面上的信息
-
-
-                 // 根据 Anonymous 的值判断是否显示 Uname 还是 '匿名'
-                 if (data.anonymous === 1) {
-                     document.getElementById('studentName').innerText = "匿名";
-                 } else {
-                     document.getElementById('studentName').innerText = data.uname;
-                 }
-
-                 // 填充性别、邮箱、电话、匿名等其他字段
-                 document.getElementById('gender').innerText = data.sex === 1 ? '男' : '女';
-                 document.getElementById('email').innerText = data.mail;
-                 document.getElementById('phone').innerText = data.phone;
-                 document.getElementById('anonymous').innerText = data.anonymous === 1 ? '是' : '否';
-
-
-                 // 点击时将 collectID 和 ListenerID 传递到 wrong-book.html 页面
-                 document.querySelector('.mini-card').onclick = function() {
-                     location.href = `wrong-book.html?collectID=${data.collectID}&ListenerID=${data.listenerID}`;
-                 };
-             })
-             .catch(error => console.error('Error fetching user info:', error));
-     }
- </script>
-
+/* 修改密码逻辑 */
+function changePwd(){
+    const oldPwd = document.getElementById('oldPwd').value.trim();
+    const newPwd = document.getElementById('newPwd').value.trim();
+    const confirmPwd = document.getElementById('confirmPwd').value.trim();
+    if(!oldPwd || !newPwd || !confirmPwd){
+        alert('请完整填写'); return;
+    }
+    if(newPwd !== confirmPwd){
+        alert('两次密码不一致'); return;
+    }
+    alert('修改成功');
+    closeModal();
+}
+</script>
 
 </body>
 </html>
