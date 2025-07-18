@@ -9,15 +9,15 @@ import java.util.List;
 public class SpeechService {
 
     @Autowired
-    private SpeechMapper SpeechMapper;
+    private SpeechMapper speechMapper;
 
     // 获取进行中的演讲
     public List<Speech> getOngoingSpeeches() {
-        return SpeechMapper.getOngoingSpeeches();
+        return speechMapper.getOngoingSpeeches();
     }
 
     // 获取已结束的演讲
     public List<Speech> getEndedSpeeches() {
-        return SpeechMapper.getEndedSpeeches();
+        return speechMapper.getEndedSpeeches();
     }
 }

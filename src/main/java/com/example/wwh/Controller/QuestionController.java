@@ -2,6 +2,7 @@ package com.example.wwh.Controller;
 
 import com.example.wwh.service.AIService;
 import com.example.wwh.service.Pdfparser;
+import com.example.wwh.service.QuestionService;
 import org.apache.pdfbox.Loader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import com.example.wwh.pojo.Question;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -19,6 +22,9 @@ public class QuestionController {
     private Pdfparser pdfParser;
     //@Autowired private PptParser pptParser;
     @Autowired private AIService aiService;
+
+    @Autowired
+    private QuestionService questionService;
 
 
 
@@ -46,5 +52,14 @@ public class QuestionController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("处理失败: " + e.getMessage());
         }
+    }
+
+
+
+    //获取个人的进行中的题目
+    @GetMapping("/listener/getOpeningQuestions")
+    public ResponseEntity<List<Question>> getQuestions(@RequestParam int speechID, @RequestParam int listenerID) {
+        List<Question> questions = questionService.getQuestions(speechID, listenerID);
+        return ResponseEntity.ok(questions);
     }
 }
