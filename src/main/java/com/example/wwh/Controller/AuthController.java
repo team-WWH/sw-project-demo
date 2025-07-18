@@ -19,6 +19,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         String token = authService.authenticate(request);
+        System.out.println("chenggongdiaoyong");
         return ResponseEntity.ok(Map.of("token", token));
     }
 }

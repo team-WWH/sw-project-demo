@@ -4,6 +4,7 @@ import com.example.wwh.Config.JwtTokenProvider;
 import com.example.wwh.Data.LoginRequest;
 import com.example.wwh.pojo.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

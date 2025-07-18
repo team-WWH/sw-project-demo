@@ -22,6 +22,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Autowired private JwtTokenProvider jwtProvider;
 
+
     private MultiRoleAuthService authService = new MultiRoleAuthService();
 
     @Override

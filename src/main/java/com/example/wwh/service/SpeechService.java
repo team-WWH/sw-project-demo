@@ -18,8 +18,37 @@ public class SpeechService {
     private UserMapper userMapper;
 
     // 获取进行中的演讲
-    public List<Speech> getOngoingSpeeches() {
-        return speechMapper.getOngoingSpeeches();
+    public List<Speech> getOngoingSpeechesByListenerID(Integer ListenerID) {
+        List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
+        List<Speech> speechList = new ArrayList<>();
+        for(int i:speechid){
+            speechList.add(speechMapper.getOngoingSpeechesByID(i));
+        }
+        return speechList;
+    }
+    public List<Speech> getOngoingSpeechesBySpeakerID(Integer SpeakerID) {
+        List<Integer> speechid = speechMapper.getSpeechidBySpeakerID(SpeakerID);
+        List<Speech> speechList = new ArrayList<>();
+        for(int i:speechid){
+            speechList.add(speechMapper.getOngoingSpeechesByID(i));
+        }
+        return speechList;
+    }
+    public List<Speech> getEndedSpeechesByListenerID(Integer ListenerID) {
+        List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
+        List<Speech> speechList = new ArrayList<>();
+        for(int i:speechid){
+            speechList.add(speechMapper.getEndedSpeechesByID(i));
+        }
+        return speechList;
+    }
+    public List<Speech> getEndedSpeechesBySpeakerID(Integer SpeakerID) {
+        List<Integer> speechid = speechMapper.getSpeechidBySpeakerID(SpeakerID);
+        List<Speech> speechList = new ArrayList<>();
+        for(int i:speechid){
+            speechList.add(speechMapper.getEndedSpeechesByID(i));
+        }
+        return speechList;
     }
 
     // 获取已结束的演讲

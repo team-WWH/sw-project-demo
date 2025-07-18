@@ -25,9 +25,20 @@ public interface SpeechMapper {
                 "WHERE s.Sstatus = 0")
         List<Speech> getEndedSpeeches();
 
+        @Select("SELECT * FROM speech WHERE Sstatus = 1 AND SpeechID = #{speechID}")
+        Speech getOngoingSpeechesByID(Integer speechID);
+
+        @Select("SELECT * FROM speech WHERE Sstatus = 0 AND  SpeechID = #{speechID}")
+        Speech getEndedSpeechesByID(Integer speechID);
+
         @Select("SELECT ListenerID FROM lisconspe WHERE SpeechID = #{speechID}")
         List<Integer> findListenerBySpeechID(Integer speechID);
 
+        @Select("SELECT SpeechID FROM lisconspe WHERE ListenerID = #{ListenerID}")
+        List<Integer> getSpeechidByListenerID(Integer ListenerID);
+
+        @Select("SELECT SpeechID FROM speech WHERE SpeakerID = #{SpeakerID}")
+        List<Integer> getSpeechidBySpeakerID(Integer SpeakerID);
 
 }
 
