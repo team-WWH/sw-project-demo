@@ -1,10 +1,220 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <title>title</title>
+<meta charset="UTF-8"/>
+<title>讨论列表</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<!-- Bootstrap 5 CDN（仅快速演示用，可替换成你自己的 UI 框架） -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        body{background:#f5f5f5;color:#333}
+        header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
+        header .brand{font-size:18px;font-weight:bold;margin-right:40px}
+        header nav a{color:#fff;margin-right:20px;text-decoration:none;font-size:14px}
+        header nav a.active{color:#1890ff}
+        .sub-nav{background:#fff;border-bottom:1px solid #e8e8e8;padding:12px 20px;font-size:14px}
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .card{background:#fff;border-radius:4px;padding:20px}
+        .toolbar{display:flex;align-items:center;margin-bottom:16px}
+        .toolbar input{width:240px;padding:6px 10px;border:1px solid #d9d9d9;border-radius:2px;margin-right:12px}
+        .btn{padding:6px 14px;border:none;border-radius:2px;font-size:14px;cursor:pointer}
+        .btn-primary{background:#1890ff;color:#fff}
+        .btn-danger{background:#ff4d4f;color:#fff}
+        table{width:100%;border-collapse:collapse;font-size:14px}
+        th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
+        th{background:#fafafa}
+  /* 自定义样式：让“暂无讨论”居中 */
+  .empty-wrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-height:40vh;
+      color:#999;
+  }
+  .empty-wrap img{width:120px;margin-bottom:15px;}
+</style>
 </head>
 <body>
-    
+<!-- 顶部主导航 -->
+<header>
+  <div class="brand">泰拉演讲团</div>
+  <nav>
+    <a href="SpeakerHomepage.html">首页</a>
+    <a href="SpeakerHistory.html">历史演讲</a>
+    <a href="SpeakerInfo.html">个人信息</a>
+  </nav>
+</header>
+
+<!-- 返回箭头 + 标题 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid d-flex align-items-center">
+    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm me-2">← 返回</a>
+    <span class="navbar-brand mb-0 h1">讨论列表</span>
+  </div>
+</nav>
+
+<!-- 搜索 + 发起讨论 -->
+<div class="container-fluid py-3 bg-white shadow-sm">
+  <div class="row align-items-center">
+    <div class="col-md-6 mb-2 mb-md-0">
+      <div class="input-group">
+        <input type="text" id="searchInput" class="form-control" placeholder="请输入要搜索的关键词"/>
+        <button class="btn btn-outline-secondary" type="button" onclick="search()">
+          <i class="bi bi-search"></i>搜索
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6 text-md-end">
+      <button class="btn btn-success" onclick="openNewDiscussion()">+ 发起讨论</button>
+    </div>
+  </div>
+</div>
+
+<!-- 筛选标签栏 -->
+<div class="container-fluid py-2 bg-light">
+  <div class="btn-group flex-wrap" role="group">
+    <button type="button" class="btn btn-sm btn-outline-primary active"
+            data-filter="all" onclick="changeFilter('all')">全部</button>
+    <button type="button" class="btn btn-sm btn-outline-primary"
+            data-filter="speech" onclick="changeFilter('speech')">演讲讨论</button>
+    <button type="button" class="btn btn-sm btn-outline-primary"
+            data-filter="question" onclick="changeFilter('question')">题目讨论</button>
+    <button type="button" class="btn btn-sm btn-outline-primary"
+            data-filter="environment" onclick="changeFilter('environment')">环境讨论</button>
+    <button type="button" class="btn btn-sm btn-outline-primary"
+            data-filter="other" onclick="changeFilter('other')">其他讨论</button>
+  </div>
+  <button class="btn btn-sm btn-link float-end" onclick="toggleSort()">
+    时间倒序 <span id="sortIcon">↓</span>
+  </button>
+</div>
+
+<!-- 讨论主体 -->
+<div class="container mt-4">
+  <div id="discussionList"></div>
+  <!-- 占位 -->
+  <div id="emptyPlaceholder" class="empty-wrap">
+    <img src="https://cdn-icons-png.flaticon.com/512/1584/1584892.png" alt="empty"/>
+    <span>暂无讨论</span>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/*****************************************************************
+ * 数据与状态
+ *****************************************************************/
+let discussionData = [];
+let currentFilter  = 'all';
+let sortDesc       = true;
+
+// 模拟后端数据
+const mockData = [
+  { id:1, type:'speech',   title:'如何准备 10 分钟高效演讲？', author:'张三', time:'2025-07-18 11:30', reply:12 },
+  { id:2, type:'question', title:'第 3 题标准答案解析',        author:'李四', time:'2025-07-18 10:15', reply:5  },
+  { id:3, type:'environment', title:'教室投影太暗怎么办？',      author:'王五', time:'2025-07-17 21:00', reply:3  },
+  { id:4, type:'other',    title:'午餐有什么好推荐？',          author:'赵六', time:'2025-07-17 19:20', reply:8  }
+];
+
+/*****************************************************************
+ * 初始化
+ *****************************************************************/
+function init() {
+  fetchDiscussionList();
+}
+init();
+
+/*****************************************************************
+ * 列表拉取
+ *****************************************************************/
+function fetchDiscussionList() {
+  setTimeout(() => {
+    discussionData = [...mockData];
+    render();
+  }, 300);
+}
+
+/*****************************************************************
+ * 渲染
+ *****************************************************************/
+function render() {
+  const container = document.getElementById('discussionList');
+  const empty     = document.getElementById('emptyPlaceholder');
+
+  let list = discussionData;
+  if (currentFilter !== 'all') {
+    list = list.filter(d => d.type === currentFilter);
+  }
+  list.sort((a,b)=>{
+    const ta = new Date(a.time).getTime();
+    const tb = new Date(b.time).getTime();
+    return sortDesc ? tb - ta : ta - tb;
+  });
+
+  if (!list.length) {
+    container.style.display = 'none';
+    empty.style.display     = 'flex';
+    return;
+  }
+  empty.style.display     = 'none';
+  container.style.display = 'block';
+
+  container.innerHTML = list.map(d => `
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <h6 class="card-title mb-1">${d.title}</h6>
+          <span class="badge bg-secondary">${typeMap(d.type)}</span>
+        </div>
+        <small class="text-muted">${d.author} · ${d.time} · ${d.reply} 回复</small>
+      </div>
+    </div>
+  `).join('');
+}
+
+/*****************************************************************
+ * 交互
+ *****************************************************************/
+function search() {
+  const kw = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!kw) {
+    discussionData = [...mockData];
+  } else {
+    discussionData = mockData.filter(d => d.title.toLowerCase().includes(kw));
+  }
+  render();
+}
+
+function changeFilter(type) {
+  currentFilter = type;
+  document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === type);
+  });
+  render();
+}
+
+function toggleSort() {
+  sortDesc = !sortDesc;
+  document.getElementById('sortIcon').textContent = sortDesc ? '↓' : '↑';
+  render();
+}
+
+function openNewDiscussion() {
+  alert('跳转到“发起讨论”页面');
+}
+
+function typeMap(t) {
+  const map = {
+    speech: '演讲讨论',
+    question: '题目讨论',
+    environment: '环境讨论',
+    other: '其他讨论'
+  };
+  return map[t] || t;
+}
+</script>
 </body>
 </html>
