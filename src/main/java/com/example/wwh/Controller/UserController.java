@@ -15,7 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 
+
+
 public class UserController {
+
 
     @Autowired
     private UserService userService;
@@ -62,4 +65,5 @@ public class UserController {
     public Organizer getOrganizerByOmail(@PathVariable String omail) {
         return userService.getOrganizerInfoMail(omail);
     }
+
 }
