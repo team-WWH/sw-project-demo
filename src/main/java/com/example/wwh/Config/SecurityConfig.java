@@ -29,10 +29,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/listener/**").hasRole("LISTENER")
-                        .requestMatchers("/speaker/**").hasRole("SPEAKER")
-                        .requestMatchers("/organizer/**").hasRole("ORGANIZER")
+                        .requestMatchers("/**").permitAll()
+                        //.requestMatchers("/auth/login").permitAll()
+                        //.requestMatchers("/listener/**").hasRole("LISTENER")
+                        //.requestMatchers("/speaker/**").hasRole("SPEAKER")
+                        //.requestMatchers("/organizer/**").hasRole("ORGANIZER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
@@ -55,6 +56,11 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
+
+
+
 
 
 }
