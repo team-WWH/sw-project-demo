@@ -7,9 +7,19 @@ package com.example.wwh.pojo;
 //反馈
 public class Feedback {
     private int FeedbackID;
-    private String Fcontent;
+
     private int ListenerID;
     private int SpeechID;
+
+    private String Fcontent;
+
+    public String getFcontent() {
+        return Fcontent;
+    }
+
+    public void setFcontent(String fcontent) {
+        Fcontent = fcontent;
+    }
 
     public int getFeedbackID() {
         return FeedbackID;
@@ -19,13 +29,6 @@ public class Feedback {
         FeedbackID = feedbackID;
     }
 
-    public String getFcontent() {
-        return Fcontent;
-    }
-
-    public void setFcontent(String fcontent) {
-        Fcontent = fcontent;
-    }
 
     public int getListenerID() {
         return ListenerID;

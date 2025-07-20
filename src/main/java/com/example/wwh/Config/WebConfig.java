@@ -3,8 +3,14 @@ package com.example.wwh.Config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 @Configuration
+@EnableWebSocket
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
@@ -15,4 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")  // 允许的请求头
                 .allowCredentials(true);  // 是否允许发送 Cookie 信息
     }
+
+
+
 }
