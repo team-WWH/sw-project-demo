@@ -47,6 +47,11 @@
   <p id="info">课程：<span id="courseName"></span> &nbsp;&nbsp; 班级：<span id="className"></span></p>
 </div>
 
+<div class="actions" style="margin-top: 20px;">
+  <button class="btn-primary" onclick="loadSpeechContent()">演讲内容</button>
+  <button class="btn-secondary" onclick="loadQuestionDetails()">题目详情</button>
+</div>
+
 <div class="main" style="display:flex;gap:20px;">
   <!-- 左侧 PPT 预览 -->
   <div class="ppt-container" style="flex:1;background:#fff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);height:600px;">
@@ -54,19 +59,43 @@
   </div>
 
   <!-- 右侧按钮区域 -->
-  <div style="width:160px;position:sticky;top:40px;align-self:flex-start;">
-    <button class="btn-primary" style="width:100%;margin-bottom:20px;height: 30px;" onclick="publishQuestion()">
+  <div style="width:300px;position:sticky;top:40px;align-self:flex-start;">
+  <div style="display:flex;gap:10px;align-items:center;">
+    <button class="btn-primary" style="flex:1;height: 30px;" onclick="publishQuestion()">
       发布题目
     </button>
-    <button class="btn-primary" style="width:100%;margin-bottom:20px;height: 30px;" onclick="viewQuestion()">
-      查看题目详情
-    </button>
-    <button class="btn-primary" style="width:100%;margin-bottom:20px;height: 30px;" onclick="viewFeedback()">
-      查看反馈
-    </button>
-    <button class="btn-danger" style="width:100%;height: 30px;background:#e74c3c;color:#fff;border:none;border-radius:4px;" onclick="endSpeech()">
+    <button class="btn-danger" style="flex:1;height: 30px;background:#e74c3c;color:#fff;border:none;border-radius:4px;" onclick="endSpeech()">
       结束演讲
     </button>
+  </div>
+  <!-- 听众展示列表 -->
+  <div class="audience-list" style="margin-top: 20px; overflow-y: auto; height: 150px; border: 1px solid #ddd; border-radius: 6px;">
+    <div class="audience-item" style="padding: 5px; border-bottom: 1px solid #eee;">
+      <img src="avatar1.png" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+      <span>听众1</span>
+    </div>
+    <div class="audience-item" style="padding: 5px; border-bottom: 1px solid #eee;">
+      <img src="avatar2.png" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+      <span>听众2</span>
+    </div>
+    <!-- 添加更多听众项 -->
+  </div>
+  <!-- 评论区 -->
+  <div class="comment-section" style="margin-top: 20px; border: 1px solid #ddd; border-radius: 6px; height: 200px; display: flex; flex-direction: column;">
+    <div style="flex: 1; overflow-y: auto; padding: 5px;">
+      <!-- 示例评论 -->
+      <div class="comment-item" style="display: flex; align-items: center; padding: 5px; border-bottom: 1px solid #eee;">
+        <img src="avatar1.png" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+        <span>听众1: 这是一条评论</span>
+      </div>
+      <!-- 更多评论... -->
+    </div>
+    <div style="display: flex; gap: 5px; padding: 5px;">
+      <input type="text" placeholder="输入消息..." style="flex: 1; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+      <button onclick="sendComment()" style="height: 30px; padding: 0 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        发送
+      </button>
+    </div>
   </div>
 </div>
 
@@ -155,7 +184,6 @@ function publishQuestion() {
   document.getElementById('publishModal').style.display = 'block';
 }
 
-
 function confirmPublish() {
   const progress = document.getElementById('progressSelect').value;
   alert(`题目已发布，进度：${progress}%`);
@@ -194,7 +222,7 @@ function renderFilePreview() {
   
   uploadedFiles.forEach((file, index) => {
     const fileItem = document.createElement('div');
-    fileItem.style.cssText = 'display:flex;align-items:center;padding:5px;border:1px solid #eee;margin-bottom:5px;border-radius:4px;';
+    fileItem.style.cssText = 'display:flex;align-items:center;padding:5px;border-bottom:1px solid #eee;margin-bottom:5px;border-radius:4px;';
     
     let previewContent = '';
     if (file.type.startsWith('image/')) {
@@ -204,7 +232,7 @@ function renderFilePreview() {
     } else if (file.type.startsWith('audio/')) {
       previewContent = `<audio src="${URL.createObjectURL(file)}" controls style="width:100px;height:30px;margin-right:10px;"></audio>`;
     } else {
-      previewContent = `<div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;margin-right:10px;font-size:12px;">${file.name.split('.').pop()}</div>`;
+      previewContent = `<div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:#f0f0f0f0;margin-right:10px;font-size:12px;">${file.name.split('.').pop()}</div>`;
     }
     
     fileItem.innerHTML = `
@@ -237,15 +265,15 @@ async function uploadFiles() {
   
   try {
     const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData
-    });
-    const result = await response.json();
-    return result.fileUrls || [];
+     method: 'POST',
+     body: formData
+   });
+   const result = await response.json();
+   return result.fileUrls || [];
   } catch (error) {
-    console.error('文件上传失败:', error);
-    alert('文件上传失败，请重试');
-    return [];
+   console.error('文件上传失败:', error);
+   alert('文件上传失败，请重试');
+   return [];
   }
 }
 
@@ -258,33 +286,33 @@ async function confirmPublish() {
   
   // 构建发布数据
   const publishData = {
-    progress: progress,
-    files: fileUrls,
-    timestamp: new Date().toISOString()
+   progress: progress,
+   files: fileUrls,
+   timestamp: new Date().toISOString()
   };
   
   try {
-    // 发送到服务器保存到数据库
-    const response = await fetch('/api/publish-question', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(publishData)
-    });
-    
-    if (response.ok) {
-      alert(`题目已发布，进度：${progress}%`);
-      closePublishModal();
-      uploadedFiles = [];
-      document.getElementById('fileInput').value = '';
-      renderFilePreview();
-    } else {
-      throw new Error('发布失败');
+   // 发送到服务器保存到数据库
+   const response = await fetch('/api/publish-question', {
+    method: 'POST',
+    headers: {
+     'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(publishData)
+   });
+   
+   if (response.ok) {
+    alert(`题目已发布，进度：${progress}%`);
+    closePublishModal();
+    uploadedFiles = [];
+    document.getElementById('fileInput').value = '';
+    renderFilePreview();
+   } else {
+     throw new Error('发布失败');
     }
   } catch (error) {
-    console.error('发布失败:', error);
-    alert('发布失败，请重试');
+   console.error('发布失败:', error);
+   alert('发布失败，请重试');
   }
 }
 
@@ -306,7 +334,71 @@ function generateAIQuestion() {
 window.onclick = function(event) {
   const modal = document.getElementById('publishModal');
   if (event.target == modal) {
-    closePublishModal();
+   closePublishModal();
+  }
+}
+
+// 发送评论
+function sendComment() {
+  const commentInput = document.querySelector('.comment-section input');
+  const commentText = commentInput.value.trim();
+  if (commentText === '') {
+   alert('请输入评论内容');
+   return;
+  }
+  
+  const commentSection = document.querySelector('.comment-section');
+  const commentItem = document.createElement('div');
+  commentItem.className = 'comment-item';
+  commentItem.style = 'display: flex; align-items: center; padding: 5px; border-bottom: 1px solid #eee;';
+  
+  const avatar = document.createElement('img');
+  avatar.src = 'avatar1.png'; // 这里可以替换为用户的实际头像
+  avatar.alt = 'Avatar';
+  avatar.style = 'width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;';
+  
+  const commentContent = document.createElement('span');
+  commentContent.textContent = commentText;
+  
+  commentItem.appendChild(avatar);
+  commentItem.appendChild(commentContent);
+  commentSection.insertBefore(commentItem, commentSection.firstChild);
+  
+  commentInput.value = '';
+}
+
+// 加载演讲内容
+async function loadSpeechContent() {
+  try {
+   const response = await fetch('/api/speech-content');
+   if (!response.ok) {
+    throw new Error('Failed to fetch speech content');
+   }
+   const data = await response.json();
+   // 假设返回的数据是一个包含演讲内容的HTML字符串
+   const pptContainer = document.querySelector('.ppt-container');
+   pptContainer.innerHTML = data.htmlContent;
+  } catch (error) {
+   console.error('Error loading speech content:', error);
+   alert('加载演讲内容失败');
+  }
+}
+
+// 加载题目详情
+async function loadQuestionDetails() {
+  try {
+   const response = await fetch('/api/SpeakerQuestion');
+   if (!response.ok) {
+    throw new Error('Failed to fetch question details');
+   }
+   const data = await response.json();
+   // 假设返回的数据是一个包含题目详情的HTML字符串
+   const questionContainer = document.createElement('div');
+   questionContainer.innerHTML = data.htmlContent;
+   document.body.appendChild(questionContainer);
+  } catch (error) {
+   console.error('Error loading question details:', error);
+   alert('加载题目详情失败');
   }
 }
 </script>

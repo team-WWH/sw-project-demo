@@ -152,8 +152,6 @@
             <thead>
                 <tr>
                     <th>名称</th>
-                    <th>班级</th>
-                    <th>创建时间</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -178,27 +176,7 @@
                     <small>必填，最多28个字</small>
                 </div>
                 
-                <div class="form-group">
-                    <label>班级<span class="required">*</span></label>
-                    <input type="text" id="speechClass" maxlength="10" required>
-                    <small>必填，最多10个字</small>
-                </div>
                 
-                <div class="form-group">
-                    <label>演讲简称</label>
-                    <input type="text" id="speechShort" maxlength="16">
-                    <small>选填，最多16个字</small>
-                </div>
-                
-                <div class="form-group">
-                    <label>演讲类型<span class="required">*</span></label>
-                    <select id="speechType" required>
-                        <option value="">请选择</option>
-                        <option value="中小学">中小学</option>
-                        <option value="高校">高校</option>
-                        <option value="其他">其他</option>
-                    </select>
-                </div>
             </form>
         </div>
         
@@ -223,11 +201,6 @@
                     <label>演讲名称<span class="required">*</span></label>
                     <input type="text" id="editName" maxlength="28" required>
                 </div>
-                
-                <div class="form-group">
-                    <label>班级<span class="required">*</span></label>
-                    <input type="text" id="editClass" maxlength="10" required>
-                </div>
             </form>
         </div>
         
@@ -241,7 +214,7 @@
 <script>
 // 模拟数据
 const list = [
-    { name: '十万个为什么', class: '三年级二班', createTime: '2022-01-18 09:48:31' },
+    { name: '十万个为什么', createTime: '2022-01-18 09:48:31' },
 ];
 
 let editIndex = -1;
@@ -253,7 +226,6 @@ function render(data){
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${item.name}</td>
-            <td>${item.class}</td>
             <td>${item.createTime}</td>
             <td>
                 <button class="btn btn-primary" onclick="window.location.href='SelectSpeak.html'">上课</button>
@@ -296,21 +268,12 @@ function createSpeech() {
         alert('请输入演讲名称');
         return;
     }
-    
-    if (!className) {
-        alert('请输入班级');
-        return;
-    }
-    
-    if (!type) {
-        alert('请选择演讲类型');
-        return;
-    }
+
     
     // 创建新演讲
     const newSpeech = {
         name: shortName || name,
-        class: className,
+
         createTime: new Date().toLocaleString('zh-CN', {
             year: 'numeric',
             month: '2-digit',
@@ -341,7 +304,6 @@ window.onclick = function(event) {
 function edit(i){
     editIndex = i;
     document.getElementById('editName').value = list[i].name;
-    document.getElementById('editClass').value = list[i].class;
     document.getElementById('editModal').style.display = 'block';
 }
 
@@ -354,13 +316,8 @@ function saveEdit() {
         return;
     }
     
-    if (!className) {
-        alert('请输入班级');
-        return;
-    }
     
     list[editIndex].name = name;
-    list[editIndex].class = className;
     render(list);
     closeEditModal();
 }

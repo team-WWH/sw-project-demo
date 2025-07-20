@@ -27,7 +27,7 @@
 <!-- 弹窗 -->
 <div class="modal-mask">
     <div class="modal">
-        <h3>选择课程和班级</h3>
+        <h3>选择课程</h3>
 
         <!-- 课程 -->
         <div class="form-row">
@@ -42,18 +42,7 @@
             <span class="add-btn" onclick="alert('跳转到新增课程页面')">+ 添加</span>
         </div>
 
-        <!-- 班级 -->
-        <div class="form-row">
-            <label>班级</label>
-            <div class="select-wrapper">
-                <select id="classSelect">
-                    <option value="">请选择班级</option>
-                    <option value="七（1）班">七（1）班</option>
-                    <option value="七（2）班">七（2）班</option>
-                </select>
-            </div>
-            <span class="add-btn" onclick="alert('跳转到新增班级页面')">+ 添加</span>
-        </div>
+       
 
         <!-- 标题 -->
         <div class="form-row">
@@ -90,17 +79,15 @@
 <script>
 function handleConfirm() {
     const course = document.getElementById('courseSelect').value.trim();
-    const cls    = document.getElementById('classSelect').value.trim();
     const title  = document.getElementById('titleInput').value.trim();
     const file   = document.getElementById('coursewareFile').files[0];
 
     if (!course) { alert('请选择课程！'); return; }
-    if (!cls)    { alert('请选择班级！'); return; }
+
 
     /* 方案 A：只带参数跳转（最简单） */
     const params = new URLSearchParams();
     params.set('course', course);
-    params.set('class', cls);
     params.set('title',  title);
     if (file) params.set('fileName', file.name);   // 如果只需文件名
     window.location.href = 'SpeakDetail.html?' + params.toString();
