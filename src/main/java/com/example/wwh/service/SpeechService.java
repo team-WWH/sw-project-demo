@@ -27,7 +27,12 @@ public class SpeechService {
             List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
             List<Speech> speechList = new ArrayList<>();
             for (int i : speechid) {
-                speechList.add(speechMapper.getOngoingSpeechesByID(i));
+                Speech speech = speechMapper.getOngoingSpeechesByID(i);
+
+                // 仅添加非null的演讲数据
+                if (speech != null) {
+                    speechList.add(speech);
+                }
             }
             return speechList;
         }

@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8"/>
     <title>演讲练习- 泰拉演讲团</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <style>
-         *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
         body{background:#f5f5f5;color:#333}
         header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
         header .brand{font-size:18px;font-weight:bold;margin-right:40px}
@@ -47,7 +44,7 @@
     </style>
 </head>
 <body>
-    <!-- 顶部主导航 -->
+<!-- 顶部主导航 -->
 <header>
     <div class="brand">泰拉演讲团</div>
     <nav>
@@ -56,6 +53,7 @@
         <a href="PersonInfo.html">个人信息</a>
     </nav>
 </header>
+
 <!-- 顶部导航 -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
@@ -71,87 +69,82 @@
 <div class="container-fluid header-bar">
     <div class="row">
         <div class="col filter-group">
-            
+            <!-- 可以添加筛选功能 -->
         </div>
     </div>
 </div>
 
 <!-- 题目列表 -->
 <div class="container mt-3">
-    <div id="questionList">
-        <!-- 题目卡片由 JS 渲染 -->
+    <h3>进行中的题目</h3>
+    <div id="ongoingQuestions">
+        <!-- 进行中的题目将被 JS 渲染到这里 -->
+    </div>
+    <hr>
+    <h3>已结束的题目</h3>
+    <div id="finishedQuestions">
+        <!-- 已结束的题目将被 JS 渲染到这里 -->
     </div>
 </div>
 
 <script>
-/* 题目数据（模拟） */
-const questions = [
-  {
-    type: '单选题',
-    time: '2025-07-13 11:21:19',
-    title: '年度热词大事小情，不仅反映国家大事、时代主旋律，还有对老百姓日常生活的深切____，展现了过去一年的社会变迁和生活万象。而透过“内卷”“躺平”“鸡娃”“双减”“干饭人”等热词，我们还可____当下独特的社会景观。依次填入画横线部分最恰当的一项是：',
-    url: 'QuestionDetail.html?id=1',
-    endTime: '2025-07-14 12:00:00'   // 新增结束时间
-  },
-  {
-    type: '单选题',
-    time: '2025-07-13 11:21:19',
-    title: '算法歧视是以算法为手段实施的歧视，主要指在大数据背景下、依靠机器计算的自动决策系统在对数据主体做出决策分析时，由于数据和算法本身不具有中立性或者隐含错误、被人为操控等原因，对数据主体进行差别对待，造成歧视性后果。根据上述定义，下列属于算法歧视的是：',
-    url: 'QuestionDetail.html?id=2',
-    endTime: '2025-07-16 23:59:59'
-  },
-  {
-    type: '单选题',
-    time: '2025-07-13 11:21:19',
-    title: '公民、法人或者其他组织认为行政机关的具体行政行为所依据的规定不合法，在对具体行政行为申请行政复议时，可以一并向行政复议机关提出对（ ）的审查申请。',
-    url: 'QuestionDetail.html?id=3',
-    endTime: '2025-07-10 23:59:59'
-  },
-  {
-    type: '单选题',
-    time: '2025-07-13 11:21:19',
-    title: '短期来看，日趋激烈的竞争必将导致相应区域的主题公园________ ；而从中长期来看， ________了国内外主题公园精粹的集群区域将更有助于吸引来自国内外的增量游客，这对身处其中的本土主题公园而言，将是难得的机遇。',
-    url: 'QuestionDetail.html?id=4',
-    endTime: '2025-07-20 00:00:00'
-  }
-];
+    // 获取 URL 中的查询参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const listenerID = urlParams.get('ListenerID');
+    const speechID = urlParams.get('SpeechID');
 
-/* 当前题 id（从 url 取） */
-const id = Number(new URLSearchParams(location.search).get('id')) || 1;
-const currentIndex = id - 1;
-const q = questions[currentIndex];
+    // 输出获取到的参数
+    console.log("ListenerID:", listenerID);
+    console.log("SpeechID:", speechID);
 
-/* 判断状态 */
-function getStatus(end){
-  return new Date() > new Date(end) ? '已结束' : '进行中';
-}
+    // 获取进行中的题目
+    fetch(`http://localhost:8081/api/questions/listener/getOpeningQuestions?speechID=${speechID}&listenerID=${listenerID}`)
+        .then(response => response.json())
+        .then(data => renderQuestions(data, 'ongoingQuestions'))  // 渲染进行中的题目
+        .catch(error => console.error('Error fetching ongoing questions:', error));
 
-/* 渲染函数 */
-function render(list){
-  const box = document.getElementById('questionList');
-  box.innerHTML = '';
-  list.forEach(q=>{
-    const card = document.createElement('div');
-    card.className = 'card question-card';
-    const statusText = getStatus(q.endTime);
-    const statusClass = statusText === '已结束' ? 'text-danger' : 'text-success';
-    card.innerHTML = `
-        <div class="card-body">
-            <span class="badge bg-secondary mb-2">${q.type}</span>
-            <small class="text-muted float-end">${q.time}</small>
-            <span class="float-end me-2 ${statusClass} fw-bold">${statusText}</span>
-            <p class="card-text">${q.title}</p>
-            <button class="btn btn-primary btn-sm" onclick="window.location.href='${q.url}'">
-                进入
-            </button>
-        </div>
-    `;
-    box.appendChild(card);
-  });
-}
+    // 获取已结束的题目
+    fetch(`http://localhost:8081/api/questions/listener/getfinishedQuestions?speechID=${speechID}&listenerID=${listenerID}`)
+        .then(response => response.json())
+        .then(data => renderQuestions(data, 'finishedQuestions'))  // 渲染已结束的题目
+        .catch(error => console.error('Error fetching finished questions:', error));
 
-/* 初始化 */
-render(questions);
+    // 渲染题目的函数
+    // 渲染题目列表
+    // 渲染题目列表
+    // 渲染题目列表
+    function renderQuestions(questions, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        questions.forEach(question => {
+            const card = document.createElement('div');
+            card.className = 'card question-card';
+            card.innerHTML = `
+            <div class="card-body">
+                <p class="card-text">${question.questioncontent}</p>
+                <button class="btn btn-primary btn-sm">进入</button>
+            </div>
+        `;
+
+            // 动态绑定事件
+            const btn = card.querySelector('button');
+            btn.addEventListener('click', () => saveQuestionAndRedirect(question));
+
+            container.appendChild(card);
+        });
+    }
+
+    // 保存数据到 sessionStorage 并跳转到详情页
+    function saveQuestionAndRedirect(question) {
+        // 将 question 对象存储到 sessionStorage 中
+        sessionStorage.setItem('questionData', JSON.stringify(question));  // 存储 question 对象
+        // 跳转到 QuestionDetail.html 页面
+        window.location.href = 'QuestionDetail.html';  // 跳转到详情页
+    }
+
+
+
 </script>
 </body>
 </html>

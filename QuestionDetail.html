@@ -114,6 +114,8 @@
 
 <script>
 /* ========== 题库 ========== */
+
+
 const questions = [
   {
     stem:`年度热词,大事小情,不仅反映国家大事、时代主旋律,还有对老百姓日常生活的深切____,展现了过去一年的社会变迁和生活万象。而透过“内卷”“躺平”“鸡娃”“双减”“干饭人”等热词,我们还可____当下独特的社会景观。`,
@@ -124,7 +126,7 @@ const questions = [
       'D. 叙写 贴近 关怀 透视'
     ],
     answer:2  , // C
-     classRate:'62.3%' 
+     classRate:'62.3%'
   },
   {
     stem:`算法歧视是以算法为手段实施的歧视，主要指在大数据背景下、依靠机器计算的自动决策系统在对数据主体做出决策分析时，由于数据和算法本身不具有中立性或者隐含错误、被人为操控等原因，对数据主体进行差别对待，造成歧视性后果。根据上述定义，下列属于算法歧视的是：`,
@@ -135,7 +137,7 @@ const questions = [
       'D. 某银行随机抽选客户赠礼'
     ],
     answer:0 , // A
-    classRate:'45.7%' 
+    classRate:'45.7%'
   },
   {
     stem:`公民、法人或者其他组织认为行政机关的具体行政行为所依据的规定不合法，在对具体行政行为申请行政复议时，可以一并向行政复议机关提出对（ ）的审查申请。`,
@@ -168,6 +170,16 @@ const correctFlags = Array(questions.length).fill(false); // 每题是否正确
 
 /* ========== 渲染题目 ========== */
 function renderQuestion(currentIndex){
+
+    // 获取存储在 sessionStorage 中的 questionData
+    const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+    if (questionData) {
+
+        console.log(questionData);  // 在控制台输出 questionData 对象（调试用）
+    } else {
+        console.error("没有找到题目数据");
+    }
+
   const q = questions[currentIndex];
   document.getElementById('counter').textContent = `第 ${currentIndex+1} 题 / 共 ${questions.length} 题`;
   const box = document.getElementById('questionBox');
@@ -176,7 +188,7 @@ box.innerHTML = `
   <div class="mb-3 position-relative">
       <span class="badge bg-primary me-2">单选题</span>
       <i class="star-icon fa-star ${isFav ? 'fas' : 'far'}" onclick="toggleFav(${currentIndex},this)"></i>
-  </div> 
+  </div>
     <div class="mb-3">${q.stem}</div>
     <div id="optionArea"></div>
     <div id="resultBar" class="bottom-result"></div>

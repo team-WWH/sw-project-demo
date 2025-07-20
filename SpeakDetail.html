@@ -98,11 +98,11 @@
     </div>
   </div>
 </div>
-
+</div>
 <div id="publishModal" class="modal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5);">
   <div style="background:#fff;margin:5% auto;padding:20px;border-radius:6px;width:400px;max-height:90vh;overflow-y:auto;">
     <h3>发布题目</h3>
-    
+
     <form id="publishForm">
       <!-- 演讲进度选择 -->
       <div class="form-group" style="margin:15px 0;">
@@ -124,10 +124,10 @@
       <!-- 文件上传区域 -->
       <div class="form-group" style="margin:15px 0;">
         <label>上传文件：</label>
-        <input type="file" id="fileInput" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx" 
+        <input type="file" id="fileInput" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx"
                style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
         <small style="color:#666;">支持图片、视频、音频、PDF、Word、PPT等格式</small>
-        
+
         <!-- 文件预览区域 -->
         <div id="filePreview" style="margin-top:10px;max-height:200px;overflow:auto;">
           <div id="previewList"></div>
@@ -219,11 +219,11 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
 function renderFilePreview() {
   const previewList = document.getElementById('previewList');
   previewList.innerHTML = '';
-  
+
   uploadedFiles.forEach((file, index) => {
     const fileItem = document.createElement('div');
     fileItem.style.cssText = 'display:flex;align-items:center;padding:5px;border-bottom:1px solid #eee;margin-bottom:5px;border-radius:4px;';
-    
+
     let previewContent = '';
     if (file.type.startsWith('image/')) {
       previewContent = `<img src="${URL.createObjectURL(file)}" style="width:50px;height:50px;object-fit:cover;margin-right:10px;">`;
@@ -234,7 +234,7 @@ function renderFilePreview() {
     } else {
       previewContent = `<div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:#f0f0f0f0;margin-right:10px;font-size:12px;">${file.name.split('.').pop()}</div>`;
     }
-    
+
     fileItem.innerHTML = `
       ${previewContent}
       <div style="flex:1;overflow:hidden;">
@@ -243,7 +243,7 @@ function renderFilePreview() {
       </div>
       <button type="button" onclick="removeFile(${index})" style="background:none;border:none;color:#e74c3c;font-size:16px;cursor:pointer;">×</button>
     `;
-    
+
     previewList.appendChild(fileItem);
   });
 }
@@ -257,12 +257,12 @@ function removeFile(index) {
 // 上传文件到服务器
 async function uploadFiles() {
   if (uploadedFiles.length === 0) return [];
-  
+
   const formData = new FormData();
   uploadedFiles.forEach(file => {
     formData.append('files', file);
   });
-  
+
   try {
     const response = await fetch('/api/upload', {
      method: 'POST',
@@ -280,17 +280,17 @@ async function uploadFiles() {
 // 修改确认发布函数
 async function confirmPublish() {
   const progress = document.getElementById('progressSelect').value;
-  
+
   // 上传文件
   const fileUrls = await uploadFiles();
-  
+
   // 构建发布数据
   const publishData = {
    progress: progress,
    files: fileUrls,
    timestamp: new Date().toISOString()
   };
-  
+
   try {
    // 发送到服务器保存到数据库
    const response = await fetch('/api/publish-question', {
@@ -300,7 +300,7 @@ async function confirmPublish() {
     },
     body: JSON.stringify(publishData)
    });
-   
+
    if (response.ok) {
     alert(`题目已发布，进度：${progress}%`);
     closePublishModal();
@@ -346,24 +346,24 @@ function sendComment() {
    alert('请输入评论内容');
    return;
   }
-  
+
   const commentSection = document.querySelector('.comment-section');
   const commentItem = document.createElement('div');
   commentItem.className = 'comment-item';
   commentItem.style = 'display: flex; align-items: center; padding: 5px; border-bottom: 1px solid #eee;';
-  
+
   const avatar = document.createElement('img');
   avatar.src = 'avatar1.png'; // 这里可以替换为用户的实际头像
   avatar.alt = 'Avatar';
   avatar.style = 'width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;';
-  
+
   const commentContent = document.createElement('span');
   commentContent.textContent = commentText;
-  
+
   commentItem.appendChild(avatar);
   commentItem.appendChild(commentContent);
   commentSection.insertBefore(commentItem, commentSection.firstChild);
-  
+
   commentInput.value = '';
 }
 
@@ -402,6 +402,5 @@ async function loadQuestionDetails() {
   }
 }
 </script>
-
 </body>
 </html>
