@@ -55,4 +55,10 @@ public interface QuestionMapper {
     @Insert("INSERT INTO Collect (ListenerID, QuestionID) VALUES (#{listenerID}, #{questionID})")
     void addToCollect(@Param("listenerID") int listenerID, @Param("questionID") int questionID);
 
+
+    // 根据 QuestionID 和 ListenerID 查询是否已收藏
+    @Select("SELECT COUNT(*) FROM collect WHERE QuestionID = #{questionID} AND ListenerID = #{listenerID}")
+    int countCollectByQuestionAndListener(@Param("questionID") int questionID, @Param("listenerID") int listenerID);
+
+
 }
