@@ -30,30 +30,33 @@ public class SpeechService {
     @Value("${app.code.charset}")
     private String charset;
     // 获取进行中的演讲
-    public List<Speech> getOngoingSpeechesByListenerID(Integer ListenerID) {
-        List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
-        List<Speech> speechList = new ArrayList<>();
-        for(int i:speechid){
-            speechList.add(speechMapper.getOngoingSpeechesByID(i));
-        }
-        return speechList;
+    public List<Speech> getOngoingSpeeches() {
+        return speechMapper.getOngoingSpeeches();
+
     }
-    public List<Speech> getOngoingSpeechesBySpeakerID(Integer SpeakerID) {
-        List<Integer> speechid = speechMapper.getSpeechidBySpeakerID(SpeakerID);
-        List<Speech> speechList = new ArrayList<>();
-        for(int i:speechid){
-            speechList.add(speechMapper.getOngoingSpeechesByID(i));
+        // 获取进行中的演讲
+        public List<Speech> getOngoingSpeechesByListenerID (Integer ListenerID){
+            List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
+            List<Speech> speechList = new ArrayList<>();
+            for (int i : speechid) {
+                Speech speech = speechMapper.getOngoingSpeechesByID(i);
+
+                // 仅添加非null的演讲数据
+                if (speech != null) {
+                    speechList.add(speech);
+                }
+            }
+            return speechList;
         }
-        return speechList;
-    }
-    public List<Speech> getEndedSpeechesByListenerID(Integer ListenerID) {
-        List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
-        List<Speech> speechList = new ArrayList<>();
-        for(int i:speechid){
-            speechList.add(speechMapper.getEndedSpeechesByID(i));
+        public List<Speech> getOngoingSpeechesBySpeakerID (Integer SpeakerID){
+            List<Integer> speechid = speechMapper.getSpeechidBySpeakerID(SpeakerID);
+            List<Speech> speechList = new ArrayList<>();
+            for (int i : speechid) {
+                speechList.add(speechMapper.getOngoingSpeechesByID(i));
+            }
+            return speechList;
         }
-        return speechList;
-    }
+  
     public ResponseEntity<?> IntendSpeech(String joinCode){
         Object speechId = redisutil.get(buildJoinCodeKey(joinCode));
         Speech speech = speechMapper.getSpeechById((Integer) speechId);
@@ -70,8 +73,17 @@ public class SpeechService {
         for(int i:speechid){
             speechList.add(speechMapper.getEndedSpeechesByID(i));
         }
-        return speechList;
-    }
+        public List<Speech> getEndedSpeechesBySpeakerID (Integer SpeakerID){
+            List<Integer> speechid = speechMapper.getSpeechidBySpeakerID(SpeakerID);
+            List<Speech> speechList = new ArrayList<>();
+            for (int i : speechid) {
+                speechList.add(speechMapper.getEndedSpeechesByID(i));
+            }
+            return speechList;
+
+        }
+
+
 
     // 获取已结束的演讲
     public List<Speech> getEndedSpeeches() {
@@ -85,8 +97,18 @@ public class SpeechService {
         List<Listener> ListenerList = new ArrayList<>();
         for(int i:IDlist){
             ListenerList.add(userMapper.findListenerByID(i));
+
+       
+
+        public List<Listener> getAllListenerBySpeech (Integer speechID){
+            List<Integer> IDlist = speechMapper.findListenerBySpeechID(speechID);
+            List<Listener> ListenerList = new ArrayList<>();
+            for (int i : IDlist) {
+                ListenerList.add(userMapper.findListenerByID(i));
+            }
+            return ListenerList;
+
         }
-        return ListenerList;
     }
 
     public String CreateSpeechFirst(Speech speech){
@@ -134,3 +156,4 @@ public class SpeechService {
         return "join_code:" + code;
     }
 }
+

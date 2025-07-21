@@ -57,8 +57,12 @@
 </div>
 
 <script>
-    // 获取正在进行中的演讲数据
-    fetch('http://localhost:8081/speeches/ended')
+
+    const listenerID=1;
+
+
+    // 获取已经结束的的演讲数据
+    fetch(`http://localhost:8081/Listener/ended?ListenerID=${listenerID}`)
         .then(response => response.json())
         .then(data => {
             render(data);  // 调用渲染函数将数据展示到页面
