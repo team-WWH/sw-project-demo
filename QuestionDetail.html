@@ -168,6 +168,7 @@ let currentIndex = Number(new URLSearchParams(location.search).get('id') || 1) -
 const userAnswers = Array(questions.length).fill(null); // 每题用户答案
 const correctFlags = Array(questions.length).fill(false); // 每题是否正确
 
+
 /* ========== 渲染题目 ========== */
 function renderQuestion(currentIndex) {
     // 获取存储在 sessionStorage 中的 questionData
@@ -218,6 +219,7 @@ function renderQuestion(currentIndex) {
 }
 
 
+
 /* ========== 选择答案 ========== */
 function selectAnswer(selectIdx){
   if(userAnswers[currentIndex]!==null) return; // 已作答不再处理
@@ -242,21 +244,21 @@ function markOptions(){
 }
 
 /* ========== 底部结果条 ========== */
-function showResult(){
-  const bar = document.getElementById('resultBar');
-  const q = questions[currentIndex];
-  const myLetter   = String.fromCharCode(65 + userAnswers[currentIndex]);
-  const trueLetter = String.fromCharCode(65 + q.answer);
+// function showResult(){
+//   const bar = document.getElementById('resultBar');
+//   const q = questions[currentIndex];
+//   const myLetter   = String.fromCharCode(65 + userAnswers[currentIndex]);
+//   const trueLetter = String.fromCharCode(65 + q.answer);
 
-  bar.innerHTML =
-    `我的答案：<span class="${correctFlags[currentIndex]?'correct':'wrong'}">${myLetter}</span>` +
-    `  正确答案：<span class="correct">${trueLetter}</span>` +
-    `  全班正确率：<span class="text-primary">${q.classRate}</span>`;
+//   bar.innerHTML =
+//     `我的答案：<span class="${correctFlags[currentIndex]?'correct':'wrong'}">${myLetter}</span>` +
+//     `  正确答案：<span class="correct">${trueLetter}</span>` +
+//     `  全班正确率：<span class="text-primary">${q.classRate}</span>`;
 
-  bar.style.display='block';
-    // 显示评价输入框
-  document.getElementById('commentBox').style.display = 'block';
-}
+//   bar.style.display='block';
+//     // 显示评价输入框
+//   document.getElementById('commentBox').style.display = 'block';
+// }
 
 /* ========== 评价区 ========== */
 function submitComment(){
@@ -314,6 +316,125 @@ function toggleFav(idx,el){
       el.classList.replace('far','fas');     // 空心→实心
   }
 }
+
+let countdownInterval;
+let countdownTime = 30; // 初始化倒计时为30秒
+
+// 渲染题目时初始化倒计时
+function renderQuestion(currentIndex) {
+    // 获取存储在 sessionStorage 中的 questionData
+    const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+    if (questionData) {
+        console.log(questionData);  // 在控制台输出 questionData 对象（调试用）
+    } else {
+        console.error("没有找到题目数据");
+        return;
+    }
+
+    // 使用 questionData 中的数据渲染题目内容
+    const q = questionData;
+
+    document.getElementById('counter').textContent = `第 ${currentIndex+1} 题 / 共 ${questions.length} 题`;
+    const box = document.getElementById('questionBox');
+    const isFav = localStorage.getItem(`fav-${currentIndex}`) === '1';
+
+    // 渲染题目框架
+    box.innerHTML = `
+    <div class="mb-3 position-relative">
+      <span class="badge bg-primary me-2">单选题</span>
+      <i class="star-icon fa-star ${isFav ? 'fas' : 'far'}" onclick="toggleFav(${currentIndex}, this)"></i>
+      <span class="position-absolute top-0 end-0 badge bg-danger" id="timer">30</span> <!-- 倒计时显示 -->
+    </div>
+    <div class="mb-3">${q.questioncontent}</div>  <!-- 显示题目 -->
+    <div id="optionArea"></div>
+    <div id="resultBar" class="bottom-result" style="display:none;"></div> <!-- 默认隐藏结果条 -->
+  `;
+
+    // 渲染选项
+    const optionArea = document.getElementById('optionArea');
+    const options = [q.a, q.b, q.c, q.d];  // 从 questionData 中提取选项
+    options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.className = 'option-block';
+        div.dataset.currentIndex = i;
+        div.innerHTML = opt;  // 显示选项内容
+        div.onclick = () => selectAnswer(i);
+        optionArea.appendChild(div);
+    });
+
+    // 如果用户已经选择了答案，标记已选的选项
+    if (userAnswers[currentIndex] !== null) {
+        markOptions();
+    }
+
+    // 重置倒计时
+    resetCountdown();
+}
+
+// 倒计时逻辑
+function startCountdown() {
+    countdownInterval = setInterval(() => {
+        countdownTime--;
+        document.getElementById('timer').textContent = countdownTime;
+        if (countdownTime <= 0) {
+            clearInterval(countdownInterval);
+            document.getElementById('timer').textContent = '0';
+            // 倒计时结束后自动返回上一页面
+            history.back();
+        }
+    }, 1000);
+}
+
+// 重置倒计时
+function resetCountdown() {
+    clearInterval(countdownInterval);
+    countdownTime = 30; // 重置倒计时为30秒
+    document.getElementById('timer').textContent = countdownTime;
+    startCountdown(); // 重新开始倒计时
+}
+
+// 初始化倒计时
+resetCountdown();
+
+// 用户选择答案
+function selectAnswer(selectIdx) {
+    if (userAnswers[currentIndex] !== null) return; // 如果已经选择答案，则不再处理
+    userAnswers[currentIndex] = selectIdx;
+    correctFlags[currentIndex] = (selectIdx === questions[currentIndex].answer);
+    markOptions();
+    showResult();
+}
+
+// 标记选项
+function markOptions() {
+    const q = questions[currentIndex];
+    const opts = document.querySelectorAll('.option-block');
+    opts.forEach((opt, i) => {
+        opt.onclick = null; // 禁用点击事件
+        if (i === q.answer) {
+            opt.classList.add('correct');
+        } else if (i === userAnswers[currentIndex]) {
+            opt.classList.add('wrong');
+        }
+    });
+}
+
+// 显示结果条
+function showResult() {
+    const bar = document.getElementById('resultBar');
+    const q = questions[currentIndex];
+    const myLetter = String.fromCharCode(65 + userAnswers[currentIndex]);
+    const correctLetter = String.fromCharCode(65 + q.answer);
+    bar.innerHTML = `
+        我的答案：<span class="${correctFlags[currentIndex] ? 'correct' : 'wrong'}">${myLetter}</span>
+        正确答案：<span class="correct">${correctLetter}</span>
+        全班正确率：<span class="text-primary">${q.classRate}</span>
+    `;
+    bar.style.display = 'block'; // 显示结果条
+}
+
+// 初始化倒计时
+resetCountdown();
 
 /* ========== 初始化 ========== */
 renderQuestion(currentIndex);
