@@ -1,7 +1,7 @@
 package com.example.wwh.Mapper;
 import com.example.wwh.pojo.Speech;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
+
 import java.util.List;
 
 @Mapper
@@ -40,5 +40,15 @@ public interface SpeechMapper {
         @Select("SELECT SpeechID FROM speech WHERE SpeakerID = #{SpeakerID}")
         List<Integer> getSpeechidBySpeakerID(Integer SpeakerID);
 
+        @Insert("INSERT INTO speech (SpeakerID,Sstatus,Stime) " +
+                "VALUES (#{SpeakerID},#{Sstatus},#{Stime})")
+        @Options(useGeneratedKeys = true, keyProperty = "SpeechID")
+        void addSpeech(Speech speech);
+
+        @Select("SELECT * FROM speech WHERE SpeechID = #{SpeechID}")
+        Speech getSpeechById(Integer SpeechID);
+
+        @Update("UPDATE speech SET Sstatus = 0   WHERE SpeechID = #{SpeechID}")
+        void updateEndStatus(Integer SpeechID);
 }
 

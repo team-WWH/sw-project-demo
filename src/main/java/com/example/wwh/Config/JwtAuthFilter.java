@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,11 +20,17 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
-
+    @Autowired
+    @Lazy
+    private MultiRoleAuthService authService;
     @Autowired private JwtTokenProvider jwtProvider;
+    @Autowired
+    public JwtAuthFilter(@Lazy MultiRoleAuthService authService, JwtTokenProvider jwtProvider) {
+        this.authService = authService;
+        this.jwtProvider = jwtProvider;
+    }
 
 
-    private MultiRoleAuthService authService = new MultiRoleAuthService();
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)

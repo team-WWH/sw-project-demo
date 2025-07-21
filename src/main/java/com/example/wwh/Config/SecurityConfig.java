@@ -1,9 +1,11 @@
 package com.example.wwh.Config;
 
 
+import com.example.wwh.service.MultiRoleAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,10 +26,12 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthFilter jwtRequestFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**").permitAll()
                         //.requestMatchers("/auth/login").permitAll()
