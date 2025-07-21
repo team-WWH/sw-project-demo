@@ -26,7 +26,16 @@ public class Question {
     private int ComconQueID;//评论--题目链接ID
     private int Qstatus;
     @JsonProperty("Analysis")
-    private String Analysis;
+    private String Answercon;//答案解析
+
+
+    public String getAnswercon() {
+        return Answercon;
+    }
+
+    public void setAnswercon(String answercon) {
+        Answercon = answercon;
+    }
 
     public int getQuestionID() {
         return QuestionID;
@@ -84,9 +93,6 @@ public class Question {
         this.QresultsID = QresultsID;
     }
 
-    public String getAnswer() {
-        return Answer;
-    }
 
     public void setAnswer(String Answer) {
         this.Answer = Answer;
