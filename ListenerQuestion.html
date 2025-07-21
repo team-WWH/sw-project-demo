@@ -111,8 +111,7 @@
 
     // 渲染题目的函数
     // 渲染题目列表
-    // 渲染题目列表
-    // 渲染题目列表
+
     function renderQuestions(questions, containerId) {
         const container = document.getElementById(containerId);
         container.innerHTML = '';
@@ -140,7 +139,7 @@
         // 将 question 对象存储到 sessionStorage 中
         sessionStorage.setItem('questionData', JSON.stringify(question));  // 存储 question 对象
         // 跳转到 QuestionDetail.html 页面
-        window.location.href = 'QuestionDetail.html';  // 跳转到详情页
+        window.location.href = `QuestionDetail.html?listenerID=${listenerID}`;  // 跳转到详情页
     }
 
 

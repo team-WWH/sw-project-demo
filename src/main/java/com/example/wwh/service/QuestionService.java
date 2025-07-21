@@ -48,4 +48,9 @@ public class QuestionService {
     }
 
 
+    // 根据 QuestionID 和 ListenerID 查询是否已收藏
+    public boolean isAlreadyCollected(int questionID, int listenerID) {
+        int count = questionMapper.countCollectByQuestionAndListener(questionID, listenerID);
+        return count > 0;  // 如果返回值大于 0，则表示该题目已经被收藏
+    }
 }

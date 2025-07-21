@@ -110,12 +110,23 @@ public class QuestionController {
     }
 
 
-    // 收藏题目
+    // 收藏题目（未测试）
     @PostMapping("listener/addtocollect")
     public ResponseEntity<String> addToCollect(@RequestParam int listenerID, @RequestParam int questionID) {
         questionService.addToCollect(listenerID, questionID);
         return ResponseEntity.ok("题目已收藏");
     }
 
+
+    // 根据 QuestionID 和 ListenerID 查询是否已收藏（未测试）
+    @GetMapping("listener/checktocollect")
+    public ResponseEntity<String> checkIfCollected(@RequestParam int questionID, @RequestParam int listenerID) {
+        boolean isCollected = questionService.isAlreadyCollected(questionID, listenerID);
+        if (isCollected) {
+            return ResponseEntity.ok("The question has already been collected.");
+        } else {
+            return ResponseEntity.ok("The question has not been collected yet.");
+        }
+    }
 
 }
