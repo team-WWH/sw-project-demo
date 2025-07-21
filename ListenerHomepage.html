@@ -45,7 +45,8 @@
         <table>
             <thead>
                 <tr>
-                    <th>名称</th>
+                    <th>序号</th>
+                    <th>演讲者</th>
                     <th>创建时间</th>
                     <th>操作</th>
                 </tr>
@@ -57,28 +58,43 @@
 
 <script>
 // 模拟数据
-const list = [
-    { name: '十万个为什么',  createTime: '2022-01-18 09:48:31' },
-];
+const listenerID=1;
 
-function render(data){
+// 获取正在进行中的演讲数据
+fetch(`http://localhost:8081/Listener/ongoing?ListenerID=${listenerID}`)
+    .then(response => response.json())
+    .then(data => {
+        render(data);  // 调用渲染函数将数据展示到页面
+    })
+    .catch(error => console.error('Error fetching speeches:', error));
+
+function render(data) {
     const tbody = document.getElementById('tbody');
-    tbody.innerHTML = '';
+    tbody.innerHTML = '';  // 清空现有的表格内容
     data.forEach((item, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${item.name}</td>
-            <td>${item.createTime}</td>
+            <td>${item.speechID}</td>
+            <td>${item.sname}</td>
+            <td>${item.otime}</td>
             <td>
-                <button class="btn btn-primary" onclick="window.location.href='ListenerQuestion.html'">
-                    进入
-                </button>
+                <button class="btn btn-primary" onclick="view(${item.speechID})">进入</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
 }
 
+function view(SpeechID) {
+
+    const speechID = SpeechID;  // 获取当前演讲的 SpeechID
+
+    // 构建跳转的 URL，携带 ListenerID 和 SpeechID 参数
+    const url = `http://localhost:8080/ListenerQuestion.html?ListenerID=${listenerID}&SpeechID=${speechID}`;
+
+    // 跳转到新的页面
+    window.location.href = url;
+}
 
 
 render(list);

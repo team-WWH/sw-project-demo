@@ -1,6 +1,7 @@
 package com.example.wwh.pojo;
 
 
+
 import java.time.LocalDateTime;
 
 //演讲
@@ -12,24 +13,10 @@ public class Speech {
     private int QueconSpeID;//演讲--题目
     private int SresultsID;//演讲分析ID
     private int ClaconSpeID;//上课数据---演讲ID
-    private int Sstatus;//1进行中   0已结束
+    private int Sstatus;
     private String Sname;//演讲者名字
-
-    public int getSstatus() {
-        return Sstatus;
-    }
-
-    public void setSstatus(int sstatus) {
-        Sstatus = sstatus;
-    }
-
-    public String getSname() {
-        return Sname;
-    }
-
-    public void setSname(String sname) {
-        Sname = sname;
-    }
+    private LocalDateTime Otime;
+    private LocalDateTime Stime;
 
     public int getSpeechID() {
         return SpeechID;
@@ -87,6 +74,22 @@ public class Speech {
         ClaconSpeID = claconSpeID;
     }
 
+    public int getSstatus() {
+        return Sstatus;
+    }
+
+    public void setSstatus(int sstatus) {
+        Sstatus = sstatus;
+    }
+
+    public String getSname() {
+        return Sname;
+    }
+
+    public void setSname(String sname) {
+        Sname = sname;
+    }
+
     public LocalDateTime getOtime() {
         return Otime;
     }
@@ -102,7 +105,4 @@ public class Speech {
     public void setStime(LocalDateTime stime) {
         Stime = stime;
     }
-
-    private LocalDateTime Otime;
-    private LocalDateTime Stime;
 }
