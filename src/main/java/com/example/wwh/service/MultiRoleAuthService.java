@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class MultiRoleAuthService {
 
-    @Autowired
-    private ListenerService listenerService;      // 普通用户服务
+
+    @Autowired private ListenerService listenerService;      // 普通用户服务
     @Autowired private SpeakerService speakerService;  // 管理员服务
     @Autowired private OrganizerService organizerService;// 供应商服务
     @Autowired private PasswordEncoder passwordEncoder;
@@ -26,7 +26,8 @@ public class MultiRoleAuthService {
                 request.getUsername(),
                 request.getUserType()
         );
-
+        System.out.println("请求的密码"+passwordEncoder.encode(request.getPassword()));
+        System.out.println("数据库的密码"+userDetails.getPassword());
         // 密码验证
         if (!passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
             throw new BadCredentialsException("Invalid password");
