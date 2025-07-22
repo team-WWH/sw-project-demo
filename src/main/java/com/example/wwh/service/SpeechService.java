@@ -70,18 +70,20 @@ public class SpeechService {
     public List<Speech> getEndedSpeechesBySpeakerID(Integer SpeakerID) {
         List<Integer> speechid = speechMapper.getSpeechidBySpeakerID(SpeakerID);
         List<Speech> speechList = new ArrayList<>();
-        for(int i:speechid){
+        for (int i : speechid) {
             speechList.add(speechMapper.getEndedSpeechesByID(i));
         }
-        public List<Speech> getEndedSpeechesBySpeakerID (Integer SpeakerID){
-            List<Integer> speechid = speechMapper.getSpeechidBySpeakerID(SpeakerID);
-            List<Speech> speechList = new ArrayList<>();
-            for (int i : speechid) {
-                speechList.add(speechMapper.getEndedSpeechesByID(i));
-            }
             return speechList;
 
         }
+    public List<Speech> getEndedSpeechesByListenerID(Integer ListenerID) {
+        List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
+        List<Speech> speechList = new ArrayList<>();
+        for (int i : speechid) {
+            speechList.add(speechMapper.getEndedSpeechesByID(i));
+        }
+        return speechList;
+    }
 
 
 
@@ -98,17 +100,8 @@ public class SpeechService {
         for(int i:IDlist){
             ListenerList.add(userMapper.findListenerByID(i));
 
-       
-
-        public List<Listener> getAllListenerBySpeech (Integer speechID){
-            List<Integer> IDlist = speechMapper.findListenerBySpeechID(speechID);
-            List<Listener> ListenerList = new ArrayList<>();
-            for (int i : IDlist) {
-                ListenerList.add(userMapper.findListenerByID(i));
-            }
-            return ListenerList;
-
         }
+        return ListenerList;
     }
 
     public String CreateSpeechFirst(Speech speech){

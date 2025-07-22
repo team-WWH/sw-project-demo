@@ -14,4 +14,7 @@ public interface StuAnswerMapper {
     @Select("SELECT * FROM stuanswers WHERE ListenerID = #{listenerID} AND QuestionID = #{questionID}")
     Stuanswers findAnswerByListenerAndQuestion(@Param("listenerID") int listenerID, @Param("questionID") int questionID);
 
+    @Insert("INSERT INTO stuanswers (Sanscontent,QuestionID,State,QS,ListenerID) VALUES (0,#{QuestionID},#{State},#{QS},#{ListenerID})")
+    void addstuAnswer(Stuanswers stuanswers);
+
 }
