@@ -44,7 +44,7 @@
 
 <div class="header">
   <h1 id="title">演讲详情</h1>
-  <p id="info">课程：<span id="courseName"></span> &nbsp;&nbsp; 班级：<span id="className"></span></p>
+  <p id="info">课程：<span id="courseName"></span> &nbsp;&nbsp; </p>
 </div>
 
 <div class="actions" style="margin-top: 20px;">
@@ -89,12 +89,6 @@
         <span>听众1: 这是一条评论</span>
       </div>
       <!-- 更多评论... -->
-    </div>
-    <div style="display: flex; gap: 5px; padding: 5px;">
-      <input type="text" placeholder="输入消息..." style="flex: 1; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
-      <button onclick="sendComment()" style="height: 30px; padding: 0 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-        发送
-      </button>
     </div>
   </div>
 </div>
@@ -151,8 +145,7 @@
 <script>
 /* 1. 解析 URL 参数 */
 const params = new URLSearchParams(location.search);
-const course = params.get('course') || '未知课程';
-const cls    = params.get('class')   || '未知班级';
+const course = params.get('name') || '未知课程';
 const ppt    = params.get('ppt')     || '123456.pptx';   // 默认示例
 
 /* 2. 回显头部信息 */
