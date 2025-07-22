@@ -113,14 +113,6 @@
     <button class="btn btn-outline-secondary" onclick="next()" style="margin-right: 500px;">下一题</button>
 </div>
 
-<!-- 报告弹窗 -->
-<div class="report-modal" id="reportModal" onclick="closeReport()">
-    <div class="report-content" onclick="event.stopPropagation()">
-        <h5 class="mb-3">答题报告</h5>
-        <p id="reportText"></p>
-        <button class="btn btn-secondary" onclick="closeReport()">关闭</button>
-    </div>
-</div>
 
 <script>
      /* ========== 初始化 ========== */
@@ -240,21 +232,23 @@
     const userAnswer = userAnswers[currentIndex];
     if (userAnswer === null) {
         // 用户未选择答案
-        resultBar.innerHTML = `
-            <div class="result-item">
-                <span class="result-label">我的答案：</span>
-                <span class="result-answer">空</span>
-            </div>
-        `;
+        // resultBar.innerHTML = `
+        //     <div class="result-item">
+        //         <span class="result-label">我的答案：</span>
+        //         <span class="result-answer">空</span>
+        //     </div>
+        // `;
+        showResult();
         console.log('Result Bar Content:', resultBar.innerHTML);
     } else {
         // 用户选择了答案
-        resultBar.innerHTML = `
-            <div class="result-item">
-                <span class="result-label">我的答案：</span>
-                <span class="result-answer">${options[userAnswer]}</span>
-            </div>
-        `;
+        // resultBar.innerHTML = `
+        //     <div class="result-item">
+        //         <span class="result-label">我的答案：</span>
+        //         <span class="result-answer">${options[userAnswer]}</span>
+        //     </div>
+        // `;
+        showResult();
         console.log('Result Bar Content:', resultBar.innerHTML);
     }
 
@@ -333,26 +327,6 @@ function selectAnswer(index) {
             currentIndex++;
             renderQuestion(currentIndex);
         }
-    }
-
-    /* ========== 报告弹窗 ========== */
-    function showReport(){
-        const answeredCnt = userAnswers.filter(x=>x!==null).length;
-        const rightCnt = correctFlags.filter(x=>x).length;
-        const rate = answeredCnt? (rightCnt/answeredCnt*100).toFixed(1)+'%' : '0%';
-        let html = `已答题：${answeredCnt}/${questions.length}<br>答对：${rightCnt}<br>正确率：${rate}<br><hr>`;
-        questions.forEach((q,i)=>{
-            if(userAnswers[i]!==null){
-                html += `第${i+1}题：${correctFlags[i]?'✅':'❌'} 你的选择：${q.options[userAnswers[i]]} | 正确答案：${q.options[q.answer]}<br>`;
-            }else{
-                html += `第${i+1}题：未作答<br>`;
-            }
-        });
-        document.getElementById('reportText').innerHTML = html;
-        document.getElementById('reportModal').style.display='flex';
-    }
-    function closeReport(){
-        document.getElementById('reportModal').style.display='none';
     }
 
     /* 收藏/取消收藏 */
