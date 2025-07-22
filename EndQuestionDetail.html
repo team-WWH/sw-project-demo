@@ -31,12 +31,11 @@
         .option-block:hover{background:#f1f3f5;}
         .correct{border-color:#28a745;background:#d4edda;color:#155724;}
         .wrong{border-color:#dc3545;background:#f8d7da;color:#721c24;}
-        .bottom-result{
-            margin-top:12px;
-            font-weight:600;
-            display:none;
-            line-height:1.8;
-        }
+        .bottom-result {
+    display: block; /* 确保显示 */
+    visibility: visible; /* 确保可见 */
+    opacity: 1; /* 确保不透明 */
+}
         .bottom-result span{
             margin:0 6px;
             padding:2px 8px;
@@ -58,6 +57,17 @@
             cursor:pointer;
             user-select:none;
         }
+        .correct {
+    border-color: #28a745; /* 绿色 */
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.incorrect {
+    border-color: #dc3545; /* 红色 */
+    background-color: #f8d7da;
+    color: #721c24;
+}
     </style>
 </head>
 <body>
@@ -89,7 +99,7 @@
 
 <!-- 评价区 -->
 <div class="container mt-3">
-    <div id="commentBox" style="display:none;width: 1150px;">
+    <div id="commentBox" style="width: 1150px;">
         <textarea id="commentInput" class="form-control mb-2" rows="2" placeholder="请对该题进行评价或留言……"></textarea>
         <div class="d-flex justify-content-end">
             <button class="btn btn-primary btn-sm" onclick="submitComment()">提交评价</button>
@@ -113,6 +123,10 @@
 </div>
 
 <script>
+     /* ========== 初始化 ========== */
+    document.addEventListener('DOMContentLoaded', function() {
+    renderQuestion(currentIndex);
+});
     /* ========== 题库 ========== */
 
 
@@ -169,77 +183,115 @@
     const correctFlags = Array(questions.length).fill(false); // 每题是否正确
 
     /* ========== 渲染题目 ========== */
-    function renderQuestion(currentIndex) {
-        // 获取存储在 sessionStorage 中的 questionData
-        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
-        if (questionData) {
-            console.log(questionData);  // 在控制台输出 questionData 对象（调试用）
-        } else {
-            console.error("没有找到题目数据");
-            return;
+  function renderQuestion(currentIndex) {
+    console.log('Rendering question:', currentIndex);
+
+    const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+    if (!questionData) {
+        console.error("没有找到题目数据");
+        return;
+    }
+
+    const q = questionData;
+    console.log('Correct Answer Index:', q.correctAnswer); // 调试信息
+
+    document.getElementById('counter').textContent = `第 ${currentIndex + 1} 题 / 共 ${questions.length} 题`;
+    const box = document.getElementById('questionBox');
+    const isFav = localStorage.getItem(`fav-${currentIndex}`) === '1';
+
+    box.innerHTML = `
+        <div class="mb-3 position-relative">
+          <span class="badge bg-primary me-2">单选题</span>
+          <i class="star-icon fa-star ${isFav ? 'fas' : 'far'}" onclick="toggleFav(${currentIndex}, this)"></i>
+        </div>
+        <div class="mb-3">${q.questioncontent}</div>
+        <div id="optionArea"></div>
+        <div id="resultBar" class="bottom-result"></div>
+    `;
+
+    const optionArea = document.getElementById('optionArea');
+    const options = [q.a, q.b, q.c, q.d];
+    options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.className = 'option-block';
+        div.dataset.currentIndex = i;
+        div.innerHTML = opt;
+        div.onclick = () => selectAnswer(i); // 保留点击事件，但后续会禁用
+        optionArea.appendChild(div);
+    });
+
+    // 禁用选项的点击事件
+    optionArea.querySelectorAll('.option-block').forEach(div => {
+        div.onclick = null; // 禁用点击事件
+    });
+
+    // 显示底部结果条
+    const resultBar = document.getElementById('resultBar');
+    if (!resultBar) {
+        console.error('Result Bar element not found');
+        return;
+    }
+
+    resultBar.style.display = 'block';
+    resultBar.style.visibility = 'visible';
+    resultBar.style.opacity = '1';
+
+    // 检查用户是否选择了答案
+    const userAnswer = userAnswers[currentIndex];
+    if (userAnswer === null) {
+        // 用户未选择答案
+        resultBar.innerHTML = `
+            <div class="result-item">
+                <span class="result-label">我的答案：</span>
+                <span class="result-answer">空</span>
+            </div>
+        `;
+        console.log('Result Bar Content:', resultBar.innerHTML);
+    } else {
+        // 用户选择了答案
+        resultBar.innerHTML = `
+            <div class="result-item">
+                <span class="result-label">我的答案：</span>
+                <span class="result-answer">${options[userAnswer]}</span>
+            </div>
+        `;
+        console.log('Result Bar Content:', resultBar.innerHTML);
+    }
+
+    // 标记正确选项和错误选项
+    const correctOption = document.querySelector(`.option-block[data-current-index="${q.correctAnswer}"]`);
+    if (correctOption) {
+        correctOption.classList.add('correct');
+    }
+
+    if (userAnswer !== null && userAnswer !== q.correctAnswer) {
+        const wrongOption = document.querySelector(`.option-block[data-current-index="${userAnswer}"]`);
+        if (wrongOption) {
+            wrongOption.classList.add('incorrect');
         }
+    }
+}
+// 标记选项的函数
+function markOptions() {
+    const optionArea = document.getElementById('optionArea');
+    const options = optionArea.getElementsByClassName('option-block');
+    const correctAnswer = questionData.correctAnswer;  // 正确答案的索引
+    const userAnswer = userAnswers[currentIndex];  // 用户选择的答案索引
 
-        // 使用 questionData 中的数据渲染题目内容
-        const q = questionData;
-
-        document.getElementById('counter').textContent = `第 ${currentIndex+1} 题 / 共 ${questions.length} 题`;
-        const box = document.getElementById('questionBox');
-        const isFav = localStorage.getItem(`fav-${currentIndex}`) === '1';
-
-        // 渲染题目框架
-        box.innerHTML = `
-    <div class="mb-3 position-relative">
-      <span class="badge bg-primary me-2">单选题</span>
-      <i class="star-icon fa-star ${isFav ? 'fas' : 'far'}" onclick="toggleFav(${currentIndex}, this)"></i>
-    </div>
-    <div class="mb-3">${q.questioncontent}</div>  <!-- 显示题目 -->
-    <div id="optionArea"></div>
-    <div id="resultBar" class="bottom-result"></div>
-  `;
-
-        // 渲染选项
-        const optionArea = document.getElementById('optionArea');
-        const options = [q.a, q.b, q.c, q.d];  // 从 questionData 中提取选项
-        options.forEach((opt, i) => {
-            const div = document.createElement('div');
-            div.className = 'option-block';
-            div.dataset.currentIndex = i;
-            div.innerHTML = opt;  // 显示选项内容
-            div.onclick = () => selectAnswer(i);
-            optionArea.appendChild(div);
-        });
-
-        // 如果用户已经选择了答案，标记已选的选项
-        if (userAnswers[currentIndex] !== null) {
-            markOptions();
-        } else {
-            document.getElementById('resultBar').style.display = 'none';  // 如果没有选择答案，隐藏结果区域
+    for (let i = 0; i < options.length; i++) {
+        if (i === correctAnswer) {
+            options[i].classList.add('correct');
+        } else if (i === userAnswer) {
+            options[i].classList.add('incorrect');
         }
     }
+}
 
-
-    /* ========== 选择答案 ========== */
-    function selectAnswer(selectIdx){
-        if(userAnswers[currentIndex]!==null) return; // 已作答不再处理
-        userAnswers[currentIndex] = selectIdx;
-        correctFlags[currentIndex] = (selectIdx === questions[currentIndex].answer);
-        markOptions();
-        showResult();
-    }
-
-    /* ========== 标记选项 ========== */
-    function markOptions(){
-        const q = questions[currentIndex];
-        const opts = document.querySelectorAll('.option-block');
-        opts.forEach((o,i)=>{
-            o.onclick=null;
-            if(i===q.answer){
-                o.classList.add('correct');
-            }else if(i===userAnswers[currentIndex] && i!==q.answer){
-                o.classList.add('wrong');
-            }
-        });
-    }
+// 选择答案的函数
+function selectAnswer(index) {
+    userAnswers[currentIndex] = index;  // 保存用户选择的答案
+    renderQuestion(currentIndex);  // 重新渲染题目
+}
 
     /* ========== 底部结果条 ========== */
     function showResult(){
@@ -265,7 +317,7 @@
         alert('评价已提交：' + txt);
         // 这里可换成 fetch 调用接口保存
         document.getElementById('commentInput').value='';
-        document.getElementById('commentBox').style.display='none';
+        document.getElementById('commentBox').style.display='block';
     }
 
 
@@ -315,8 +367,7 @@
         }
     }
 
-    /* ========== 初始化 ========== */
-    renderQuestion(currentIndex);
+   
 </script>
 </body>
 </html>
