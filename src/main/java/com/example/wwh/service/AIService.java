@@ -4,6 +4,7 @@ import com.example.wwh.pojo.Question;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,7 +16,7 @@ import java.util.Map;
 public class AIService {
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Question generateQuestions(String content, String apiUrl, String apiKey) throws JsonProcessingException {
+    public Question[] generateQuestions(String content, String apiUrl, String apiKey) throws JsonProcessingException {
         // 构造请求头
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -23,15 +24,15 @@ public class AIService {
 
         // 构造提示词
         String prompt = String.format("""
-            你是一位资深教师，请根据以下教学内容生成1道题目：
+            你是一位资深教师，请根据以下教学内容生成4道题目：
             【教学材料】
             %s
             
             【要求】
-            1. 包含1道包含四个选项的选择题
+            1. 每道题目都是一个包含四个选项的选择题
             2. 标注答案和解析
             3. 难度适中，考察核心知识点
-            4.严格按照以下josn返回，不要包含任何额外文本、注释或Markdown代码块，同时大小写也要与下列示例对应：
+            4.严格按照以下josn返回，不要包含任何额外文本、注释或Markdown代码块，只返回josn，同时大小写也要与下列示例对应：
             {
                 "Questioncontent":"题目内容",
                 "A":"选项A",
@@ -41,6 +42,7 @@ public class AIService {
                 "Answer":"答案",
                 "Analysis":"解析"
             }
+            5.请以josn数组的形式进行返回
             """, content.substring(0, Math.min(content.length(), 6000)));
 
         // 构造请求体
@@ -61,8 +63,8 @@ public class AIService {
                     response.getBody().get("choices")).get(0);
             String contents =  (String) ((Map<String, Object>) choices.get("message")).get("content");
             System.out.println("返回的josn内容："+contents);
-            Question question = mapper.readValue(contents, Question.class);
-            return question;
+            Question[] questions = mapper.readValue(contents, Question[].class);
+            return questions;
         }
         throw new RuntimeException("API调用失败: " + response.getStatusCode());
     }

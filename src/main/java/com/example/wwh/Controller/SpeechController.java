@@ -5,6 +5,7 @@ import com.example.wwh.Data.CreateResponse;
 import com.example.wwh.pojo.Listener;
 import com.example.wwh.pojo.Speaker;
 import com.example.wwh.pojo.Speech;
+import com.example.wwh.service.MinioService;
 import com.example.wwh.service.SpeechService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +27,8 @@ public class SpeechController {
 
     @Autowired
     private SpeechService speechService;
-
+    @Autowired
+    private MinioService minioService;
     // 获取正在进行中的演讲
     @GetMapping("Listener/ongoing")
     public List<Speech> getOngoingSpeechesByListenerID(@RequestParam("ListenerID") Integer ListenerID) {
@@ -43,9 +47,14 @@ public class SpeechController {
     public List<Speech> getEndedSpeechesBySpeakerID(@Param("SpeakerID") Integer SpeakerID) {
         return speechService.getEndedSpeechesBySpeakerID(SpeakerID);
     }
+    @PostMapping("Speaker/addfile")
+    public ResponseEntity<String> addFile(String title, Integer SpeakerID, MultipartFile file,String type) throws Exception {
+        String filename = title + SpeakerID+'.'+type;
+        minioService.uploadFile(file,filename);
+        return ResponseEntity.ok("文件添加成功");
+    }
     @PutMapping("Speaker/createSpeech")
-    public ResponseEntity<CreateResponse> CreateSpeech(String title,Integer SpeakerID){
-
+    public ResponseEntity<CreateResponse> CreateSpeech(String title, Integer SpeakerID) throws Exception {
         //int durationHours = 24;
         //Duration duration = Duration.ofHours(durationHours);
         LocalDateTime now = LocalDateTime.now();
@@ -65,12 +74,12 @@ public class SpeechController {
     public ResponseEntity<?> ComeInSpeech(String code){
         return speechService.IntendSpeech(code);
     }
-    @PutMapping("   ")
+    @PutMapping("Speaker/EndSpeech")
     public ResponseEntity<?> endSpeech(Integer SpeechID){
         speechService.UpdateEndStatus(SpeechID);
         return ResponseEntity.ok("已经结束");
     }
-    @GetMapping
+    @GetMapping("Speaker/AllListener")
     public List<Listener> AllListenerOfSpeech(Integer speechID){
         return speechService.getAllListenerBySpeech(speechID);
     }

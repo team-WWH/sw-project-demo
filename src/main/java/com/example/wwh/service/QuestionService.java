@@ -53,4 +53,16 @@ public class QuestionService {
         int count = questionMapper.countCollectByQuestionAndListener(questionID, listenerID);
         return count > 0;  // 如果返回值大于 0，则表示该题目已经被收藏
     }
+
+    public void addQuestion(Question question){
+        questionMapper.addquestion(question);
+    }
+
+    public List<Question> getAllQuestionStatus1(Integer SpeechID){
+        return questionMapper.getOningQuestionBySpeechID(SpeechID);
+    }
+
+    public void addqueconspe(Integer SpeechID,Integer QuestionID){
+        questionMapper.addqueconspe(SpeechID,QuestionID);
+    }
 }

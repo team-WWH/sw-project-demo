@@ -26,6 +26,10 @@ public interface QuestionMapper {
             "WHERE qs.SpeechID = #{speechID} AND sa.ListenerID = #{listenerID} AND q.Qstatus = 2 AND sa.QS IN (1,2) ")
     List<Question> findQuestionsBySpeechAndListener2(@Param("speechID") int speechID, @Param("listenerID") int listenerID);
 
+    @Select("SELECT q.* FROM Question q "+
+            "JOIN queconspe qs ON q.QuestionID = qs.QuestionID "+
+            "WHERE qs.SpeechID = #{speechID} AND q.Qstatus = 1")
+    List<Question> getOningQuestionBySpeechID(Integer SpeechID);
 
     //获取听众个人本次演讲没有抽到的题目
     @Select("SELECT q.* FROM Question q " +
@@ -60,5 +64,9 @@ public interface QuestionMapper {
     @Select("SELECT COUNT(*) FROM collect WHERE QuestionID = #{questionID} AND ListenerID = #{listenerID}")
     int countCollectByQuestionAndListener(@Param("questionID") int questionID, @Param("listenerID") int listenerID);
 
+    @Insert("INSERT INTO question (A,B,C,D,Answer,Questioncontent,Answercon,Qstatus) VALUES (#{A},#{B},#{C},#{D},#{Answer},#{Questioncontent},#{Answercon},1)")
+    void addquestion(Question question);
 
+    @Insert("INSERT INTO queconspe (SpeechID,QuestionID) VALUES (#{SpeechID},#{QuestionID})")
+    void addqueconspe(Integer SpeechID,Integer QuestionID);
 }

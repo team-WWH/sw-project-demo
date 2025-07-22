@@ -93,6 +93,9 @@ public class Question {
         this.QresultsID = QresultsID;
     }
 
+    public String getAnswer() {
+        return Answer;
+    }
 
     public void setAnswer(String Answer) {
         this.Answer = Answer;
@@ -122,11 +125,4 @@ public class Question {
         this.Qstatus = Qstatus;
     }
 
-    public String getAnalysis() {
-        return Analysis;
-    }
-
-    public void setAnalysis(String Analysis) {
-        this.Analysis = Analysis;
-    }
 }
