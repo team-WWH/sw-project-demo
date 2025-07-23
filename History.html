@@ -22,34 +22,37 @@
         th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
         th{background:#fafafa}
         .brand {
-        font-size: 24px;
-        font-weight: bold;
-    }
 
-    nav a {
-        margin-left: 20px;
-        text-decoration: none;
-        color: #333;
-    }
 
-    nav a.active {
-        color: #007bff;
-    }
+            font-size: 24px;
+            font-weight: bold;
+        }
 
-    .sub-nav {
-        background-color: #fff;
-        padding: 10px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+        }
 
-    .sub-nav-left h2 {
-        margin: 0;
-    }
+        nav a.active {
+            color: #007bff;
+        }
 
-     .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .sub-nav {
+            background-color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sub-nav-left h2 {
+            margin: 0;
+        }
+
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+
         .card {
             background: linear-gradient(to bottom right, #40e0d0, #00cda0);
             border-radius: 12px;
@@ -127,7 +130,10 @@
         <a href="ListenerHomepage.html">首页</a>
         <a href="History.html" class="active">历史演讲</a>
         <a href="PersonInfo.html">个人信息</a>
-         <a href="ListenerFavor.html">我的收藏</a>
+
+
+        <a href="ListenerFavor.html">我的收藏</a>
+
     </nav>
 </header>
 
@@ -151,68 +157,57 @@
         .catch(error => console.error('Error fetching speeches:', error));
 
     function renderSpeechCard(speech) {
-    const container = document.getElementById('speechCardsContainer');
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-        <div class="card-header" >
-            <div class="card-name">${speech.sname}</div> 
-        </div>
-        <div class="card-body" style="margin-top:30px">
-            <div class="card-info" >
-               <div class="card-invite-code"  style="">${speech.inviteCode}</div>
-                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
-            border-radius: 2px;">☇</button>
-            </div>
-        </div>
-        <div class="card-footer">
-            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px">进入</button> 
-        </div>
-    `;
-    container.appendChild(card);
-}
 
-function render(data) {
-    const container = document.getElementById('speechCardsContainer');
-    container.innerHTML = '';
-    data.forEach(speech => { // 使用speech而不是item
-        renderSpeechCard(speech); // 传入当前演讲数据
-    });
-}
 
-    function view(idx) {
-        const speech = list[idx];
-        if (speech) {
-            window.location.href = `ListenerQuestion.html?name=${encodeURIComponent(speech.sname)}`;
-        } else {
-            alert('演讲未找到');
-        }
+        const container = document.getElementById('speechCardsContainer');
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+    <div class="card-header" >
+        <div class="card-name">${speech.speechname}</div>
+    </div>
+    <div class="card-body" style="margin-top:30px">
+        <div class="card-info" >
+           <div class="card-invite-code">${speech.inviteCode || '无邀请代码'}</div>
+            <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')" style="width:5px;border: 1px solid #ddd; border-radius: 2px;">☇</button>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px">上课</button>
+    </div>
+`;
+        container.appendChild(card);
     }
 
-     function deleteSpeech(idx) {
-        const confirmed = confirm('确定要删除这个演讲吗？');
-        if (confirmed) {
-            const speech = list[idx];
-            if (speech) {
-                // 这里可以添加删除演讲的逻辑
-                console.log('演讲已删除', speech);
-                // 重新渲染列表
-                list.splice(idx, 1);
-                render(list);
-            } else {
-                alert('演讲未找到');
-            }
-        }
+    function render(data) {
+        const container = document.getElementById('speechCardsContainer');
+        container.innerHTML = '';
+        data.forEach(speech => { // 使用speech而不是item
+            renderSpeechCard(speech); // 传入当前演讲数据
+        });
     }
 
 
-function add(){ alert('跳转到“新增在线测评”页面'); }
+    function view(speechID) {
+        //const listenerID = 123;  // 假设 listenerID 是已知的，替换为实际的值
+        const url = `ListenerHistoryQuestion.html?SpeechID=${speechID}&ListenerID=${listenerID}`;
+        window.location.href = url;  // 跳转到目标页面，并传递参数
 
-const list = [
-    { speechID: 1, sname: '十万个为什么',otime: '2024-07-22',inviteCode: 'ABC123DEF' },
-    // 添加更多演讲数据...
-];
-render(list);
+    }
+
+
+
+
+
+    function add(){ alert('跳转到“新增在线测评”页面'); }
+
+    const list = [
+        { speechID: 1, sname: '十万个为什么',otime: '2024-07-22',inviteCode: 'ABC123DEF' },
+        // 添加更多演讲数据...
+    ];
+    render(list);
+
+
 </script>
 </body>
 </html>

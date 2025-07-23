@@ -1,24 +1,30 @@
 package com.example.wwh.Controller;
 
 
+
+import com.example.wwh.DTO.QuestionDTO;
+
+import com.example.wwh.Data.StuanwersResponse;
+
 import com.example.wwh.pojo.Question;
 import com.example.wwh.pojo.Comment;
-import com.example.wwh.service.AIService;
-import com.example.wwh.service.Pdfparser;
-import com.example.wwh.service.QuestionService;
+import com.example.wwh.pojo.Stuanswers;
+import com.example.wwh.service.*;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -30,13 +36,15 @@ public class QuestionController {
     private Pdfparser pdfParser;
     //@Autowired private PptParser pptParser;
     @Autowired private AIService aiService;
-
-
-    private final Executor questionExecutor = Executors.newFixedThreadPool(1);
-
+    @Autowired
+    private PPTParser pptParser;
+    private final Executor questionExecutor = Executors.newFixedThreadPool(5);
+    @Autowired
+    private FileSplitService fileSplitService;
     @Autowired
     private QuestionService questionService;
-
+    @Autowired
+    private  SimpMessagingTemplate messagingTemplate;
 
 
     private final String[] API_ENDPOINTS = {
@@ -46,41 +54,130 @@ public class QuestionController {
 
     private final String[] API_KEYS = {
             "79f03a71e4dd418fb376f1ccb85819f9.b8KKhydUu7rUz1P3",
-
+            "dcb58333b1d244dabc0199ac0da0d70d.nPuTCTpIZdT6XjkT",
+            "899b4ff0a9a34e988da07180d2265979.cng4pdsEMlVWqqoe",
+            "fe63429dedc942dbb3ef94037de4a5af.0OcuWOpTGYGK3wvq",
+            "b8e68ae4d23d4a2e811313fb65c47e56.xmmRYfUBmsl8YbON",
     };
+    @Autowired
+    private MinioService minioService;
+    @Autowired
+    private StuAnswerService stuAnswerService;
 
     @GetMapping("/generate")
-    public ResponseEntity<?> generateQuestions() throws IOException {
-        File file = new File("C://Users//王镜然//Desktop//任务1代码说明文档.pdf");
+    public ResponseEntity<?> generateQuestions(Integer currentNumber, String title, Integer SpeakerID, String type,Integer SpeechID) {
+        String name = title + SpeakerID + '.' + type;
         try {
-            String content = "";
-            String filename = "任务1代码说明文档.pdf";
+            List<String> urls = fileSplitService.splitFile(name, currentNumber);
+            Integer page = 0;
+            if(name.endsWith(".pdf")){
+                page = 3;
+            }
+            else{
+                page = 5;
+            }
+            Integer length = 0;
+            if(currentNumber%page == 0){
+                length =  currentNumber/page - 1;
+            }
+            else{
+                length =  currentNumber/page;
+            }
+            System.out.println("查看一下长度：******"+length);
+            List<CompletableFuture<List<Question>>> futures = new ArrayList<>();
+            Random random = new Random();
 
-            if (filename.endsWith(".pdf")) {
-                content = pdfParser.parse( file);
-            } else if (filename.endsWith(".ppt") || filename.endsWith(".pptx")) {
-               // content = pptParser.parse(file);
-            } else {
-                return ResponseEntity.badRequest().body("不支持的文件格式");
+            for (int i = 0; i < 5; i++) {
+                int finalLength = length;
+                CompletableFuture<List<Question>> future = CompletableFuture.supplyAsync(() -> {
+                    try {
+                        int num = ThreadLocalRandom.current().nextInt(finalLength);
+                        System.out.println("选择的随机分片: " + urls.get(num));
+                        byte[] fileData = minioService.downloadFile(urls.get(num));
+                        String content;
+                        if (name.endsWith(".pdf")) {
+                            try (PDDocument document = Loader.loadPDF(fileData)) {
+                                content = pdfParser.parse(document);
+                            }
+                        } else if (name.endsWith(".ppt") || name.endsWith(".pptx")) {
+                            content = pptParser.parse(fileData, name);
+                        } else {
+                            throw new IllegalArgumentException("不支持的文件格式");
+                        }
+                        int index = ThreadLocalRandom.current().nextInt(API_KEYS.length);
+                        String endpoint = API_ENDPOINTS[0];
+                        String apiKey = API_KEYS[index];
+                        Question[] questions = aiService.generateQuestions(content, endpoint, apiKey);
+                        return Arrays.asList(questions);
+                    } catch (Exception e) {
+                        System.err.println("任务执行失败: " + e.getMessage());
+                        return Collections.emptyList();
+                    }
+                }, questionExecutor);
+
+                futures.add(future);
             }
 
-            List<Question> questionsList = new ArrayList<>();
-            for (int i = 0; i < 1; i++) {
+            CompletableFuture<Void> allFutures = CompletableFuture.allOf(
+                    futures.toArray(new CompletableFuture[0])
+            );
 
-                String endpoint = API_ENDPOINTS[i % API_ENDPOINTS.length];
-                String apiKey = API_KEYS[i % API_KEYS.length];
+            CompletableFuture<List<Question>> combined = allFutures.thenApply(v ->
+                    futures.stream()
+                            .flatMap(future -> future.join().stream())
+                            .collect(Collectors.toList())
+            );
 
+            List<Question> questionsList = combined.get(120, TimeUnit.SECONDS);
 
-                questionsList.add(aiService.generateQuestions(content, endpoint, apiKey));
+            for (Question question : questionsList) {
+                questionService.addQuestion(question);
+                questionService.addqueconspe(SpeechID,question.getQuestionID());
             }
-           // String apiUrl = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
-            //String apiKey = "79f03a71e4dd418fb376f1ccb85819f9.b8KKhydUu7rUz1P3";
-           // String questions = aiService.generateQuestions(content, apiUrl, apiKey);
+            messagingTemplate.convertAndSend("/topic/chat", "QUESTION_PUBLISH");
             return ResponseEntity.ok(questionsList);
 
+        } catch (InterruptedException | ExecutionException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("并发处理错误: " + e.getMessage());
+        } catch (TimeoutException e) {
+            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
+                    .body("请求超时: 120秒内未完成所有题目生成");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("处理失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("处理失败: " + e.getMessage());
         }
+    }
+    @GetMapping("api/getnowquestion")
+    public ResponseEntity<String> getnowQuestion(Integer SpeechID,Integer ListenerID){
+        List<Question>  questions =  questionService.getAllQuestionStatus1(SpeechID);
+        List<Stuanswers> stuanswersList = new ArrayList<>();
+        for(Question question:questions){
+            Stuanswers stuanswers = new Stuanswers();
+            stuanswers.setQuestionID(question.getQuestionID());
+            stuanswers.setListenerID(ListenerID);
+            stuanswers.setQS(0);
+//            Integer i = 0;
+//            if(question.getAnswer()=="A"){
+//                i = 1;
+//            }else if(question.getAnswer()=="B"){
+//                i = 2;
+//            }else if(question.getAnswer()=="C"){
+//                i = 3;
+//            }else if(question.getAnswer()=="D"){
+//                i = 4;
+//            }
+            stuanswers.setSanscontent("0");
+            stuanswers.setState(-1);
+            stuanswersList.add(stuanswers);
+        }
+        Random random = new Random();
+        stuanswersList.get(random.nextInt(stuanswersList.size())).setQS(1);
+       for(Stuanswers stuanswers:stuanswersList){
+           stuAnswerService.addStuAnswer(stuanswers);
+       }
+
+       return ResponseEntity.ok("题目获取成功");
     }
 
 
@@ -93,31 +190,31 @@ public class QuestionController {
         return ResponseEntity.ok(questions);
     }
 
-    // 获取已经结束的题目(未测试)
+    // 获取已经结束的题目
     @GetMapping("/listener/getfinishedQuestions")
-    public ResponseEntity<List<Question>> getFinishedQuestions(
+    public ResponseEntity<List<QuestionDTO>> getFinishedQuestions(
             @RequestParam int speechID,
             @RequestParam int listenerID) {
 
         // 调用 service 层获取题目
-        List<Question> questions = questionService.getFinishedQuestions(speechID, listenerID);
+        List<QuestionDTO> questions = questionService.getFinishedQuestions(speechID, listenerID);
 
         return ResponseEntity.ok(questions);  // 返回题目数据
     }
 
-    // 获取没抽到的题目(未测试)
+    // 获取没抽到的题目
     @GetMapping("/listener/getNogetQuestions")
-    public ResponseEntity<List<Question>> getNogetQuestions(
+    public ResponseEntity<List<QuestionDTO>> getNogetQuestions(
             @RequestParam int speechID,
             @RequestParam int listenerID) {
 
         // 调用 service 层获取题目
-        List<Question> questions = questionService.getNogetQuestions(speechID, listenerID);
+        List<QuestionDTO> questions = questionService.getNogetQuestions(speechID, listenerID);
 
         return ResponseEntity.ok(questions);  // 返回题目数据
     }
 
-    // 获取某个题目的评论（未测试）
+    // 获取某个题目的评论
     @GetMapping("/listener/getcomments")
     public ResponseEntity<List<Comment>> getCommentsForQuestion(
             @RequestParam int questionID) {
@@ -128,17 +225,17 @@ public class QuestionController {
         return ResponseEntity.ok(comments);  // 返回评论数据
     }
 
-    // 获取某个听众收藏的题目（未测试）
+    // 获取某个听众收藏的题目
     @GetMapping("/listener/collect")
-    public ResponseEntity<List<Question>> getQuestionsByListener(
+    public ResponseEntity<List<QuestionDTO>> getQuestionsByListener(
             @RequestParam int listenerID) {
 
-        List<Question> questions = questionService.getQuestionsByListenerAndStatus(listenerID);
+        List<QuestionDTO> questions = questionService.getQuestionsByListenerAndStatus(listenerID);
         return ResponseEntity.ok(questions);
     }
 
 
-    // 收藏题目（未测试）
+    // 收藏题目
     @PostMapping("listener/addtocollect")
     public ResponseEntity<String> addToCollect(@RequestParam int listenerID, @RequestParam int questionID) {
         questionService.addToCollect(listenerID, questionID);
@@ -146,7 +243,7 @@ public class QuestionController {
     }
 
 
-    // 根据 QuestionID 和 ListenerID 查询是否已收藏（未测试）
+    // 根据 QuestionID 和 ListenerID 查询是否已收藏
     @GetMapping("listener/checktocollect")
     public ResponseEntity<String> checkIfCollected(@RequestParam int questionID, @RequestParam int listenerID) {
         boolean isCollected = questionService.isAlreadyCollected(questionID, listenerID);
@@ -157,4 +254,29 @@ public class QuestionController {
         }
     }
 
+
+    //获取演讲的进行中的题目
+    @GetMapping("/speaker/getSpeechOpeningQuestions")
+    public ResponseEntity<List<Question>> getSpeechOnQuestions(@RequestParam int speechID) {
+        List<Question> questions = questionService.getSpeechOnQuestions(speechID);
+        return ResponseEntity.ok(questions);
+    }
+
+    //获取演讲的已结束的题目
+    @GetMapping("/speaker/getSpeechEndQuestions")
+    public ResponseEntity<List<Question>> getSpeechEndQuestions(@RequestParam int speechID) {
+        List<Question> questions = questionService.getSpeechEndQuestions(speechID);
+        return ResponseEntity.ok(questions);
+    }
+
+
+
+    // 插入评论的接口
+    @PostMapping("/listener/addComment")
+    public String addComment(@RequestParam int listenerID,
+                             @RequestParam int questionID,
+                             @RequestParam String comcontent) {
+        questionService.addComment(listenerID, questionID, comcontent);
+        return "Comment added successfully!";
+    }
 }

@@ -53,104 +53,50 @@
         <a href="SpeakerInfo.html" class="active">个人信息</a>
     </nav>
 </header>
-<!-- 主卡片 -->
-<div class="card">
-    <div class="card-header">DT502</div>
-    <div class="card-body">
-        <!-- 字段 -->
-        <div class="form-item">
-            <label>学号：</label>
-            <span>20231234</span>
-        </div>
-        <div class="form-item">
-            <label>学生姓名：</label>
-            <span>陈红</span>
-        </div>
-        <div class="form-item">
-            <label>性别：</label>
-            <label><input type="radio" name="gender" value="男"> 男</label>
-            <label style="margin-left:15px"><input type="radio" name="gender" value="女" checked> 女</label>
-        </div>
-        <div class="form-item">
-            <label>密码：</label>
-            <button class="btn btn-primary" onclick="openModal()">修改密码</button>
-        </div>
+ <!-- 主卡片 -->
+ <div class="card">
+     <div class="card-header">DT502</div>
+     <div class="card-body">
+         <!-- 字段 -->
+         <div class="form-item">
+             <label>用户名：</label>
+             <span id="username">20231234</span>  <!-- 这里用一个id来填充用户名 -->
+         </div>
+         <div class="form-item">
+             <label>邮箱：</label>
+             <span id="email">陈红</span>  <!-- 这里用一个id来填充邮箱 -->
+         </div>
 
-        <!-- 头像上传 -->
-        <div class="form-item" style="align-items:flex-start">
-            <label>头像：</label>
-            <div class="avatar-uploader" onclick="document.getElementById('avatarInput').click()">
-                <img id="avatarImg" src="" style="display:none">
-                <div class="icon">+</div>
-            </div>
-            <input id="avatarInput" type="file" accept="image/*" style="display:none" onchange="previewAvatar(this)">
-        </div>
+         <div class="form-item">
+             <label>性别：</label>
+             <span id="gender">未知</span>  <!-- 这里用一个id来填充性别 -->
+         </div>
+     </div>
+ </div>
 
-        <div class="form-item">
-            <button class="btn btn-primary" onclick="alert('保存成功')">保存</button>
-        </div>
-    </div>
-</div>
 
-<!-- 快捷入口 -->
-<div class="mini-cards">
-    <div class="mini-card" onclick="location.href='exam-record.html'">
-        <div class="icon">📄</div>
-        <div>考试记录</div>
-    </div>
-    <div class="mini-card" onclick="location.href='wrong-book.html'">
-        <div class="icon">📓</div>
-        <div>错题本</div>
-    </div>
-</div>
-
-<!-- 修改密码弹窗 -->
-<div class="modal" id="pwdModal">
-    <div class="modal-content">
-        <div class="modal-header">修改密码</div>
-        <div class="form-item"><label>原密码：</label><input type="password" id="oldPwd"></div>
-        <div class="form-item"><label>新密码：</label><input type="password" id="newPwd"></div>
-        <div class="form-item"><label>确认密码：</label><input type="password" id="confirmPwd"></div>
-        <div class="modal-footer">
-            <button class="btn" onclick="closeModal()">取消</button>
-            <button class="btn btn-primary" onclick="changePwd()">确定</button>
-        </div>
-    </div>
-</div>
 
 <script>
-/* 头像预览 */
-function previewAvatar(input){
-    if(input.files && input.files[0]){
-        const reader = new FileReader();
-        reader.onload = function(e){
-            const img = document.getElementById('avatarImg');
-            img.src = e.target.result;
-            img.style.display = 'block';
-            document.querySelector('.avatar-uploader .icon').style.display='none';
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
+    // 获取 URL 中的 listenerID 参数
+    // const urlParams = new URLSearchParams(window.location.search);
+    // const listenerID = urlParams.get('listenerID');  // 假设 URL 中有 listenerID 参数
+    const speakerID = 1;
 
-/* 弹窗控制 */
-function openModal(){ document.getElementById('pwdModal').style.display='flex'; }
-function closeModal(){ document.getElementById('pwdModal').style.display='none'; }
+    // 发送 GET 请求来获取听众信息
+    fetch(`http://localhost:8081/users/speaker/${speakerID}`)
+        .then(response => response.json())  // 解析返回的 JSON 数据
+        .then(listener => {
+            // 填充页面中的信息
+            document.getElementById('username').textContent =  listener.sname || '未知';
+            document.getElementById('email').textContent = listener.smail || '未知';
+            document.getElementById('gender').textContent = listener.ssex ? '男' : '女';
+        })
+        .catch(error => {
+            console.error('Error fetching listener info:', error);
+            // 如果发生错误，给出提示
+            alert('加载听众信息失败');
+        });
 
-/* 修改密码逻辑 */
-function changePwd(){
-    const oldPwd = document.getElementById('oldPwd').value.trim();
-    const newPwd = document.getElementById('newPwd').value.trim();
-    const confirmPwd = document.getElementById('confirmPwd').value.trim();
-    if(!oldPwd || !newPwd || !confirmPwd){
-        alert('请完整填写'); return;
-    }
-    if(newPwd !== confirmPwd){
-        alert('两次密码不一致'); return;
-    }
-    alert('修改成功');
-    closeModal();
-}
 </script>
 
 </body>

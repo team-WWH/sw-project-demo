@@ -24,7 +24,7 @@ public class MyBatisConfig {
         return DataSourceBuilder.create()
                 .url("jdbc:mysql://localhost:3306/wwh")  // 更改为实际数据库地址
                 .username("root")  // 数据库用户名
-                .password("123456")  // 数据库密码
+                .password("zhuiluo0")  // 数据库密码
                 .driverClassName("com.mysql.cj.jdbc.Driver")  // MySQL 驱动
                 .build();
     }

@@ -144,8 +144,10 @@
 </div>
 
 <script>
-    // 获取正在进行中的演讲数据
-    fetch('http://localhost:8081/speeches/ended')
+    const speakerID = 1;
+
+    // 获取历史的演讲数据
+    fetch(`http://localhost:8081/Speaker/ended?SpeakerID=${speakerID}`)
         .then(response => response.json())
         .then(data => {
             render(data);  // 调用渲染函数将数据展示到页面
@@ -154,49 +156,52 @@
 
 
 
-       
 
-    function render(data) {
+
+
+    function renderSpeechCard(speech) {
         const container = document.getElementById('speechCardsContainer');
-        container.innerHTML = '';  // 清空现有的卡片内容
-        data.forEach((item, idx) => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-header" >
-            <div class="card-name">${item.sname}</div>
-        </div>
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+        <div class="card-header" >
+            <div class="card-name">${speech.speechname}</div>
         <div class="card-body" style="margin-top:30px">
             <div class="card-info" >
-                <div class="card-invite-code"  style="">${item.inviteCode}</div>
-                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${item.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
+               <div class="card-invite-code"  style="">${speech.inviteCode}</div>
+                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
             border-radius: 2px;">☇</button>
             </div>
         </div>
         <div class="card-footer">
-            <button class="btn btn-primary card-btn" onclick="view(${idx})" style="height:30px">进入</button>
-            <button class="btn btn-danger card-btn" onclick="analysis(${idx})" style="height:30px">查看分析</button>
+            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px;margin-left:190px">上课</button>
+            <button class="btn btn-primary card-btn" onClick="ASpeech(${speech.speechID})" style="height:30px;">查看</button>
         </div>
-            `;
-            container.appendChild(card);
+    `;
+        container.appendChild(card);
+    }
+
+    function render(data) {
+        const container = document.getElementById('speechCardsContainer');
+        container.innerHTML = '';
+        data.forEach(speech => { // 使用speech而不是item
+            renderSpeechCard(speech); // 传入当前演讲数据
         });
     }
 
-    function view(idx) {
-        const speech = list[idx];
-        if (speech) {
-            window.location.href = `SpeakDetail.html?name=${encodeURIComponent(speech.sname)}&filePath=${encodeURIComponent(speech.filePath)}`;
-        } else {
-            alert('演讲未找到');
-        }
+
+    function view(SpeechID) {
+        const speechID = SpeechID;  // 获取当前演讲的 SpeechID
+        const url = `http://localhost:8080/SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${speechID}`;
+        window.location.href = url;
     }
-     function analysis(idx) {
-        const speech = list[idx];
-        if (speech) {
-            window.location.href = `SpeakAnalysis.html?name=${encodeURIComponent(speech.sname)}`;
-        } else {
-            alert('分析未找到');
-        }
+
+    //查看演讲分析
+    function ASpeech(SpeechID) {
+        const speechID = SpeechID;  // 获取当前演讲的 SpeechID
+        const url = `http://localhost:8080/ListenerQuestion.html?ListenerID=${listenerID}&SpeechID=${speechID}`;
+        window.location.href = url;
+
     }
 
     function deleteSpeech(idx) {
@@ -219,10 +224,17 @@
         alert('跳转到“新增在线测评”页面');
     }
 
+
+
+    function addSpeech() {
+        alert('跳转到“新增在线测评”页面');
+    }
+
     const list = [
         { speechID: 1, sname: '十万个为什么', otime: '2024-07-22', inviteCode: 'ABC123DEF', filePath: 'path/to/file' },
         // 添加更多演讲数据...
     ];
+
 
     render(list);
 </script>

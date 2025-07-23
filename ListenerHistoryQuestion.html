@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <title>演讲练习 - 泰拉演讲团</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        body{background:#f5f5f5;color:#333}
+        header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
+        header .brand{font-size:18px;font-weight:bold;margin-right:40px}
+        header nav a{color:#fff;margin-right:20px;text-decoration:none;font-size:14px}
+        header nav a.active{color:#1890ff}
+        .sub-nav{background:#fff;border-bottom:1px solid #e8e8e8;padding:12px 20px;font-size:14px}
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .card{background:#fff;border-radius:4px;padding:20px}
+        .toolbar{display:flex;align-items:center;margin-bottom:16px}
+        .toolbar input{width:240px;padding:6px 10px;border:1px solid #d9d9d9;border-radius:2px;margin-right:12px}
+        .btn{padding:6px 14px;border:none;border-radius:2px;font-size:14px;cursor:pointer}
+        .btn-primary{background:#1890ff;color:#fff}
+        .btn-danger{background:#ff4d4f;color:#fff}
+        table{width:100%;border-collapse:collapse;font-size:14px}
+        th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
+        th{background:#fafafa}
+        .header-bar {
+            background:#f8f9fa;
+            border-bottom:1px solid #dee2e6;
+            padding:12px 0;
+            position:sticky;
+            top:0;
+            z-index:1000;
+        }
+        .filter-group .btn{
+            margin-right:6px;
+        }
+        .question-card{
+            margin-bottom:1rem;
+            cursor:pointer;
+            transition:background .2s;
+        }
+        .question-card:hover{
+            background:#f1f3f5;
+        }
+        .comment-section {
+            margin-top: 20px;
+        }
+        .comment-section h4 {
+            margin-bottom: 10px;
+        }
+        .comment-section .form-control {
+            margin-bottom: 10px;
+        }
+        .comment-section .comment {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+        .comment-section .comment .comment-author {
+            font-weight: bold;
+        }
+        .comment-section .comment .comment-date {
+            font-size: 12px;
+            color: #888;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .chat-header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .chat-messages {
+            padding: 20px;
+            height: 300px;
+            overflow-y: auto;
+            border-top: 1px solid #e9ecef;
+            border-bottom: 1px solid #e9ecef;
+            background-color: #f8f9fa;
+        }
+        .message-sender {
+            font-weight: normal;  /* 去除粗体 */
+            font-size: 12px;  /* 设置较小的字体 */
+            color: #666666;  /* 设置更浅的颜色 */
+            margin-bottom: 5px;  /* 确保用户名与消息内容有间距 */
+            text-align: left;
+        }
+
+        .message-sent {
+            background-color: #28a745;
+            color: white;
+            text-align: right;
+            margin-left: 50px; /* 调整右侧消息的位置 */
+        }
+
+        .message-received {
+            background-color: #f1f1f1;
+            color: #333;
+            text-align: left;
+            margin-right: 50px; /* 调整左侧消息的位置 */
+        }
+
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        .message-text {
+            font-size: 14px;
+        }
+
+        .input-area {
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 0 0 8px 8px;
+        }
+        .input-group input {
+            width: 85%;
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部主导航 -->
+<header>
+    <div class="brand">泰拉演讲团</div>
+    <nav>
+        <a href="ListenerHomepage.html">首页</a>
+        <a href="History.html">历史演讲</a>
+        <a href="PersonInfo.html">个人信息</a>
+        <a href="ListenerFavor.html">我的收藏</a>
+    </nav>
+</header>
+
+<!-- 顶部导航 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">演讲练习</span>
+    </div>
+</nav>
+
+<!-- 筛选栏 -->
+<div class="container-fluid header-bar">
+    <div class="row">
+        <div class="col filter-group">
+            <!-- 可以添加筛选功能 -->
+        </div>
+    </div>
+</div>
+
+<!-- 主内容区 -->
+<div class="container mt-3">
+    <div class="row">
+        <!-- 题目列表 -->
+        <div class="col-md-8">
+            <h3>你的题目</h3>
+            <div id="ongoingQuestions">
+                <!-- 进行中的题目将被 JS 渲染到这里 -->
+            </div>
+            <hr>
+            <h3>未抽到的题目</h3>
+            <div id="finishedQuestions">
+                <!-- 已结束的题目将被 JS 渲染到这里 -->
+            </div>
+        </div>
+
+        <!--        &lt;!&ndash; 评论区 &ndash;&gt;-->
+        <!--        <div class="col-md-4">-->
+        <!--            <div class="comment-section">-->
+        <!--                <h4>评论区</h4>-->
+        <!--                <div id="comments">-->
+        <!--                    &lt;!&ndash; 评论将被 JS 渲染到这里 &ndash;&gt;-->
+        <!--                </div>-->
+        <!--                <form id="commentForm">-->
+        <!--                    <div class="mb-3">-->
+        <!--                        <label for="commentInput" class="form-label">发表评论</label>-->
+        <!--                        <textarea class="form-control" id="commentInput" rows="3" placeholder="请输入您的评论..."></textarea>-->
+        <!--                    </div>-->
+        <!--                    <button type="submit" class="btn btn-primary">提交评论</button>-->
+        <!--                </form>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <!-- 替换的聊天室 -->
+        <div class="col-md-4">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h2>反馈吧</h2>
+                </div>
+
+                <div class="chat-messages" id="messages">
+                    <div class="message">系统初始化中...</div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // 静态题目数据
+    const ongoingQuestions = [
+        { id: 1, questioncontent: "如何提高演讲技巧？", createTime: "2025-07-20T00:00:00", endTime: "2025-07-20T00:00:30" },
+        { id: 2, questioncontent: "如何克服演讲中的紧张情绪？", createTime: "2025-07-19T00:00:00", endTime: "2025-07-19T00:00:30" },
+        { id: 3, questioncontent: "如何设计一个吸引人的演讲开场？", createTime: "2025-07-18T00:00:00", endTime: "2025-07-18T00:00:30" }
+    ];
+
+    const finishedQuestions = [
+        { id: 4, questioncontent: "如何进行有效的演讲练习？", createTime: "2025-07-17T00:00:00", endTime: "2025-07-17T00:00:30" },
+        { id: 5, questioncontent: "如何与听众建立良好的互动？", createTime: "2025-07-16T00:00:00", endTime: "2025-07-16T00:00:30" }
+    ];
+
+    // 获取当前时间
+    const now = new Date();
+
+    // 检查进行中的题目是否已结束
+    const updatedOngoingQuestions = [];
+    const updatedFinishedQuestions = [];
+
+    ongoingQuestions.forEach(question => {
+        const endTime = new Date(question.endTime);
+        if (endTime < now) {
+            // 如果结束时间小于当前时间，将题目移动到已结束列表
+            updatedFinishedQuestions.push(question);
+        } else {
+            // 否则，保留为进行中的题目
+            updatedOngoingQuestions.push(question);
+        }
+    });
+
+    // 合并已结束的题目
+    updatedFinishedQuestions.push(...finishedQuestions);
+
+    // 获取 URL 中的查询参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const listenerID = urlParams.get('ListenerID');
+    const speechID = urlParams.get('SpeechID');
+
+    // 输出获取到的参数
+    console.log("ListenerID:", listenerID);
+    console.log("SpeechID:", speechID);
+
+
+    //-------------------------------------------------------
+    //聊天室
+    const messagesContainer = document.getElementById('messages');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+
+    let stompClient = null;
+    let connected = false;
+
+    // 获取当前页面的 URL
+    //const urlParams = new URLSearchParams(window.location.search);
+    //session
+    //const storedListenerInfo = JSON.parse(localStorage.getItem("listenerInfo"));
+
+    // 获取 URL 中的 ListenerID 和 SpeechID 参数
+    //const listenerID = urlParams.get('ListenerID');
+    //const speechID = urlParams.get('SpeechID');
+
+    const endpointUrl = 'http://localhost:8081/listener/tofeedback';
+
+    // function displayMessage(message, isSent) {
+    //     const messageDiv = document.createElement('div');
+    //     messageDiv.className = `message ${isSent ? 'message-sent' : 'message-received'}`;
+    //     messageDiv.textContent = message;
+    //     messagesContainer.appendChild(messageDiv);
+    //     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    // }
+    function displayMessage(message, isSent) {
+        const messageDiv = document.createElement('div');
+
+        // 根据消息的 listenerID 与当前 listenerID 比较，决定消息显示在左侧还是右侧
+        const currentListenerID = parseInt(listenerID); // 假设当前用户的 listenerID 是通过 URL 获取的
+
+        if (parseInt(message.listenerID) === currentListenerID) {
+            // 当前用户的消息，显示在右侧
+            messageDiv.className = 'message message-sent';
+        } else {
+            // 其他用户的消息，显示在左侧
+            messageDiv.className = 'message message-received';
+        }
+
+        // 判断消息是否是状态消息
+        if (typeof message === 'string') {
+            // 如果是字符串消息，创建一个简化的消息对象
+            const statusMessage = {
+                listenerID: null, // 状态消息没有实际的 listenerID
+                speechID: null,   // 状态消息没有实际的 speechID
+                fcontent: message // 纯文本内容
+            };
+
+            // 直接显示状态消息
+            const messageContent = document.createElement('div');
+            const messageTextDiv = document.createElement('span');
+            messageTextDiv.className = 'message-text';
+            messageTextDiv.textContent = statusMessage.fcontent;
+
+            messageContent.appendChild(messageTextDiv);
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } else {
+            // 处理正常的消息
+            fetch(`http://localhost:8081/users/listener/${message.listenerID}`)
+                .then(response => response.json())
+                .then(listenerInfo => {
+                    const messageContent = document.createElement('div');
+
+                    // 创建显示用户名的部分
+                    const senderNameDiv = document.createElement('div');
+                    senderNameDiv.className = 'message-sender';
+                    senderNameDiv.textContent = listenerInfo.anonymous ? "匿名" : listenerInfo.uname;
+
+                    // 创建显示消息内容的部分
+                    const messageTextDiv = document.createElement('span');
+                    messageTextDiv.className = 'message-text';
+                    messageTextDiv.textContent = message.fcontent;
+
+                    // 将用户名部分放到消息的顶部
+                    messageDiv.appendChild(senderNameDiv);
+                    messageContent.appendChild(messageTextDiv);
+                    messageDiv.appendChild(messageContent);
+                    messagesContainer.appendChild(messageDiv);
+
+                    // 滚动到底部显示最新的消息
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('获取用户信息失败', err);
+                    const messageContent = document.createElement('div');
+                    const messageTextDiv = document.createElement('span');
+                    messageTextDiv.className = 'message-text';
+                    messageTextDiv.textContent = message.fcontent;
+                    messageContent.appendChild(messageTextDiv);
+                    messageDiv.appendChild(messageContent);
+                    messagesContainer.appendChild(messageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+    }
+
+
+
+
+
+
+    // 加载历史消息
+    function loadHistory() {
+        fetch(`http://localhost:8081/feedback/history?speechID=${speechID}`)
+            .then(response => response.json())
+            .then(messages => {
+                messages.forEach(msg => {
+                    console.log(messages);  // 查看返回的数据
+                    if (messages.length === 0) {
+                        console.log('没有历史消息');
+                    }
+                    displayMessage(msg, false);
+                });
+            })
+            .catch(err => console.error('加载历史消息失败', err));
+    }
+
+    function connect() {
+        if (connected) return;
+
+        try {
+            const socket = new SockJS(endpointUrl);
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function() {
+                connected = true;
+                displayMessage('已连接到聊天室', false);
+
+                // 订阅消息，接收消息并过滤不属于自己的消息
+                stompClient.subscribe(`/topic/chat/${speechID}`, function(message) {
+                    const receivedMsg = JSON.parse(message.body);
+
+                    // 正确过滤：只显示其他人发送的消息
+                    if (parseInt(receivedMsg.listenerID) !== parseInt(listenerID)) {
+                        displayMessage(receivedMsg, false); // 显示为接收消息
+                    }
+                });
+
+                loadHistory();  // 连接后加载历史消息
+
+                // 现在设置 onDisconnect 处理程序
+                stompClient.onDisconnect = function() {
+                    setTimeout(connect, 5000); // 5秒后重连
+                };
+
+            });
+        } catch (error) {
+            displayMessage('连接失败，请重试', false);
+        }
+    }
+
+
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        // 创建消息对象，包含 listenerID 和 speechID
+        const messageObj = {
+            fcontent: message,
+            listenerID: listenerID,  // 当前用户的 listenerID
+            speechID: speechID,      // 当前演讲的 speechID
+            //timestamp: new Date().toISOString()  // 消息的时间戳
+        };
+
+        // 先显示为"已发送"
+        displayMessage(messageObj, true);
+
+        // 再发送到服务器
+        stompClient.send("/app/chat", {}, JSON.stringify({
+            fcontent: message,
+            sender: {
+                id: listenerID,
+                name: "用户" + listenerID // 可添加更多信息
+            },
+            listenerID: parseInt(listenerID), // 确保是数字
+            speechID: parseInt(speechID),     // 确保是数字
+            timestamp: new Date().toISOString()
+        }));
+
+        messageInput.value = '';
+    }
+
+
+    // sendButton.addEventListener('click', sendMessage);
+    // messageInput.addEventListener('keypress', function(e) {
+    //     if (e.key === 'Enter') {
+    //         sendMessage();
+    //     }
+    // });
+
+    window.addEventListener('DOMContentLoaded', function() {
+        connect();
+    });
+
+
+
+    //-----------------------------------------------------------------------
+    // 获取你的题目
+    fetch(`http://localhost:8081/api/questions/listener/getfinishedQuestions?speechID=${speechID}&listenerID=${listenerID}`)
+        .then(response => response.json())
+        .then(data => renderQuestions(data, 'ongoingQuestions'))  // 渲染进行中的题目
+        .catch(error => console.error('Error fetching ongoing questions:', error));
+
+    // 获取未抽到的题目
+    fetch(`http://localhost:8081/api/questions/listener/getNogetQuestions?speechID=${speechID}&listenerID=${listenerID}`)
+        .then(response => response.json())
+        .then(data => renderQuestions(data, 'finishedQuestions'))  // 渲染已结束的题目
+        .catch(error => console.error('Error fetching finished questions:', error));
+
+    // 渲染题目的函数
+    // 渲染题目列表
+    function renderQuestions(questions, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        questions.forEach(question => {
+            const card = document.createElement('div');
+            card.className = 'card question-card';
+            card.innerHTML = `
+            <div class="card-body">
+                <p class="card-text">${question.questioncontent}</p>
+                <button class="btn btn-primary btn-sm">进入</button>
+                <span class="answer-status" style="font-size: 1.5em; margin-left: 10px;">
+                    ${question.sanscontent === '0' ? '' : (question.answer === question.sanscontent ? '✔️' : '❌')}
+                </span>
+            </div>
+        `;
+            console.log(question);
+
+            // 动态绑定事件
+            const btn = card.querySelector('button');
+            btn.addEventListener('click', () => saveQuestionAndRedirect(question));
+
+            container.appendChild(card);
+        });
+    }
+
+
+
+    // 保存数据到 sessionStorage 并跳转到不同页面
+    function saveQuestionAndRedirect(question) {
+        // 将 question 对象存储到 sessionStorage 中
+        sessionStorage.setItem('questionData', JSON.stringify(question));  // 存储 question 对象
+
+        // 根据题目状态跳转到不同的页面
+        if (parseInt(question.qstatus) === 1) {
+            // 进行中的题目跳转到 ongoingQuestionDetail.html
+            window.location.href = `QuestionDetail.html?listenerID=${listenerID}`;
+        } else if (parseInt(question.qstatus) === 2) {
+            // 已结束的题目跳转到 endedQuestionDetail.html
+            window.location.href = `EndQuestionDetail.html?listenerID=${listenerID}`;
+        }
+    }
+
+    // // 渲染静态数据
+    // renderQuestions(updatedOngoingQuestions, 'ongoingQuestions', true);
+    // renderQuestions(updatedFinishedQuestions, 'finishedQuestions', false);
+    //
+    // // 模拟的评论数据
+    // const comments = [
+    //     { author: '用户A', date: '2025-07-20 10:00', content: '这是一个非常有用的演讲练习题目！' },
+    //     { author: '用户B', date: '2025-07-20 10:30', content: '我也觉得这个题目很有帮助，谢谢分享！' },
+    //     { author: '用户C', date: '2025-07-20 11:00', content: '期待更多这样的练习题目！' }
+    // ];
+    //
+    // // 加载评论
+    // function loadComments() {
+    //     const commentsContainer = document.getElementById('comments');
+    //     commentsContainer.innerHTML = '';
+    //     comments.forEach(comment => {
+    //         const commentElement = document.createElement('div');
+    //         commentElement.className = 'comment';
+    //         commentElement.innerHTML = `
+    //             <div class="comment-author">${comment.author}</div>
+    //             <div class="comment-date">${comment.date}</div>
+    //             <div class="comment-content">${comment.content}</div>
+    //         `;
+    //         commentsContainer.appendChild(commentElement);
+    //     });
+    // }
+    //
+    // // 提交评论
+    // document.getElementById('commentForm').addEventListener('submit', (e) => {
+    //     e.preventDefault();
+    //     const commentInput = document.getElementById('commentInput');
+    //     const commentContent = commentInput.value.trim();
+    //     if (commentContent) {
+    //         const comment = {
+    //             author: '用户', // 这里可以根据实际情况获取用户信息
+    //             date: new Date().toLocaleString(),
+    //             content: commentContent
+    //         };
+    //         comments.push(comment);
+    //         commentInput.value = '';
+    //         loadComments();
+    //     }
+    // });
+    //
+    // // 初始加载评论
+    // loadComments();
+
+
+
+</script>
+</body>
+</html>

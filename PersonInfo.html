@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>DT502</title>
-<style>
-    /* 全局样式 */
-     *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+    <meta charset="UTF-8">
+    <title>DT502</title>
+    <style>
+        /* 全局样式 */
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
         body{background:#f5f5f5;color:#333}
         header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
         header .brand{font-size:18px;font-weight:bold;margin-right:40px}
@@ -22,35 +22,36 @@
         table{width:100%;border-collapse:collapse;font-size:14px}
         th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
         th{background:#fafafa}
-    .card{width:100%;max-width:600px;margin:0 auto;background:#fff;border-radius:8px;box-shadow:0 2px 12px 0 rgba(0,0,0,.1);}
-    .card-header{padding:18px 20px;border-bottom:1px solid #ebeef5;font-size:18px;font-weight:bold;color:#303133;}
-    .card-body{padding:20px;}
-    .form-item{display:flex;align-items:center;margin-bottom:18px;}
-    .form-item label{width:100px;font-size:14px;color:#606266;flex-shrink:0;}
-    .form-item span{flex:1;font-size:14px;color:#909399;}
-    .form-item input[type=text],.form-item input[type=password]{flex:1;padding:8px 10px;border:1px solid #dcdfe6;border-radius:4px;}
-    .btn{display:inline-block;line-height:1;white-space:nowrap;cursor:pointer;background:#fff;border:1px solid #dcdfe6;color:#606266;text-align:center;outline:none;margin:0;padding:9px 15px;font-size:14px;border-radius:4px;}
-    .btn-primary{background:#409eff;border-color:#409eff;color:#fff;}
-    .avatar-uploader{position:relative;width:120px;height:120px;border:1px dashed #d9d9d9;border-radius:6px;cursor:pointer;overflow:hidden;}
-    .avatar-uploader img{width:100%;height:100%;object-fit:cover;}
-    .avatar-uploader .icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;color:#8c939d;}
-    .mini-cards{display:flex;gap:20px;margin-top:20px;justify-content:center;}
-    .mini-card{flex:1;max-width:260px;background:#fff;border-radius:8px;box-shadow:0 2px 12px 0 rgba(0,0,0,.1);padding:20px 0;text-align:center;cursor:pointer;}
-    .mini-card .icon{font-size:32px;color:#409eff;margin-bottom:10px;}
-    .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:999;}
-    .modal-content{background:#fff;border-radius:8px;padding:20px 30px;width:90%;max-width:400px;}
-    .modal-header{font-size:16px;font-weight:bold;margin-bottom:15px;}
-    .modal-footer{text-align:right;margin-top:15px;}
-</style>
+        .card{width:100%;max-width:600px;margin:0 auto;background:#fff;border-radius:8px;box-shadow:0 2px 12px 0 rgba(0,0,0,.1);}
+        .card-header{padding:18px 20px;border-bottom:1px solid #ebeef5;font-size:18px;font-weight:bold;color:#303133;}
+        .card-body{padding:20px;}
+        .form-item{display:flex;align-items:center;margin-bottom:18px;}
+        .form-item label{width:100px;font-size:14px;color:#606266;flex-shrink:0;}
+        .form-item span{flex:1;font-size:14px;color:#909399;}
+        .form-item input[type=text],.form-item input[type=password]{flex:1;padding:8px 10px;border:1px solid #dcdfe6;border-radius:4px;}
+        .btn{display:inline-block;line-height:1;white-space:nowrap;cursor:pointer;background:#fff;border:1px solid #dcdfe6;color:#606266;text-align:center;outline:none;margin:0;padding:9px 15px;font-size:14px;border-radius:4px;}
+        .btn-primary{background:#409eff;border-color:#409eff;color:#fff;}
+        .avatar-uploader{position:relative;width:120px;height:120px;border:1px dashed #d9d9d9;border-radius:6px;cursor:pointer;overflow:hidden;}
+        .avatar-uploader img{width:100%;height:100%;object-fit:cover;}
+        .avatar-uploader .icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;color:#8c939d;}
+        .mini-cards{display:flex;gap:20px;margin-top:20px;justify-content:center;}
+        .mini-card{flex:1;max-width:260px;background:#fff;border-radius:8px;box-shadow:0 2px 12px 0 rgba(0,0,0,.1);padding:20px 0;text-align:center;cursor:pointer;}
+        .mini-card .icon{font-size:32px;color:#409eff;margin-bottom:10px;}
+        .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:999;}
+        .modal-content{background:#fff;border-radius:8px;padding:20px 30px;width:90%;max-width:400px;}
+        .modal-header{font-size:16px;font-weight:bold;margin-bottom:15px;}
+        .modal-footer{text-align:right;margin-top:15px;}
+    </style>
 </head>
 <body>
- <!-- 顶部主导航 -->
+<!-- 顶部主导航 -->
 <header>
     <div class="brand">泰拉演讲团</div>
     <nav>
         <a href="ListenerHomepage.html">首页</a>
         <a href="History.html">历史演讲</a>
         <a href="PersonInfo.html" class="active">个人信息</a>
+         <a href="ListenerFavor.html">我的收藏</a>
     </nav>
 </header>
 <!-- 主卡片 -->
@@ -59,98 +60,53 @@
     <div class="card-body">
         <!-- 字段 -->
         <div class="form-item">
-            <label>学号：</label>
-            <span>20231234</span>
+            <label>用户名：</label>
+            <span id="username">20231234</span>  <!-- 这里用一个id来填充用户名 -->
         </div>
         <div class="form-item">
-            <label>学生姓名：</label>
-            <span>陈红</span>
+            <label>邮箱：</label>
+            <span id="email">陈红</span>  <!-- 这里用一个id来填充邮箱 -->
+        </div>
+        <div class="form-item">
+            <label>是否匿名：</label>
+            <span id="isAnonymous">未知</span>  <!-- 这里用一个id来填充是否匿名 -->
         </div>
         <div class="form-item">
             <label>性别：</label>
-            <label><input type="radio" name="gender" value="男"> 男</label>
-            <label style="margin-left:15px"><input type="radio" name="gender" value="女" checked> 女</label>
-        </div>
-        <div class="form-item">
-            <label>密码：</label>
-            <button class="btn btn-primary" onclick="openModal()">修改密码</button>
-        </div>
-
-        <!-- 头像上传 -->
-        <div class="form-item" style="align-items:flex-start">
-            <label>头像：</label>
-            <div class="avatar-uploader" onclick="document.getElementById('avatarInput').click()">
-                <img id="avatarImg" src="" style="display:none">
-                <div class="icon">+</div>
-            </div>
-            <input id="avatarInput" type="file" accept="image/*" style="display:none" onchange="previewAvatar(this)">
-        </div>
-
-        <div class="form-item">
-            <button class="btn btn-primary" onclick="alert('保存成功')">保存</button>
+            <span id="gender">未知</span>  <!-- 这里用一个id来填充性别 -->
         </div>
     </div>
 </div>
 
-<!-- 快捷入口 -->
-<div class="mini-cards">
-    <div class="mini-card" onclick="location.href='exam-record.html'">
-        <div class="icon">📄</div>
-        <div>考试记录</div>
-    </div>
-    <div class="mini-card" onclick="location.href='wrong-book.html'">
-        <div class="icon">📓</div>
-        <div>错题本</div>
-    </div>
-</div>
 
-<!-- 修改密码弹窗 -->
-<div class="modal" id="pwdModal">
-    <div class="modal-content">
-        <div class="modal-header">修改密码</div>
-        <div class="form-item"><label>原密码：</label><input type="password" id="oldPwd"></div>
-        <div class="form-item"><label>新密码：</label><input type="password" id="newPwd"></div>
-        <div class="form-item"><label>确认密码：</label><input type="password" id="confirmPwd"></div>
-        <div class="modal-footer">
-            <button class="btn" onclick="closeModal()">取消</button>
-            <button class="btn btn-primary" onclick="changePwd()">确定</button>
-        </div>
-    </div>
-</div>
+
+
 
 <script>
-/* 头像预览 */
-function previewAvatar(input){
-    if(input.files && input.files[0]){
-        const reader = new FileReader();
-        reader.onload = function(e){
-            const img = document.getElementById('avatarImg');
-            img.src = e.target.result;
-            img.style.display = 'block';
-            document.querySelector('.avatar-uploader .icon').style.display='none';
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
 
-/* 弹窗控制 */
-function openModal(){ document.getElementById('pwdModal').style.display='flex'; }
-function closeModal(){ document.getElementById('pwdModal').style.display='none'; }
 
-/* 修改密码逻辑 */
-function changePwd(){
-    const oldPwd = document.getElementById('oldPwd').value.trim();
-    const newPwd = document.getElementById('newPwd').value.trim();
-    const confirmPwd = document.getElementById('confirmPwd').value.trim();
-    if(!oldPwd || !newPwd || !confirmPwd){
-        alert('请完整填写'); return;
-    }
-    if(newPwd !== confirmPwd){
-        alert('两次密码不一致'); return;
-    }
-    alert('修改成功');
-    closeModal();
-}
+    // 获取 URL 中的 listenerID 参数
+    // const urlParams = new URLSearchParams(window.location.search);
+    // const listenerID = urlParams.get('listenerID');  // 假设 URL 中有 listenerID 参数
+    const listenerID = 1;
+
+    // 发送 GET 请求来获取听众信息
+    fetch(`http://localhost:8081/users/listener/${listenerID}`)
+        .then(response => response.json())  // 解析返回的 JSON 数据
+        .then(listener => {
+            // 填充页面中的信息
+            document.getElementById('username').textContent = listener.anonymous ? '匿名' : listener.uname || '未知';
+            document.getElementById('email').textContent = listener.mail || '未知';
+            document.getElementById('isAnonymous').textContent = listener.anonymous ? '是' : '否';
+            document.getElementById('gender').textContent = listener.sex ? '男' : '女';
+        })
+        .catch(error => {
+            console.error('Error fetching listener info:', error);
+            // 如果发生错误，给出提示
+            alert('加载听众信息失败');
+        });
+
+
 </script>
 
 </body>
