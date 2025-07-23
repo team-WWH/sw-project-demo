@@ -26,6 +26,9 @@ public class StuAnswerService {
     public List<Stuanswers> getStuanswerByQuestionID(Integer QuestionID){
         return stuanswersMapper.getStuanswerByQuestionID(QuestionID);
     }
+    public void updataAnswers(Integer StuanswersID,String answers,Integer State){
+        stuanswersMapper.updataAnswersByID(StuanswersID,answers,State);
+    }
 
 
 
