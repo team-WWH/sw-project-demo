@@ -158,6 +158,7 @@
 
 
 
+
     function renderSpeechCard(speech) {
         const container = document.getElementById('speechCardsContainer');
         const card = document.createElement('div');
@@ -200,6 +201,27 @@
         const speechID = SpeechID;  // 获取当前演讲的 SpeechID
         const url = `http://localhost:8080/ListenerQuestion.html?ListenerID=${listenerID}&SpeechID=${speechID}`;
         window.location.href = url;
+
+    }
+
+    function deleteSpeech(idx) {
+        const confirmed = confirm('确定要删除这个演讲吗？');
+        if (confirmed) {
+            const speech = list[idx];
+            if (speech) {
+                // 这里可以添加删除演讲的逻辑
+                console.log('演讲已删除', speech);
+                // 重新渲染列表
+                list.splice(idx, 1);
+                render(list);
+            } else {
+                alert('演讲未找到');
+            }
+        }
+    }
+
+    function addSpeech() {
+        alert('跳转到“新增在线测评”页面');
     }
 
 
@@ -212,6 +234,7 @@
         { speechID: 1, sname: '十万个为什么', otime: '2024-07-22', inviteCode: 'ABC123DEF', filePath: 'path/to/file' },
         // 添加更多演讲数据...
     ];
+
 
     render(list);
 </script>

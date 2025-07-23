@@ -23,6 +23,7 @@
         th{background:#fafafa}
         .brand {
 
+
             font-size: 24px;
             font-weight: bold;
         }
@@ -130,6 +131,7 @@
         <a href="History.html" class="active">历史演讲</a>
         <a href="PersonInfo.html">个人信息</a>
 
+
         <a href="ListenerFavor.html">我的收藏</a>
 
     </nav>
@@ -155,6 +157,7 @@
         .catch(error => console.error('Error fetching speeches:', error));
 
     function renderSpeechCard(speech) {
+
 
         const container = document.getElementById('speechCardsContainer');
         const card = document.createElement('div');
@@ -189,7 +192,9 @@
         //const listenerID = 123;  // 假设 listenerID 是已知的，替换为实际的值
         const url = `ListenerHistoryQuestion.html?SpeechID=${speechID}&ListenerID=${listenerID}`;
         window.location.href = url;  // 跳转到目标页面，并传递参数
+
     }
+
 
 
 
@@ -201,6 +206,7 @@
         // 添加更多演讲数据...
     ];
     render(list);
+
 
 </script>
 </body>
