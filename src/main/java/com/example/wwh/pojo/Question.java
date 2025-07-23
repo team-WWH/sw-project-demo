@@ -93,6 +93,9 @@ public class Question {
         this.QresultsID = QresultsID;
     }
 
+    public String getAnswer() {
+        return Answer;
+    }
 
     public void setAnswer(String Answer) {
         this.Answer = Answer;

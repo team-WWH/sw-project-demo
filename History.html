@@ -22,6 +22,7 @@
         th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
         th{background:#fafafa}
         .brand {
+
             font-size: 24px;
             font-weight: bold;
         }
@@ -50,6 +51,7 @@
         }
 
         .container{max-width:1200px;margin:20px auto;padding:0 20px}
+
         .card {
             background: linear-gradient(to bottom right, #40e0d0, #00cda0);
             border-radius: 12px;
@@ -127,7 +129,9 @@
         <a href="ListenerHomepage.html">首页</a>
         <a href="History.html" class="active">历史演讲</a>
         <a href="PersonInfo.html">个人信息</a>
+
         <a href="ListenerFavor.html">我的收藏</a>
+
     </nav>
 </header>
 
@@ -151,6 +155,7 @@
         .catch(error => console.error('Error fetching speeches:', error));
 
     function renderSpeechCard(speech) {
+
         const container = document.getElementById('speechCardsContainer');
         const card = document.createElement('div');
         card.className = 'card';
@@ -179,11 +184,13 @@
         });
     }
 
+
     function view(speechID) {
         //const listenerID = 123;  // 假设 listenerID 是已知的，替换为实际的值
         const url = `ListenerHistoryQuestion.html?SpeechID=${speechID}&ListenerID=${listenerID}`;
         window.location.href = url;  // 跳转到目标页面，并传递参数
     }
+
 
 
 
@@ -194,6 +201,7 @@
         // 添加更多演讲数据...
     ];
     render(list);
+
 </script>
 </body>
 </html>

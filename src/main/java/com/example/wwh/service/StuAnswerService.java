@@ -17,6 +17,10 @@ public class StuAnswerService {
         return stuanswersMapper.findAnswerByListenerAndQuestion(listenerID, questionID);
     }
 
+    public void addStuAnswer(Stuanswers stuanswers){
+        stuanswersMapper.addstuAnswer(stuanswers);
+    }
+
 
 
 }

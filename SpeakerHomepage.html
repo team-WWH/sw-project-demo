@@ -147,24 +147,7 @@
     gap: 12px;
 }
 
-.btn {
-    padding: 8px 20px;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-}
 
-.btn-primary {
-    background-color: #1890ff;
-    color: white;
-    border: none;
-}
-
-.btn-secondary {
-    background-color: #f7f7f7f7;
-    color: #666;
-    border: 1px solid #ddd;
-}
         .create-speech-link {
     color: #1890ff; /* 链接颜色 */
     text-decoration: none; /* 去除下划线 */
@@ -209,14 +192,19 @@
             <h3>创建演讲</h3>
         </div>
         <div class="modal-body">
-            <form id="createSpeechForm">
-                <div class="form-group">
-                    <label for="speechName">演讲名称 <span class="required">*</span></label>
-                    <input type="text" id="speechName" maxlength="28" required>
-                    <small>必填，最多28个字</small>
-                </div>
-            </form>
+    <form id="createSpeechForm">
+        <div class="form-group">
+            <label for="speechName">演讲名称 <span class="required">*</span></label>
+            <input type="text" id="speechName" maxlength="28" required>
+            <small>必填，最多28个字</small>
         </div>
+        <div class="form-group">
+            <label for="speechFile">上传文件</label>
+            <input type="file" id="speechFile">
+            <small>可选，支持上传文件</small>
+        </div>
+    </form>
+</div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" onclick="closeCreateSpeechModal()">取消</button>
             <button type="button" class="btn btn-primary" onclick="createSpeech()">确认</button>
@@ -230,8 +218,7 @@
 </div>
 
 <script>
-
-    function addSpeech() {
+function addSpeech() {
     document.getElementById('createSpeechModal').style.display = 'block';
 }
 
@@ -242,6 +229,9 @@ function closeCreateSpeechModal() {
 
 function createSpeech() {
     const name = document.getElementById('speechName').value.trim();
+    const fileInput = document.getElementById('speechFile');
+    const file = fileInput.files[0];
+
     if (!name) {
         alert('请输入演讲名称');
         return;
@@ -255,12 +245,31 @@ function createSpeech() {
         // 其他属性...
     };
 
-    // 将新演讲添加到列表中
-    list.push(newSpeech);
-    render(list);
+    if (file) {
+        // 上传文件到后端接口
+        const formData = new FormData();
+        formData.append('file', file);
 
-    // 关闭模态弹窗
-    closeCreateSpeechModal();
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            newSpeech.filePath = data.filePath; // 保存文件路径
+            list.push(newSpeech);
+            render(list);
+            closeCreateSpeechModal();
+        })
+        .catch(err => {
+            console.error('文件上传失败:', err);
+            alert('文件上传失败');
+        });
+    } else {
+        list.push(newSpeech);
+        render(list);
+        closeCreateSpeechModal();
+    }
 }
 
 function generateInviteCode() {
@@ -272,30 +281,30 @@ function generateInviteCode() {
     return code;
 }
 
-
 function renderSpeechCard(speech) {
     const container = document.getElementById('speechCardsContainer');
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-        <div class="card-header">
+        <div class="card-header" >
             <div class="card-name">${speech.name}</div>
         </div>
-        <div class="card-body">
-            <div class="card-info">
-                <div class="card-invite-code">${speech.inviteCode}</div>
-                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')">☇</button>
+        <div class="card-body" style="margin-top:30px">
+            <div class="card-info" >
+                <div class="card-invite-code"  style="">${speech.inviteCode}</div>
+                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
+            border-radius: 2px;">☇</button>
             </div>
         </div>
         <div class="card-footer">
-            <button class="btn btn-primary card-btn" onclick="window.location.href='SelectSpeak.html'">上课</button>
-            <button class="btn btn-danger card-btn" onclick="deleteSpeech(${speech.id})">删除</button>
+            <button class="btn btn-primary card-btn" onclick="startSpeech(${speech.id})" style="height:30px">上课</button>
+            <button class="btn btn-danger card-btn" onclick="deleteSpeech(${speech.id})" style="height:30px">删除</button>
         </div>
     `;
     container.appendChild(card);
 }
 
-function render(data){
+function render(data) {
     const container = document.getElementById('speechCardsContainer');
     container.innerHTML = '';
     data.forEach(speech => {
@@ -319,6 +328,36 @@ function deleteSpeech(id) {
         // 重新渲染列表
         render(list.filter(speech => speech.id !== id));
     }
+}
+
+function startSpeech(id) {
+    const speech = list.find(speech => speech.id === id);
+    if (!speech) {
+        alert('演讲未找到');
+        return;
+    }
+
+    // 如果有文件路径，传递到 SpeakDetail 页面
+    let queryParams = `?name=${encodeURIComponent(speech.name)}`;
+    if (speech.filePath) {
+        queryParams += `&filePath=${encodeURIComponent(speech.filePath)}`;
+    }
+
+    window.location.href = `SpeakDetail.html${queryParams}`;
+}
+
+function saveFile(file, filePath) {
+    // 如果是前端实现，可以使用 FileReader 或其他方法
+    // 如果需要后端支持，可以使用 AJAX 上传文件
+    console.log('文件保存到:', filePath);
+    // 示例：使用 FileReader 读取文件内容
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const fileContent = event.target.result;
+        console.log('文件内容:', fileContent);
+        // 这里可以将文件内容保存到本地存储或其他地方
+    };
+    reader.readAsText(file);
 }
 
 const list = [

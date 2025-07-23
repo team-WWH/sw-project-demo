@@ -67,6 +67,7 @@
             font-size: 12px;
             color: #888;
         }
+
         .chat-container {
             max-width: 600px;
             margin: 0 auto;
@@ -131,6 +132,7 @@
         .input-group input {
             width: 85%;
         }
+
     </style>
 </head>
 <body>
@@ -148,7 +150,9 @@
 <!-- 顶部导航 -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
+
         <span class="navbar-brand mb-0 h1">演讲练习</span>
+
     </div>
 </nav>
 
@@ -176,6 +180,7 @@
                 <!-- 已结束的题目将被 JS 渲染到这里 -->
             </div>
         </div>
+
 
 <!--        &lt;!&ndash; 评论区 &ndash;&gt;-->
 <!--        <div class="col-md-4">-->
@@ -213,6 +218,7 @@
             </div>
         </div>
 
+
     </div>
 </div>
 
@@ -246,6 +252,7 @@
             updatedOngoingQuestions.push(question);
         }
     });
+
 
     // 合并已结束的题目
     updatedFinishedQuestions.push(...finishedQuestions);
@@ -466,15 +473,15 @@
         .then(data => renderQuestions(data, 'ongoingQuestions'))  // 渲染进行中的题目
         .catch(error => console.error('Error fetching ongoing questions:', error));
 
-    // 获取已结束的题目
-    fetch(`http://localhost:8081/api/questions/listener/getfinishedQuestions?speechID=${speechID}&listenerID=${listenerID}`)
-        .then(response => response.json())
-        .then(data => renderQuestions(data, 'finishedQuestions'))  // 渲染已结束的题目
-        .catch(error => console.error('Error fetching finished questions:', error));
+
+    // 合并已结束的题目
+    updatedFinishedQuestions.push(...finishedQuestions);
 
     // 渲染题目的函数
+
     // 渲染题目列表
     function renderQuestions(questions, containerId) {
+
         const container = document.getElementById(containerId);
         container.innerHTML = '';
 
@@ -482,6 +489,7 @@
             const card = document.createElement('div');
             card.className = 'card question-card';
             card.innerHTML = `
+
             <div class="card-body">
                 <p class="card-text">${question.questioncontent}</p>
                 <button class="btn btn-primary btn-sm">进入</button>
@@ -492,13 +500,24 @@
         `;
             console.log(question);
 
+
             // 动态绑定事件
             const btn = card.querySelector('button');
-            btn.addEventListener('click', () => saveQuestionAndRedirect(question));
+            btn.addEventListener('click', () => {
+                // 将 question 对象存储到 sessionStorage 中
+                sessionStorage.setItem('questionData', JSON.stringify(question));
+                // 根据题目状态跳转到不同的页面
+                if (isOngoing) {
+                    window.location.href = `QuestionDetail.html?listenerID=${listenerID}`;  // 跳转到进行中的题目详情页
+                } else {
+                    window.location.href = `EndQuestionDetail.html?listenerID=${listenerID}`;  // 跳转到已结束的题目详情页
+                }
+            });
 
             container.appendChild(card);
         });
     }
+
 
     // 保存数据到 sessionStorage 并跳转到不同页面
     function saveQuestionAndRedirect(question) {
@@ -564,6 +583,25 @@
 
 
 
+    // 提交评论
+    document.getElementById('commentForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const commentInput = document.getElementById('commentInput');
+        const commentContent = commentInput.value.trim();
+        if (commentContent) {
+            const comment = {
+                author: '用户', // 这里可以根据实际情况获取用户信息
+                date: new Date().toLocaleString(),
+                content: commentContent
+            };
+            comments.push(comment);
+            commentInput.value = '';
+            loadComments();
+        }
+    });
+
+    // 初始加载评论
+    loadComments();
 </script>
 </body>
 </html>

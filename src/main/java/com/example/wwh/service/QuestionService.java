@@ -56,6 +56,7 @@ public class QuestionService {
     }
 
 
+
     //获取演讲的进行中的题目
     public List<Question> getSpeechOnQuestions(int speechID) {
         return questionMapper.findQuestionsBySpeechAndListener4(speechID);
@@ -69,5 +70,17 @@ public class QuestionService {
     // 插入评论
     public void addComment(int listenerID, int questionID, String comcontent) {
         questionMapper.insertComment(listenerID, questionID, comcontent);
+
+    public void addQuestion(Question question){
+        questionMapper.addquestion(question);
+    }
+
+    public List<Question> getAllQuestionStatus1(Integer SpeechID){
+        return questionMapper.getOningQuestionBySpeechID(SpeechID);
+    }
+
+    public void addqueconspe(Integer SpeechID,Integer QuestionID){
+        questionMapper.addqueconspe(SpeechID,QuestionID);
+
     }
 }

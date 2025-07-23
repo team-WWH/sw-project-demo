@@ -51,6 +51,7 @@
         <a href="ListenerHomepage.html">首页</a>
         <a href="History.html">历史演讲</a>
         <a href="PersonInfo.html" class="active">个人信息</a>
+         <a href="ListenerFavor.html">我的收藏</a>
     </nav>
 </header>
 <!-- 主卡片 -->
@@ -71,38 +72,11 @@
             <label><input type="radio" name="gender" value="男"> 男</label>
             <label style="margin-left:15px"><input type="radio" name="gender" value="女" checked> 女</label>
         </div>
-        <div class="form-item">
-            <label>密码：</label>
-            <button class="btn btn-primary" onclick="openModal()">修改密码</button>
-        </div>
-
-        <!-- 头像上传 -->
-        <div class="form-item" style="align-items:flex-start">
-            <label>头像：</label>
-            <div class="avatar-uploader" onclick="document.getElementById('avatarInput').click()">
-                <img id="avatarImg" src="" style="display:none">
-                <div class="icon">+</div>
-            </div>
-            <input id="avatarInput" type="file" accept="image/*" style="display:none" onchange="previewAvatar(this)">
-        </div>
-
-        <div class="form-item">
-            <button class="btn btn-primary" onclick="alert('保存成功')">保存</button>
-        </div>
+      
     </div>
 </div>
 
-<!-- 快捷入口 -->
-<div class="mini-cards">
-    <div class="mini-card" onclick="location.href='exam-record.html'">
-        <div class="icon">📄</div>
-        <div>考试记录</div>
-    </div>
-    <div class="mini-card" onclick="location.href='wrong-book.html'">
-        <div class="icon">📓</div>
-        <div>错题本</div>
-    </div>
-</div>
+
 
 <!-- 修改密码弹窗 -->
 <div class="modal" id="pwdModal">
