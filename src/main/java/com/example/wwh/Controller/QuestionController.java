@@ -63,7 +63,7 @@ public class QuestionController {
     private MinioService minioService;
     @Autowired
     private StuAnswerService stuAnswerService;
-
+    //调用ai生成题目
     @GetMapping("/generate")
     public ResponseEntity<?> generateQuestions(Integer currentNumber, String title, Integer SpeakerID, String type,Integer SpeechID) {
         String name = title + SpeakerID + '.' + type;
@@ -148,6 +148,7 @@ public class QuestionController {
                     .body("处理失败: " + e.getMessage());
         }
     }
+    //获得现在的刚刚发布的题目
     @GetMapping("api/getnowquestion")
     public ResponseEntity<String> getnowQuestion(Integer SpeechID,Integer ListenerID){
         List<Question>  questions =  questionService.getAllQuestionStatus1(SpeechID);
@@ -168,7 +169,7 @@ public class QuestionController {
 //                i = 4;
 //            }
             stuanswers.setSanscontent("0");
-            stuanswers.setState(-1);
+            stuanswers.setState(0);
             stuanswersList.add(stuanswers);
         }
         Random random = new Random();
