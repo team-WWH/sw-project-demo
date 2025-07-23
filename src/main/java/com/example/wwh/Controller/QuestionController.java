@@ -167,7 +167,7 @@ public class QuestionController {
 //            }else if(question.getAnswer()=="D"){
 //                i = 4;
 //            }
-            stuanswers.setSanscontent(0);
+            stuanswers.setSanscontent("0");
             stuanswers.setState(-1);
             stuanswersList.add(stuanswers);
         }
