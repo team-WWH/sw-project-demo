@@ -17,4 +17,6 @@ public interface StuAnswerMapper {
     @Insert("INSERT INTO stuanswers (Sanscontent,QuestionID,State,QS,ListenerID) VALUES (0,#{QuestionID},#{State},#{QS},#{ListenerID})")
     void addstuAnswer(Stuanswers stuanswers);
 
+    @Select("SELECT * FROM stuanswers WHERE QuestionID = #{QuestionID} AND QS != 0 ")
+    List<Stuanswers> getStuanswerByQuestionID(Integer QuestionID);
 }

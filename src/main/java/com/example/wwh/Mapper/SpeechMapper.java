@@ -1,4 +1,5 @@
 package com.example.wwh.Mapper;
+import com.example.wwh.pojo.Listener;
 import com.example.wwh.pojo.Speech;
 import org.apache.ibatis.annotations.*;
 
@@ -34,6 +35,12 @@ public interface SpeechMapper {
         @Select("SELECT ListenerID FROM lisconspe WHERE SpeechID = #{speechID}")
         List<Integer> findListenerBySpeechID(Integer speechID);
 
+        @Select("SELECT l.ListenerID,l.Uname,l.Mail,l.Phone,l.Anonymous,l.Sex" +
+                " FROM Listener l " +
+                "JOIN lisconspe lc ON l.ListenerID = lc.ListenerID " +
+                "WHERE lc.SpeechID = #{speechID} ")
+        List<Listener> findAllListenerBySpeechID(Integer speechID);
+
         @Select("SELECT SpeechID FROM lisconspe WHERE ListenerID = #{ListenerID}")
         List<Integer> getSpeechidByListenerID(Integer ListenerID);
 
@@ -50,5 +57,8 @@ public interface SpeechMapper {
 
         @Update("UPDATE speech SET Sstatus = 0   WHERE SpeechID = #{SpeechID}")
         void updateEndStatus(Integer SpeechID);
+
+        @Select("SELECT QuestionID FROM queconspe WHERE SpeechID = #{SpeechID}")
+        List<Integer> getAllQuestionIDBySpeechID(Integer SpeechID);
 }
 

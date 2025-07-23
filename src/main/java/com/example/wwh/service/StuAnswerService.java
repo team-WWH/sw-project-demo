@@ -5,6 +5,8 @@ import com.example.wwh.pojo.Stuanswers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StuAnswerService {
     @Autowired
@@ -20,6 +22,11 @@ public class StuAnswerService {
     public void addStuAnswer(Stuanswers stuanswers){
         stuanswersMapper.addstuAnswer(stuanswers);
     }
+
+    public List<Stuanswers> getStuanswerByQuestionID(Integer QuestionID){
+        return stuanswersMapper.getStuanswerByQuestionID(QuestionID);
+    }
+
 
 
 

@@ -152,5 +152,13 @@ public class SpeechService {
     private String buildJoinCodeKey(String code) {
         return "join_code:" + code;
     }
+
+    public  List<Integer> getAllQuestionIDBySpeechID(Integer SpeechID){
+       return  speechMapper.getAllQuestionIDBySpeechID(SpeechID);
+    }
+
+    public List<Listener> getAllListenerBySpeechID(Integer SpeechID){
+        return speechMapper.findAllListenerBySpeechID(SpeechID);
+    }
 }
 
