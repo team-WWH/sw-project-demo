@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"/>
-  <title>我的收藏</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+    <meta charset="UTF-8"/>
+    <title>我的收藏</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
         body{background:#f5f5f5;color:#333}
         header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
         header .brand{font-size:18px;font-weight:bold;margin-right:40px}
@@ -23,129 +23,131 @@
         table{width:100%;border-collapse:collapse;font-size:14px}
         th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
         th{background:#fafafa}
-    .fav-list{max-width:800px;margin:auto;}
-    .fav-item{display:flex;align-items:center;padding:.75rem 1rem;
-              margin-bottom:.5rem;background:#fff;border-radius:.375rem;
-              box-shadow:0 1px 2px rgba(0,0,0,.05)}
-    .fav-item .stem{flex:1;margin:0 1rem;font-size:.95rem;}
-    .fav-item .btn-del{font-size:.85rem;padding:.25rem .5rem}
-  </style>
+        .fav-list{max-width:800px;margin:auto;}
+        .fav-item{display:flex;align-items:center;padding:.75rem 1rem;
+            margin-bottom:.5rem;background:#fff;border-radius:.375rem;
+            box-shadow:0 1px 2px rgba(0,0,0,.05)}
+        .fav-item .stem{flex:1;margin:0 1rem;font-size:.95rem;}
+        .fav-item .btn-del{font-size:.85rem;padding:.25rem .5rem}
+    </style>
 </head>
 <body>
-    <!-- 顶部主导航 -->
+<!-- 顶部主导航 -->
 <header>
     <div class="brand">泰拉演讲团</div>
     <nav>
         <a href="ListenerHomepage.html">首页</a>
         <a href="History.html">历史演讲</a>
         <a href="PersonInfo.html" >个人信息</a>
-         <a href="ListenerFavor.html">我的收藏</a>
+
+        <a href="ListenerFavor.html">我的收藏</a>
+
     </nav>
 </header>
 <nav class="navbar navbar-light bg-white shadow-sm ">
-  <div class="container-fluid">
-    <span class="navbar-brand mb-0 h5">收藏</span>
-    <button class="btn btn-outline-danger btn-sm" onclick="clearAll()">
-      <i class="fas fa-trash-alt"></i> 清空
-    </button>
-  </div>
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h5">收藏</span>
+        <button class="btn btn-outline-danger btn-sm" onclick="clearAll()">
+            <i class="fas fa-trash-alt"></i> 清空
+        </button>
+    </div>
 </nav>
 
 <div class="container fav-list" id="favList">
-  <!-- 动态生成 -->
+    <!-- 动态生成 -->
 </div>
 
 <script>
-/* 题库（与练习页保持一致） */
-const questions = [
-  {
-    stem:`年度热词,大事小情,不仅反映国家大事、时代主旋律,还有对老百姓日常生活的深切____,展现了过去一年的社会变迁和生活万象。而透过“内卷”“躺平”“鸡娃”“双减”“干饭人”等热词,我们还可____当下独特的社会景观。`,
-    options:[
-      'A. 描绘 切合 感触 了解',
-      'B. 体现 把握 体验 感受',
-      'C. 勾勒 蕴含 体察 窥见',
-      'D. 叙写 贴近 关怀 透视'
-    ],
-    answer:2  , // C
-     classRate:'62.3%' 
-  },
-  {
-    stem:`算法歧视是以算法为手段实施的歧视，主要指在大数据背景下、依靠机器计算的自动决策系统在对数据主体做出决策分析时，由于数据和算法本身不具有中立性或者隐含错误、被人为操控等原因，对数据主体进行差别对待，造成歧视性后果。根据上述定义，下列属于算法歧视的是：`,
-    options:[
-      'A. 某平台根据性别推荐不同职位',
-      'B. 某 App 根据用户历史推荐新闻',
-      'C. 某医院按病情严重程度排队',
-      'D. 某银行随机抽选客户赠礼'
-    ],
-    answer:0 , // A
-    classRate:'45.7%' 
-  },
-  {
-    stem:`公民、法人或者其他组织认为行政机关的具体行政行为所依据的规定不合法，在对具体行政行为申请行政复议时，可以一并向行政复议机关提出对（ ）的审查申请。`,
-    options:[
-    'A. 国务院部门的规定',
-    'B. 国务院的规定',
-    'C. 国务院部门规章',
-    'D. 地方人民政府规章'
-  ],
-    answer:0,  // A
-    classRate:'78.9%'
-  },
-  {
-    stem:`短期来看，日趋激烈的竞争必将导致相应区域的主题公园________ ；而从中长期来看， ________了国内外主题公园精粹的集群区域将更有助于吸引来自国内外的增量游客，这对身处其中的本土主题公园而言，将是难得的机遇。`,
-    options:[
-    'A. 此消彼长 会聚',
-    'B. 弱肉强食 荟萃',
-    'C. 优胜劣汰 聚集',
-    'D. 物竞天择 融汇'
-    ],
-    answer:2 , // C
-     classRate:'53.1%'
-  }
-];
+    /* 题库（与练习页保持一致） */
+    const questions = [
+        {
+            stem:`年度热词,大事小情,不仅反映国家大事、时代主旋律,还有对老百姓日常生活的深切____,展现了过去一年的社会变迁和生活万象。而透过“内卷”“躺平”“鸡娃”“双减”“干饭人”等热词,我们还可____当下独特的社会景观。`,
+            options:[
+                'A. 描绘 切合 感触 了解',
+                'B. 体现 把握 体验 感受',
+                'C. 勾勒 蕴含 体察 窥见',
+                'D. 叙写 贴近 关怀 透视'
+            ],
+            answer:2  , // C
+            classRate:'62.3%'
+        },
+        {
+            stem:`算法歧视是以算法为手段实施的歧视，主要指在大数据背景下、依靠机器计算的自动决策系统在对数据主体做出决策分析时，由于数据和算法本身不具有中立性或者隐含错误、被人为操控等原因，对数据主体进行差别对待，造成歧视性后果。根据上述定义，下列属于算法歧视的是：`,
+            options:[
+                'A. 某平台根据性别推荐不同职位',
+                'B. 某 App 根据用户历史推荐新闻',
+                'C. 某医院按病情严重程度排队',
+                'D. 某银行随机抽选客户赠礼'
+            ],
+            answer:0 , // A
+            classRate:'45.7%'
+        },
+        {
+            stem:`公民、法人或者其他组织认为行政机关的具体行政行为所依据的规定不合法，在对具体行政行为申请行政复议时，可以一并向行政复议机关提出对（ ）的审查申请。`,
+            options:[
+                'A. 国务院部门的规定',
+                'B. 国务院的规定',
+                'C. 国务院部门规章',
+                'D. 地方人民政府规章'
+            ],
+            answer:0,  // A
+            classRate:'78.9%'
+        },
+        {
+            stem:`短期来看，日趋激烈的竞争必将导致相应区域的主题公园________ ；而从中长期来看， ________了国内外主题公园精粹的集群区域将更有助于吸引来自国内外的增量游客，这对身处其中的本土主题公园而言，将是难得的机遇。`,
+            options:[
+                'A. 此消彼长 会聚',
+                'B. 弱肉强食 荟萃',
+                'C. 优胜劣汰 聚集',
+                'D. 物竞天择 融汇'
+            ],
+            answer:2 , // C
+            classRate:'53.1%'
+        }
+    ];
 
-function renderFav(){
-  const wrap=document.getElementById('favList');
-  wrap.innerHTML='';
-  let hasFav=false;
+    function renderFav(){
+        const wrap=document.getElementById('favList');
+        wrap.innerHTML='';
+        let hasFav=false;
 
-  for(let i=0;i<questions.length;i++){
-    if(localStorage.getItem(`fav-${i}`)==='1'){
-      hasFav=true;
-      const div=document.createElement('div');
-      div.className='fav-item';
-      div.innerHTML=`
+        for(let i=0;i<questions.length;i++){
+            if(localStorage.getItem(`fav-${i}`)==='1'){
+                hasFav=true;
+                const div=document.createElement('div');
+                div.className='fav-item';
+                div.innerHTML=`
         <span class="badge bg-primary">第 ${i+1} 题</span>
         <div class="stem text-truncate">${questions[i].stem}</div>
         <a class="btn btn-sm btn-outline-primary" href="QuestionDetail.html?id=${i+1}">查看</a>
         <button class="btn btn-del btn-outline-secondary" onclick="removeFav(${i},this)">
           <i class="fas fa-times"></i>
         </button>`;
-      wrap.appendChild(div);
+                wrap.appendChild(div);
+            }
+        }
+        if(!hasFav){
+            wrap.innerHTML='<div class="text-center text-muted mt-5">暂无收藏</div>';
+        }
     }
-  }
-  if(!hasFav){
-    wrap.innerHTML='<div class="text-center text-muted mt-5">暂无收藏</div>';
-  }
-}
 
-/* 取消收藏（从列表里移除） */
-function removeFav(idx,btn){
-  localStorage.removeItem(`fav-${idx}`);
-  btn.closest('.fav-item').remove();
-  if(!document.querySelector('.fav-item')) renderFav(); // 列表空了
-}
+    /* 取消收藏（从列表里移除） */
+    function removeFav(idx,btn){
+        localStorage.removeItem(`fav-${idx}`);
+        btn.closest('.fav-item').remove();
+        if(!document.querySelector('.fav-item')) renderFav(); // 列表空了
+    }
 
-/* 清空全部收藏 */
-function clearAll(){
-  if(!confirm('确定要清空所有收藏吗？')) return;
-  for(let i=0;i<questions.length;i++){
-    localStorage.removeItem(`fav-${i}`);
-  }
-  renderFav();
-}
+    /* 清空全部收藏 */
+    function clearAll(){
+        if(!confirm('确定要清空所有收藏吗？')) return;
+        for(let i=0;i<questions.length;i++){
+            localStorage.removeItem(`fav-${i}`);
+        }
+        renderFav();
+    }
 
-renderFav();
+    renderFav();
 </script>
 </body>
 </html>

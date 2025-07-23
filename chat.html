@@ -8,529 +8,283 @@
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --danger: #e63946;
-            --light: #f8f9fa;
-            --dark: #212529;
-        }
-
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f5 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             padding: 20px;
+            background-color: #f4f4f4;
         }
-
         .chat-container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-
         .chat-header {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+            background-color: #007bff;
             color: white;
-            padding: 25px;
+            padding: 15px;
             text-align: center;
+            border-radius: 8px 8px 0 0;
         }
-
-        .status-area {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 15px;
-            border-radius: 50px;
-            max-width: 400px;
-            margin: 20px auto 0;
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            margin-right: 12px;
-        }
-
-        .status-connecting { background-color: #f59e0b; animation: pulse 1.5s infinite; }
-        .status-connected { background-color: #10b981; }
-        .status-disconnected { background-color: var(--danger); }
-
-        @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
-
-        .chat-content {
-            padding: 25px;
-        }
-
         .chat-messages {
-            height: 400px;
+            padding: 20px;
+            height: 300px;
             overflow-y: auto;
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
+            border-top: 1px solid #e9ecef;
+            border-bottom: 1px solid #e9ecef;
             background-color: #f8f9fa;
         }
-
-        .message {
-            margin-bottom: 15px;
-            max-width: 80%;
-            clear: both;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .message-sender {
+            font-weight: normal;  /* 去除粗体 */
+            font-size: 12px;  /* 设置较小的字体 */
+            color: #666666;  /* 设置更浅的颜色 */
+            margin-bottom: 5px;  /* 确保用户名与消息内容有间距 */
+            text-align: left;
         }
 
         .message-sent {
-            background-color: var(--primary);
+            background-color: #28a745;
             color: white;
-            border-radius: 18px 18px 0 18px;
-            float: right;
+            text-align: right;
+            margin-left: 50px; /* 调整右侧消息的位置 */
         }
 
         .message-received {
-            background-color: #e9ecef;
-            color: var(--dark);
-            border-radius: 18px 18px 18px 0;
-            float: left;
+            background-color: #f1f1f1;
+            color: #333;
+            text-align: left;
+            margin-right: 50px; /* 调整左侧消息的位置 */
         }
 
-        .message-content {
-            padding: 12px 16px;
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            max-width: 100%;
+            word-wrap: break-word;
         }
 
-        .message-meta {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-
-        .system-message {
-            text-align: center;
-            color: #6c757d;
-            margin: 10px 0;
-            font-size: 0.9rem;
+        .message-text {
+            font-size: 14px;
         }
 
         .input-area {
-            background-color: white;
-            padding: 20px;
-            border-top: 1px solid #e9ecef;
-        }
-
-        .connection-info {
-            background-color: #e6f7ff;
             padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--primary);
+            background-color: #fff;
+            border-radius: 0 0 8px 8px;
         }
-
-        .info-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--primary);
+        .input-group input {
+            width: 85%;
         }
-
-        .btn-send {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            transition: all 0.3s ease;
-        }
-
-        .btn-send:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
-        }
-
-        .timestamp {
-            font-size: 0.75rem;
-            text-align: right;
-            margin-top: 3px;
-            color: #6c757d;
-        }
-
-        .log-box {
-            height: 200px;
-            overflow-y: auto;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            background-color: #f8f9fa;
-            font-family: monospace;
-            font-size: 0.9rem;
-        }
-
-        .log-entry {
-            margin-bottom: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed #e9ecef;
-        }
-
-        .log-info { color: var(--primary); }
-        .log-success { color: #10b981; }
-        .log-error { color: var(--danger); }
     </style>
 </head>
 <body>
 <div class="chat-container">
     <div class="chat-header">
-        <h1><i class="bi bi-chat-dots"></i> STOMP WebSocket 聊天室</h1>
-        <p class="lead">基于STOMP协议的实时通信解决方案</p>
-        <div class="status-area">
-            <span class="status-indicator" id="statusIndicator"></span>
-            <span id="connectionStatus">正在初始化连接...</span>
-        </div>
+        <h2>聊天室</h2>
     </div>
 
-    <div class="chat-content">
-        <div class="connection-info">
-            <div class="info-title">连接信息</div>
-            <div><strong>端点URL:</strong> <span id="endpointUrlDisplay">http://localhost:8081/listener/tofeedback</span></div>
-            <div><strong>发送路径:</strong> /app/chat</div>
-            <div><strong>订阅路径:</strong> /topic/chat</div>
-            <div><strong>STOMP版本:</strong> <span id="stompVersion">2.3.3</span></div>
-        </div>
+    <div class="chat-messages" id="messages">
+        <div class="message">系统初始化中...</div>
+    </div>
 
-        <div class="chat-messages" id="messages">
-            <div class="system-message">系统初始化中...</div>
-        </div>
-
-        <div class="input-area">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="listenerId" class="form-label">Listener ID</label>
-                    <input type="number" class="form-control" id="listenerId" value="1">
-                </div>
-                <div class="col-md-6">
-                    <label for="speechId" class="form-label">Speech ID</label>
-                    <input type="number" class="form-control" id="speechId" value="1">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <input type="text" class="form-control" id="messageInput" placeholder="输入您的消息..." autocomplete="off">
-                <button class="btn btn-send" type="button" id="sendButton">
-                    发送 <i class="bi bi-send"></i>
-                </button>
-            </div>
-
-            <div class="d-flex justify-content-center mt-3">
-                <button class="btn btn-outline-primary me-2" id="connectButton">连接</button>
-                <button class="btn btn-outline-danger me-2" id="disconnectButton" disabled>断开</button>
-                <button class="btn btn-outline-success" id="testButton">测试连接</button>
-            </div>
-        </div>
-
-        <div class="mt-4">
-            <h5>连接日志</h5>
-            <div id="log" class="log-box"></div>
-            <div class="d-flex justify-content-end mt-2">
-                <button class="btn btn-sm btn-outline-secondary" id="clearLogButton">清空日志</button>
-            </div>
+    <div class="input-area">
+        <div class="input-group">
+            <input type="text" class="form-control" id="messageInput" placeholder="输入消息..." autocomplete="off">
+            <button class="btn btn-primary" type="button" id="sendButton">发送</button>
         </div>
     </div>
 </div>
 
 <script>
-    // DOM元素
     const messagesContainer = document.getElementById('messages');
     const messageInput = document.getElementById('messageInput');
     const sendButton = document.getElementById('sendButton');
-    const statusIndicator = document.getElementById('statusIndicator');
-    const connectionStatus = document.getElementById('connectionStatus');
-    const listenerIdInput = document.getElementById('listenerId');
-    const speechIdInput = document.getElementById('speechId');
-    const connectButton = document.getElementById('connectButton');
-    const disconnectButton = document.getElementById('disconnectButton');
-    const testButton = document.getElementById('testButton');
-    const clearLogButton = document.getElementById('clearLogButton');
-    const logBox = document.getElementById('log');
-    const endpointUrlDisplay = document.getElementById('endpointUrlDisplay');
-    const stompVersion = document.getElementById('stompVersion');
 
-    // 全局变量
     let stompClient = null;
     let connected = false;
-    let reconnectAttempts = 0;
-    const maxReconnectAttempts = 5;
+
+    // 获取当前页面的 URL
+    const urlParams = new URLSearchParams(window.location.search);
+    //session
+    //const storedListenerInfo = JSON.parse(localStorage.getItem("listenerInfo"));
+
+    // 获取 URL 中的 ListenerID 和 SpeechID 参数
+    const listenerID = urlParams.get('ListenerID');
+    const speechID = urlParams.get('SpeechID');
+
     const endpointUrl = 'http://localhost:8081/listener/tofeedback';
-    endpointUrlDisplay.textContent = endpointUrl;
 
-    // 添加日志
-    function addLog(message, level = 'info') {
-        const timestamp = new Date().toLocaleTimeString();
-        const entry = document.createElement('div');
-        entry.className = `log-entry log-${level}`;
-        entry.textContent = `[${timestamp}] ${message}`;
-        logBox.appendChild(entry);
-        logBox.scrollTop = logBox.scrollHeight;
-    }
-
-    // 更新连接状态
-    function updateStatus(status, text) {
-        statusIndicator.className = 'status-indicator ' + status;
-        connectionStatus.textContent = text;
-    }
-
-    // 显示系统消息
-    function displaySystemMessage(text) {
-        const messageElement = document.createElement('div');
-        messageElement.className = 'system-message';
-        messageElement.textContent = text;
-        messagesContainer.appendChild(messageElement);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-
-    // 显示聊天消息
+    // function displayMessage(message, isSent) {
+    //     const messageDiv = document.createElement('div');
+    //     messageDiv.className = `message ${isSent ? 'message-sent' : 'message-received'}`;
+    //     messageDiv.textContent = message;
+    //     messagesContainer.appendChild(messageDiv);
+    //     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    // }
     function displayMessage(message, isSent) {
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${isSent ? 'message-sent' : 'message-received'}`;
 
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'message-content';
-        contentDiv.textContent = message.fcontent;
+        // 根据消息的 listenerID 与当前 listenerID 比较，决定消息显示在左侧还是右侧
+        const currentListenerID = parseInt(listenerID); // 假设当前用户的 listenerID 是通过 URL 获取的
 
-        const metaDiv = document.createElement('div');
-        metaDiv.className = 'message-meta';
-        metaDiv.innerHTML = `
-                <div><strong>${isSent ? '您' : '用户' + message.listenerID}</strong></div>
-                <div>ListenerID: ${message.listenerID}, SpeechID: ${message.speechID}</div>
-            `;
+        if (parseInt(message.listenerID) === currentListenerID) {
+            // 当前用户的消息，显示在右侧
+            messageDiv.className = 'message message-sent';
+        } else {
+            // 其他用户的消息，显示在左侧
+            messageDiv.className = 'message message-received';
+        }
 
-        const timestampDiv = document.createElement('div');
-        timestampDiv.className = 'timestamp';
-        const date = new Date(message.timestamp || new Date());
-        timestampDiv.textContent = date.toLocaleTimeString();
+        // 判断消息是否是状态消息
+        if (typeof message === 'string') {
+            // 如果是字符串消息，创建一个简化的消息对象
+            const statusMessage = {
+                listenerID: null, // 状态消息没有实际的 listenerID
+                speechID: null,   // 状态消息没有实际的 speechID
+                fcontent: message // 纯文本内容
+            };
 
-        messageDiv.appendChild(contentDiv);
-        messageDiv.appendChild(metaDiv);
-        messageDiv.appendChild(timestampDiv);
+            // 直接显示状态消息
+            const messageContent = document.createElement('div');
+            const messageTextDiv = document.createElement('span');
+            messageTextDiv.className = 'message-text';
+            messageTextDiv.textContent = statusMessage.fcontent;
 
-        messagesContainer.appendChild(messageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            messageContent.appendChild(messageTextDiv);
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } else {
+            // 处理正常的消息
+            fetch(`http://localhost:8081/users/listener/${message.listenerID}`)
+                .then(response => response.json())
+                .then(listenerInfo => {
+                    const messageContent = document.createElement('div');
+
+                    // 创建显示用户名的部分
+                    const senderNameDiv = document.createElement('div');
+                    senderNameDiv.className = 'message-sender';
+                    senderNameDiv.textContent = listenerInfo.anonymous ? "匿名" : listenerInfo.uname;
+
+                    // 创建显示消息内容的部分
+                    const messageTextDiv = document.createElement('span');
+                    messageTextDiv.className = 'message-text';
+                    messageTextDiv.textContent = message.fcontent;
+
+                    // 将用户名部分放到消息的顶部
+                    messageDiv.appendChild(senderNameDiv);
+                    messageContent.appendChild(messageTextDiv);
+                    messageDiv.appendChild(messageContent);
+                    messagesContainer.appendChild(messageDiv);
+
+                    // 滚动到底部显示最新的消息
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('获取用户信息失败', err);
+                    const messageContent = document.createElement('div');
+                    const messageTextDiv = document.createElement('span');
+                    messageTextDiv.className = 'message-text';
+                    messageTextDiv.textContent = message.fcontent;
+                    messageContent.appendChild(messageTextDiv);
+                    messageDiv.appendChild(messageContent);
+                    messagesContainer.appendChild(messageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
     }
 
-    // 连接到WebSocket
+
+
+
+
+
+    // 加载历史消息
+    function loadHistory() {
+        fetch(`http://localhost:8081/feedback/history?speechID=${speechID}`)
+            .then(response => response.json())
+            .then(messages => {
+                messages.forEach(msg => {
+                    console.log(messages);  // 查看返回的数据
+                    if (messages.length === 0) {
+                        console.log('没有历史消息');
+                    }
+                    displayMessage(msg, false);
+                });
+            })
+            .catch(err => console.error('加载历史消息失败', err));
+    }
+
     function connect() {
         if (connected) return;
 
-        updateStatus('status-connecting', '正在连接...');
-        addLog(`正在连接到: ${endpointUrl}`);
-
         try {
-            // 创建SockJS连接
             const socket = new SockJS(endpointUrl);
-
-            // 创建STOMP客户端
             stompClient = Stomp.over(socket);
+            stompClient.connect({}, function() {
+                connected = true;
+                displayMessage('已连接到聊天室', false);
+                // 订阅消息，接收消息并过滤不属于自己的消息
+                stompClient.subscribe(`/topic/chat/${speechID}`, function(message) {
+                    const receivedMsg = JSON.parse(message.body);
 
-            // 禁用调试信息（生产环境）
-            stompClient.debug = null;
-
-            // 连接到STOMP端点
-            stompClient.connect({},
-                function(frame) {
-                    connected = true;
-                    reconnectAttempts = 0;
-                    updateStatus('status-connected', '已连接');
-                    addLog('连接成功!');
-                    displaySystemMessage('已成功连接到聊天室');
-
-                    // 订阅接收消息的端点
-                    stompClient.subscribe('/topic/chat', function(message) {
-                        console.log(message);
-                        const receivedMsg = JSON.parse(message.body);
-                        displayMessage(receivedMsg, false);
-                        addLog(`收到消息: ${receivedMsg.fcontent}`);
-                    });
-
-                    // 更新按钮状态
-                    disconnectButton.disabled = false;
-                    connectButton.disabled = true;
-                },
-                function(error) {
-                    connected = false;
-                    updateStatus('status-disconnected', '连接失败');
-                    addLog(`连接错误: ${error.headers.message || error}`);
-                    displaySystemMessage('连接失败，正在重试...');
-
-                    // 更新按钮状态
-                    disconnectButton.disabled = true;
-                    connectButton.disabled = false;
-
-                    // 自动重连
-                    if (reconnectAttempts < maxReconnectAttempts) {
-                        reconnectAttempts++;
-                        const delay = Math.min(3000 * reconnectAttempts, 15000);
-                        addLog(`将在 ${delay/1000} 秒后尝试重新连接 (尝试 ${reconnectAttempts}/${maxReconnectAttempts})`);
-
-                        setTimeout(() => {
-                            addLog('尝试重新连接...');
-                            connect();
-                        }, delay);
-                    } else {
-                        addLog('已达到最大重连次数，请手动重试');
-                        displaySystemMessage('连接失败，请检查网络和服务状态');
+                    // 正确过滤：只显示其他人发送的消息
+                    if (parseInt(receivedMsg.listenerID) !== parseInt(listenerID)) {
+                        displayMessage(receivedMsg, false); // 显示为接收消息
                     }
-                }
-            );
+                });
+                loadHistory();  // 连接后加载历史消息
+            });
         } catch (error) {
-            updateStatus('status-disconnected', '初始化失败');
-            addLog(`初始化错误: ${error.message}`);
-            displaySystemMessage('初始化失败: ' + error.message);
-
-            // 更新按钮状态
-            disconnectButton.disabled = true;
-            connectButton.disabled = false;
+            displayMessage('连接失败，请重试', false);
         }
+        stompClient.onDisconnect = function() {
+            setTimeout(connect, 5000); // 5秒后重连
+        };
     }
 
-    // 断开连接
-    function disconnect() {
-        if (stompClient && connected) {
-            try {
-                stompClient.disconnect();
-                addLog("已断开连接");
-                displaySystemMessage('连接已断开');
-            } catch (e) {
-                addLog(`断开连接错误: ${e.message}`);
-            }
-        }
-
-        connected = false;
-        updateStatus("status-disconnected", "已断开连接");
-
-        // 更新按钮状态
-        disconnectButton.disabled = true;
-        connectButton.disabled = false;
-    }
-
-    // 发送消息
     function sendMessage() {
-        if (!connected || !stompClient) {
-            displaySystemMessage('尚未连接，无法发送消息');
-            addLog('错误: 未连接，无法发送消息', 'error');
-            return;
-        }
+        const message = messageInput.value.trim();
+        if (!message) return;
 
-        const fcontent = messageInput.value.trim();
-        console.log(fcontent);
-        if (!fcontent) {
-            return;
-
-        }
-
-        const listenerID = parseInt(listenerIdInput.value) || 1;
-        const speechID = parseInt(speechIdInput.value) || 1;
-
-        const message = {
-            fcontent: fcontent,
-            listenerID: listenerID,
-            speechID: speechID,
-            timestamp: new Date().toISOString()
-        };
-        console.log(message.fcontent);
-        try {
-            // 发送消息到指定端点
-            stompClient.send("/app/chat", {}, JSON.stringify(message));
-
-            // 本地显示自己发送的消息
-            displayMessage(message, true);
-            addLog(`已发送消息: ${fcontent}`);
-
-            // 清空输入框
-            messageInput.value = '';
-            messageInput.focus();
-        } catch (error) {
-            addLog(`发送消息错误: ${error}`, 'error');
-            displaySystemMessage('发送消息失败: ' + error);
-        }
-    }
-
-    // 发送测试消息
-    function sendTestMessage() {
-        if (!connected) {
-            displaySystemMessage('尚未连接，无法发送测试消息');
-            return;
-        }
-
-        const listenerID = parseInt(listenerIdInput.value) || 1;
-        const speechID = parseInt(speechIdInput.value) || 1;
-
-        const testMessage = {
-            fcontent: '这是一条测试消息',
-            listenerID: listenerID,
-            speechID: speechID,
-            timestamp: new Date().toISOString()
+        // 创建消息对象，包含 listenerID 和 speechID
+        const messageObj = {
+            fcontent: message,
+            listenerID: listenerID,  // 当前用户的 listenerID
+            speechID: speechID,      // 当前演讲的 speechID
+            //timestamp: new Date().toISOString()  // 消息的时间戳
         };
 
-        try {
-            stompClient.send("/app/chat", {}, JSON.stringify(testMessage));
-            addLog('已发送测试消息');
-            displaySystemMessage('测试消息已发送');
-        } catch (error) {
-            addLog(`发送测试消息错误: ${error}`, 'error');
-            displaySystemMessage('发送测试消息失败: ' + error);
-        }
+        // 先显示为"已发送"
+        displayMessage(messageObj, true);
+
+        // 再发送到服务器
+        stompClient.send("/app/chat", {}, JSON.stringify({
+            fcontent: message,
+            sender: {
+                id: listenerID,
+                name: "用户" + listenerID // 可添加更多信息
+            },
+            listenerID: parseInt(listenerID), // 确保是数字
+            speechID: parseInt(speechID),     // 确保是数字
+            timestamp: new Date().toISOString()
+        }));
+
+        messageInput.value = '';
     }
 
-    // 初始化事件监听器
-    function initEventListeners() {
-        sendButton.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
 
-        connectButton.addEventListener('click', connect);
-        disconnectButton.addEventListener('click', disconnect);
-        testButton.addEventListener('click', sendTestMessage);
-        clearLogButton.addEventListener('click', function() {
-            logBox.innerHTML = '';
-            addLog('日志已清空');
-        });
-
-        // 监听窗口关闭事件，断开连接
-        window.addEventListener('beforeunload', function() {
-            if (stompClient && connected) {
-                stompClient.disconnect();
-            }
-        });
-    }
-
-    // 页面加载完成后初始化
-    document.addEventListener('DOMContentLoaded', function() {
-        // 显示STOMP版本
-        try {
-            stompVersion.textContent = Stomp.VERSIONS.V1_2;
-        } catch (e) {
-            stompVersion.textContent = '2.3.3';
+    sendButton.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
         }
+    });
 
-        initEventListeners();
-        addLog('页面已加载，准备连接...');
-
-        // 自动连接
-        setTimeout(connect, 1000);
+    window.addEventListener('DOMContentLoaded', function() {
+        connect();
     });
 </script>
 </body>

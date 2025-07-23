@@ -1,6 +1,7 @@
 package com.example.wwh.service;
 
 
+import com.example.wwh.DTO.QuestionDTO;
 import com.example.wwh.Mapper.QuestionMapper;
 import com.example.wwh.pojo.Comment;
 import com.example.wwh.pojo.Question;
@@ -21,13 +22,13 @@ public class QuestionService {
         return questionMapper.findQuestionsBySpeechAndListener1(speechID, listenerID);
     }
 
-    // 获取已经结束的题目
-    public List<Question> getFinishedQuestions(int speechID, int listenerID) {
+    // 获取听众个人已经结束的题目
+    public List<QuestionDTO> getFinishedQuestions(int speechID, int listenerID) {
         return questionMapper.findQuestionsBySpeechAndListener2(speechID, listenerID);
     }
 
-    // 获取没抽到的题目
-    public List<Question> getNogetQuestions(int speechID, int listenerID) {
+    // 获取听众个人没抽到的题目
+    public List<QuestionDTO> getNogetQuestions(int speechID, int listenerID) {
         return questionMapper.findQuestionsBySpeechAndListener3(speechID, listenerID);
     }
 
@@ -54,6 +55,22 @@ public class QuestionService {
         return count > 0;  // 如果返回值大于 0，则表示该题目已经被收藏
     }
 
+
+
+    //获取演讲的进行中的题目
+    public List<Question> getSpeechOnQuestions(int speechID) {
+        return questionMapper.findQuestionsBySpeechAndListener4(speechID);
+    }
+
+    //获取演讲的已结束的题目
+    public List<Question> getSpeechEndQuestions(int speechID) {
+        return questionMapper.findQuestionsBySpeechAndListener5(speechID);
+    }
+
+    // 插入评论
+    public void addComment(int listenerID, int questionID, String comcontent) {
+        questionMapper.insertComment(listenerID, questionID, comcontent);
+
     public void addQuestion(Question question){
         questionMapper.addquestion(question);
     }
@@ -64,5 +81,6 @@ public class QuestionService {
 
     public void addqueconspe(Integer SpeechID,Integer QuestionID){
         questionMapper.addqueconspe(SpeechID,QuestionID);
+
     }
 }

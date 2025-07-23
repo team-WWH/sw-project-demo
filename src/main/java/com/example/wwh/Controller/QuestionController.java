@@ -1,7 +1,11 @@
 package com.example.wwh.Controller;
 
 
+
+import com.example.wwh.DTO.QuestionDTO;
+
 import com.example.wwh.Data.StuanwersResponse;
+
 import com.example.wwh.pojo.Question;
 import com.example.wwh.pojo.Comment;
 import com.example.wwh.pojo.Stuanswers;
@@ -186,26 +190,26 @@ public class QuestionController {
         return ResponseEntity.ok(questions);
     }
 
-    // 获取已经结束的题目(未测试)
+    // 获取已经结束的题目
     @GetMapping("/listener/getfinishedQuestions")
-    public ResponseEntity<List<Question>> getFinishedQuestions(
+    public ResponseEntity<List<QuestionDTO>> getFinishedQuestions(
             @RequestParam int speechID,
             @RequestParam int listenerID) {
 
         // 调用 service 层获取题目
-        List<Question> questions = questionService.getFinishedQuestions(speechID, listenerID);
+        List<QuestionDTO> questions = questionService.getFinishedQuestions(speechID, listenerID);
 
         return ResponseEntity.ok(questions);  // 返回题目数据
     }
 
     // 获取没抽到的题目(未测试)
     @GetMapping("/listener/getNogetQuestions")
-    public ResponseEntity<List<Question>> getNogetQuestions(
+    public ResponseEntity<List<QuestionDTO>> getNogetQuestions(
             @RequestParam int speechID,
             @RequestParam int listenerID) {
 
         // 调用 service 层获取题目
-        List<Question> questions = questionService.getNogetQuestions(speechID, listenerID);
+        List<QuestionDTO> questions = questionService.getNogetQuestions(speechID, listenerID);
 
         return ResponseEntity.ok(questions);  // 返回题目数据
     }
@@ -221,7 +225,7 @@ public class QuestionController {
         return ResponseEntity.ok(comments);  // 返回评论数据
     }
 
-    // 获取某个听众收藏的题目（未测试）
+    // 获取某个听众收藏的题目
     @GetMapping("/listener/collect")
     public ResponseEntity<List<Question>> getQuestionsByListener(
             @RequestParam int listenerID) {
@@ -231,7 +235,7 @@ public class QuestionController {
     }
 
 
-    // 收藏题目（未测试）
+    // 收藏题目
     @PostMapping("listener/addtocollect")
     public ResponseEntity<String> addToCollect(@RequestParam int listenerID, @RequestParam int questionID) {
         questionService.addToCollect(listenerID, questionID);
@@ -250,4 +254,29 @@ public class QuestionController {
         }
     }
 
+
+    //获取演讲的进行中的题目
+    @GetMapping("/speaker/getSpeechOpeningQuestions")
+    public ResponseEntity<List<Question>> getSpeechOnQuestions(@RequestParam int speechID) {
+        List<Question> questions = questionService.getSpeechOnQuestions(speechID);
+        return ResponseEntity.ok(questions);
+    }
+
+    //获取演讲的已结束的题目
+    @GetMapping("/speaker/getSpeechEndQuestions")
+    public ResponseEntity<List<Question>> getSpeechEndQuestions(@RequestParam int speechID) {
+        List<Question> questions = questionService.getSpeechEndQuestions(speechID);
+        return ResponseEntity.ok(questions);
+    }
+
+
+
+    // 插入评论的接口
+    @PostMapping("/listener/addComment")
+    public String addComment(@RequestParam int listenerID,
+                             @RequestParam int questionID,
+                             @RequestParam String comcontent) {
+        questionService.addComment(listenerID, questionID, comcontent);
+        return "Comment added successfully!";
+    }
 }

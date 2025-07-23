@@ -111,6 +111,12 @@
 </div>
 
 <script>
+
+    /* ========== 初始化 ========== */
+    document.addEventListener('DOMContentLoaded', function() {
+        renderQuestion(currentIndex);
+    });
+
     /* ========== 题库 ========== */
     const questions = [
         {
@@ -168,7 +174,18 @@
     let countdownInterval; // 用于存储 setInterval 的返回值，以便后续清除定时器
 
     function renderQuestion(currentIndex) {
-        const q = questions[currentIndex];
+
+        //const q = questions[currentIndex];
+        // 获取存储在 sessionStorage 中的 questionData
+        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+        if (questionData) {
+            console.log(questionData);  // 在控制台输出 questionData 对象（调试用）
+        } else {
+            console.error("没有找到题目数据");
+            return;
+        }
+        // 使用 questionData 中的数据渲染题目内容
+        const q = questionData;
 
         document.getElementById('counter').textContent = `第 ${currentIndex + 1} 题 / 共 ${questions.length} 题`;
         const box = document.getElementById('questionBox');
@@ -181,14 +198,19 @@
 
           <div class="position-absolute top-0 end-0 me-3 mt-3" id="countdown">30s</div> <!-- 倒计时显示 -->
         </div>
-        <div class="mb-3">${q.stem}</div>  <!-- 显示题目 -->
+
+        <div class="mb-3">${q.questioncontent}</div>  <!-- 显示题目 -->
+
         <div id="optionArea"></div>
         <div id="resultBar" class="bottom-result"></div>
       `;
         //   <i class="star-icon fa-star ${isFav ? 'fas' : 'far'}" onclick="toggleFav(${currentIndex}, this)"></i>
         // 渲染选项
         const optionArea = document.getElementById('optionArea');
-        q.options.forEach((opt, i) => {
+
+        const options = [q.a, q.b, q.c, q.d];  // 从 questionData 中提取选项
+        options.forEach((opt, i) => {
+
             const div = document.createElement('div');
             div.className = 'option-block';
             div.dataset.currentIndex = i;
@@ -204,6 +226,7 @@
 
         // 启动倒计时
         startCountdown();
+
     }
 
     function startCountdown() {
@@ -300,6 +323,7 @@
             el.classList.replace('far', 'fas');     // 空心→实心
         }
     }
+
 
     /* ========== 初始化 ========== */
     renderQuestion(currentIndex);
