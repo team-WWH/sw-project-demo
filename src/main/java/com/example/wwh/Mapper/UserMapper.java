@@ -48,4 +48,6 @@ public interface UserMapper {
     //根据组织者mail获取个人信息
     @Select("SELECT * FROM Organizer WHERE Omail = #{omail}")
     Organizer getOrganizerByMail(String omail);
+
+
 }

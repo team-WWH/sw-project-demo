@@ -121,12 +121,6 @@ public class Question {
     public void setQstatus(int Qstatus) {
         this.Qstatus = Qstatus;
     }
-
-    public String getAnalysis() {
-        return Analysis;
-    }
-
-    public void setAnalysis(String Analysis) {
-        this.Analysis = Analysis;
-    }
 }
+
+

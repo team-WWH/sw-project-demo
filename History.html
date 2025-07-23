@@ -21,6 +21,101 @@
         table{width:100%;border-collapse:collapse;font-size:14px}
         th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
         th{background:#fafafa}
+        .brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        nav a.active {
+            color: #007bff;
+        }
+
+        .sub-nav {
+            background-color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sub-nav-left h2 {
+            margin: 0;
+        }
+
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .card {
+            background: linear-gradient(to bottom right, #40e0d0, #00cda0);
+            border-radius: 12px;
+            padding: 20px;
+            width: 300px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .card-header {
+            align-self: flex-start;
+        }
+        .card-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .card-body {
+            flex-grow: 1;
+        }
+        .card-info {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+        }
+        .card-invite-code {
+            font-size: 12px;
+        }
+        .card-copy-btn {
+            width: auto; /* 自动宽度 */
+            height: 24px;
+            background-color: #f0f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+            padding: 0 8px; /* 添加内边距 */
+        }
+        .card-copy-btn:hover {
+            background-color: #ddd;
+        }
+        .fa-copy {
+            margin-right: 5px;
+        }
+        .card-footer {
+            align-self: flex-end;
+            display: flex;
+            gap: 10px;
+        }
+        .card-btn {
+            background-color: #fff;
+            color: #333;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            width: auto; /* 自动宽度 */
+            height: 24px;
+            padding: 0 8px; /* 添加内边距 */
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -32,28 +127,14 @@
         <a href="ListenerHomepage.html">首页</a>
         <a href="History.html" class="active">历史演讲</a>
         <a href="PersonInfo.html">个人信息</a>
+        <a href="ListenerFavor.html">我的收藏</a>
     </nav>
 </header>
 
 
 <!-- 主体内容 -->
 <div class="container">
-    <div class="card">
-       
-
-        <!-- 列表 -->
-        <table>
-            <thead>
-                <tr>
-                    <th>序号</th>
-                    <th>演讲者</th>
-                    <th>创建时间</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-        </table>
-    </div>
+    <div id="speechCardsContainer"></div>
 </div>
 
 <script>
@@ -69,31 +150,50 @@
         })
         .catch(error => console.error('Error fetching speeches:', error));
 
+    function renderSpeechCard(speech) {
+        const container = document.getElementById('speechCardsContainer');
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+    <div class="card-header" >
+        <div class="card-name">${speech.speechname}</div>
+    </div>
+    <div class="card-body" style="margin-top:30px">
+        <div class="card-info" >
+           <div class="card-invite-code">${speech.inviteCode || '无邀请代码'}</div>
+            <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')" style="width:5px;border: 1px solid #ddd; border-radius: 2px;">☇</button>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px">上课</button>
+    </div>
+`;
+        container.appendChild(card);
+    }
+
     function render(data) {
-        const tbody = document.getElementById('tbody');
-        tbody.innerHTML = '';  // 清空现有的表格内容
-        data.forEach((item, idx) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-            <td>${item.speechID}</td>
-            <td>${item.sname}</td>
-            <td>${item.otime}</td>
-            <td>
-                <button class="btn btn-primary" onclick="view(${idx})">进入</button>
-            </td>
-        `;
-            tbody.appendChild(tr);
+        const container = document.getElementById('speechCardsContainer');
+        container.innerHTML = '';
+        data.forEach(speech => { // 使用speech而不是item
+            renderSpeechCard(speech); // 传入当前演讲数据
         });
     }
 
-    function view(idx) {
-        alert(`进入第 ${idx + 1} 个演讲`);
+    function view(speechID) {
+        //const listenerID = 123;  // 假设 listenerID 是已知的，替换为实际的值
+        const url = `ListenerHistoryQuestion.html?SpeechID=${speechID}&ListenerID=${listenerID}`;
+        window.location.href = url;  // 跳转到目标页面，并传递参数
     }
 
 
-function add(){ alert('跳转到“新增在线测评”页面'); }
 
-render(list);
+    function add(){ alert('跳转到“新增在线测评”页面'); }
+
+    const list = [
+        { speechID: 1, sname: '十万个为什么',otime: '2024-07-22',inviteCode: 'ABC123DEF' },
+        // 添加更多演讲数据...
+    ];
+    render(list);
 </script>
 </body>
 </html>

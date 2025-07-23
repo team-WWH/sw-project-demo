@@ -15,5 +15,11 @@ public interface FeedbackMapper {
     @Insert("INSERT INTO feedback (Fcontent, ListenerID, SpeechID) VALUES (#{Fcontent}, #{ListenerID}, #{SpeechID})")
     void submitFeedback(Feedback feedback);
 
+    // 获取与 SpeechID 相关的所有 ListenerID
+    @Select("SELECT DISTINCT ListenerID FROM feedback WHERE SpeechID = #{speechID}")
+    List<Integer> getListenersBySpeechID(int speechID);
 
+    // 获取与指定 SpeechID 和 ListenerID 相关的所有历史消息
+    @Select("SELECT FeedbackID, Fcontent, ListenerID, SpeechID FROM feedback WHERE SpeechID = #{speechID}  ORDER BY FeedbackID ASC")
+    List<Feedback> getMessagesBySpeechAndListener(int speechID);
 }

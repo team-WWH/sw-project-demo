@@ -15,6 +15,16 @@ public class Speech {
     private int ClaconSpeID;//上课数据---演讲ID
     private int Sstatus;
     private String Sname;//演讲者名字
+    private String Speechname;//演讲名字
+
+    public String getSpeechname() {
+        return Speechname;
+    }
+
+    public void setSpeechname(String speechname) {
+        Speechname = speechname;
+    }
+
     private LocalDateTime Otime;
     private LocalDateTime Stime;
 

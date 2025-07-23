@@ -31,11 +31,10 @@
         .option-block:hover{background:#f1f3f5;}
         .correct{border-color:#28a745;background:#d4edda;color:#155724;}
         .wrong{border-color:#dc3545;background:#f8d7da;color:#721c24;}
-        .bottom-result{
-            margin-top:12px;
-            font-weight:600;
-            display:none;
-            line-height:1.8;
+        .bottom-result {
+            display: block; /* 确保显示 */
+            visibility: visible; /* 确保可见 */
+            opacity: 1; /* 确保不透明 */
         }
         .bottom-result span{
             margin:0 6px;
@@ -57,6 +56,35 @@
             color:#ffc107;
             cursor:pointer;
             user-select:none;
+        }
+        .correct {
+            border-color: #28a745; /* 绿色 */
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .incorrect {
+            border-color: #dc3545; /* 红色 */
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        /* 评论区样式 */
+        #commentsSection {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #commentsList {
+            margin-top: 10px;
+        }
+        /* 评论输入框样式 */
+        #commentBox {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -89,30 +117,35 @@
 
 <!-- 评价区 -->
 <div class="container mt-3">
-    <div id="commentBox" style="display:none;width: 1150px;">
+    <!-- 评论显示区 -->
+    <div id="commentsSection" style="margin-bottom: 20px;">
+        <h5>评论区：</h5>
+        <div id="commentsList"></div>
+    </div>
+
+    <!-- 提交评论区 -->
+    <div id="commentBox" style="margin-bottom: 20px;">
         <textarea id="commentInput" class="form-control mb-2" rows="2" placeholder="请对该题进行评价或留言……"></textarea>
         <div class="d-flex justify-content-end">
-            <button class="btn btn-primary btn-sm" onclick="submitComment()">提交评价</button>
+            <button class="btn btn-primary btn-sm" onclick="submitComment(2, 1)">提交评价</button> <!-- 假设 QuestionID = 2，ListenerID = 1 -->
         </div>
     </div>
 </div>
 
-<!-- 底部导航 -->
-<div class="d-flex justify-content-between px-3 py-2 bg-white fixed-bottom border-top">
-    <button class="btn btn-outline-secondary" onclick="prev()" style="margin-left: 500px ;">上一题</button>
-    <button class="btn btn-outline-secondary" onclick="next()" style="margin-right: 500px;">下一题</button>
-</div>
 
-<!-- 报告弹窗 -->
-<div class="report-modal" id="reportModal" onclick="closeReport()">
-    <div class="report-content" onclick="event.stopPropagation()">
-        <h5 class="mb-3">答题报告</h5>
-        <p id="reportText"></p>
-        <button class="btn btn-secondary" onclick="closeReport()">关闭</button>
-    </div>
-</div>
+
+<!-- 底部导航 -->
+<!--<div class="d-flex justify-content-between px-3 py-2 bg-white fixed-bottom border-top">-->
+<!--    <button class="btn btn-outline-secondary" onclick="prev()" style="margin-left: 500px ;">上一题</button>-->
+<!--    <button class="btn btn-outline-secondary" onclick="next()" style="margin-right: 500px;">下一题</button>-->
+<!--</div>-->
+
 
 <script>
+    /* ========== 初始化 ========== */
+    document.addEventListener('DOMContentLoaded', function() {
+        renderQuestion(currentIndex);
+    });
     /* ========== 题库 ========== */
 
 
@@ -162,6 +195,9 @@
             classRate:'53.1%'
         }
     ];
+    // 获取 URL 中的查询参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const listenerID = urlParams.get('ListenerID');
 
     /* ========== 状态 ========== */
     let currentIndex = Number(new URLSearchParams(location.search).get('id') || 1) - 1;
@@ -170,153 +206,382 @@
 
     /* ========== 渲染题目 ========== */
     function renderQuestion(currentIndex) {
-        // 获取存储在 sessionStorage 中的 questionData
+        console.log('Rendering question:', currentIndex);
+
         const questionData = JSON.parse(sessionStorage.getItem('questionData'));
-        if (questionData) {
-            console.log(questionData);  // 在控制台输出 questionData 对象（调试用）
-        } else {
+        if (!questionData) {
             console.error("没有找到题目数据");
             return;
         }
 
-        // 使用 questionData 中的数据渲染题目内容
         const q = questionData;
+        //console.log('Correct Answer Index:', q.correctAnswer); // 调试信息
 
-        document.getElementById('counter').textContent = `第 ${currentIndex+1} 题 / 共 ${questions.length} 题`;
+        document.getElementById('counter').textContent = `第 ${currentIndex + 1} 题 / 共 ${questions.length} 题`;
         const box = document.getElementById('questionBox');
         const isFav = localStorage.getItem(`fav-${currentIndex}`) === '1';
 
-        // 渲染题目框架
         box.innerHTML = `
-    <div class="mb-3 position-relative">
-      <span class="badge bg-primary me-2">单选题</span>
-      <i class="star-icon fa-star ${isFav ? 'fas' : 'far'}" onclick="toggleFav(${currentIndex}, this)"></i>
-    </div>
-    <div class="mb-3">${q.questioncontent}</div>  <!-- 显示题目 -->
-    <div id="optionArea"></div>
-    <div id="resultBar" class="bottom-result"></div>
-  `;
+        <div class="mb-3 position-relative">
+          <span class="badge bg-primary me-2">单选题</span>
+          <i class="star-icon fa-star ${isFav ? 'fas' : 'far'}" onclick="toggleFav(${currentIndex}, this)"></i>
+        </div>
+        <div class="mb-3">${q.questioncontent}</div>
+        <div id="optionArea"></div>
+        <div id="resultBar" class="bottom-result"></div>
+    `;
 
-        // 渲染选项
         const optionArea = document.getElementById('optionArea');
-        const options = [q.a, q.b, q.c, q.d];  // 从 questionData 中提取选项
+        const options = [q.a, q.b, q.c, q.d];
         options.forEach((opt, i) => {
             const div = document.createElement('div');
             div.className = 'option-block';
             div.dataset.currentIndex = i;
-            div.innerHTML = opt;  // 显示选项内容
-            div.onclick = () => selectAnswer(i);
+            div.innerHTML = opt;
+            div.onclick = () => selectAnswer(i); // 保留点击事件，但后续会禁用
             optionArea.appendChild(div);
         });
 
-        // 如果用户已经选择了答案，标记已选的选项
-        if (userAnswers[currentIndex] !== null) {
-            markOptions();
+        // 禁用选项的点击事件
+        optionArea.querySelectorAll('.option-block').forEach(div => {
+            div.onclick = null; // 禁用点击事件
+        });
+
+        // 显示底部结果条
+        const resultBar = document.getElementById('resultBar');
+        if (!resultBar) {
+            console.error('Result Bar element not found');
+            return;
+        }
+
+        resultBar.style.display = 'block';
+        resultBar.style.visibility = 'visible';
+        resultBar.style.opacity = '1';
+
+        // 检查用户是否选择了答案
+        const userAnswer = q.sanscontent;
+        if (userAnswer === 0) {
+            // 用户未选择答案
+            // resultBar.innerHTML = `
+            //     <div class="result-item">
+            //         <span class="result-label">我的答案：</span>
+            //         <span class="result-answer">空</span>
+            //     </div>
+            // `;
+            showResult();
+            console.log('Result Bar Content:', resultBar.innerHTML);
         } else {
-            document.getElementById('resultBar').style.display = 'none';  // 如果没有选择答案，隐藏结果区域
+            // 用户选择了答案
+            // resultBar.innerHTML = `
+            //     <div class="result-item">
+            //         <span class="result-label">我的答案：</span>
+            //         <span class="result-answer">${options[userAnswer]}</span>
+            //     </div>
+            // `;
+            showResult();
+            console.log('Result Bar Content:', resultBar.innerHTML);
+        }
+    console.log(q);
+        const letterToIndex = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+
+        const correctAnswer = letterToIndex[q.Answer];  // 正确答案的索引
+        const userAnswerIndex = letterToIndex[q.sanscontent];  // 用户选择的答案索引
+        // 标记正确选项和错误选项
+        const correctOption = document.querySelector(`.option-block[data-current-index="${correctAnswer}"]`);
+        if (correctOption) {
+            correctOption.classList.add('correct');
+        }
+
+        if (userAnswer !== 0 && userAnswer !== q.Answer) {
+            const wrongOption = document.querySelector(`.option-block[data-current-index="${userAnswerIndex}"]`);
+            if (wrongOption) {
+                wrongOption.classList.add('incorrect');
+            }
+        }
+    }
+    // 标记选项的函数
+    function markOptions() {
+        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+        if (!questionData) {
+            console.error("没有找到题目数据");
+            return;
+        }
+        const q = questionData;
+        const optionArea = document.getElementById('optionArea');
+        const options = optionArea.getElementsByClassName('option-block');
+        // 将字母映射到索引
+        const letterToIndex = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
+
+        const correctAnswer = letterToIndex[q.Answer];  // 正确答案的索引
+        const userAnswer = letterToIndex[q.sanscontent];  // 用户选择的答案索引
+
+        for (let i = 1; i < options.length+1; i++) {
+            if (i === correctAnswer) {
+                options[i].classList.add('correct');
+            } else if (i === userAnswer) {
+                options[i].classList.add('incorrect');
+            }
         }
     }
 
-
-    /* ========== 选择答案 ========== */
-    function selectAnswer(selectIdx){
-        if(userAnswers[currentIndex]!==null) return; // 已作答不再处理
-        userAnswers[currentIndex] = selectIdx;
-        correctFlags[currentIndex] = (selectIdx === questions[currentIndex].answer);
-        markOptions();
-        showResult();
-    }
-
-    /* ========== 标记选项 ========== */
-    function markOptions(){
-        const q = questions[currentIndex];
-        const opts = document.querySelectorAll('.option-block');
-        opts.forEach((o,i)=>{
-            o.onclick=null;
-            if(i===q.answer){
-                o.classList.add('correct');
-            }else if(i===userAnswers[currentIndex] && i!==q.answer){
-                o.classList.add('wrong');
-            }
-        });
+    // 选择答案的函数
+    function selectAnswer(index) {
+        userAnswers[currentIndex] = index;  // 保存用户选择的答案
+        renderQuestion(currentIndex);  // 重新渲染题目
     }
 
     /* ========== 底部结果条 ========== */
     function showResult(){
+        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+        if (!questionData) {
+            console.error("没有找到题目数据");
+            return;
+        }
+        const q = questionData;
         const bar = document.getElementById('resultBar');
-        const q = questions[currentIndex];
+        //const q = questions[currentIndex];
         const myLetter   = String.fromCharCode(65 + userAnswers[currentIndex]);
         const trueLetter = String.fromCharCode(65 + q.answer);
 
-        bar.innerHTML =
-            `我的答案：<span class="${correctFlags[currentIndex]?'correct':'wrong'}">${myLetter}</span>` +
-            `  正确答案：<span class="correct">${trueLetter}</span>` +
-            `  全班正确率：<span class="text-primary">${q.classRate}</span>`;
+        bar.innerHTML = `
+    我的答案：<span class="${q.sanscontent === '0' ? 'text-muted' : (correctFlags[currentIndex] ? 'correct' : 'wrong')}">
+                ${q.sanscontent === '0' ? '未做答' : q.sanscontent}
+              </span>
+    正确答案：<span class="correct">${q.answer}</span>
+    答案解析：<span class="text-primary">${q.answercon}</span>
+`;
+
 
         bar.style.display='block';
         // 显示评价输入框
         document.getElementById('commentBox').style.display = 'block';
     }
 
-    /* ========== 评价区 ========== */
-    function submitComment(){
-        const txt = document.getElementById('commentInput').value.trim();
-        if(!txt){ alert('请输入评价内容'); return; }
-        alert('评价已提交：' + txt);
-        // 这里可换成 fetch 调用接口保存
-        document.getElementById('commentInput').value='';
-        document.getElementById('commentBox').style.display='none';
+    /* ========== 评价区 ========== ================================================================*/
+    // function submitComment(){
+    //     const txt = document.getElementById('commentInput').value.trim();
+    //     if(!txt){ alert('请输入评价内容'); return; }
+    //     alert('评价已提交：' + txt);
+    //     // 这里可换成 fetch 调用接口保存
+    //     document.getElementById('commentInput').value='';
+    //     document.getElementById('commentBox').style.display='block';
+    // }
+    // 获取某个题目的评论
+    // 获取某个题目的评论
+    function getCommentsForQuestion(questionID) {
+        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+        if (!questionData) {
+            console.error("没有找到题目数据");
+            return;
+        }
+        const q = questionData;
+        fetch(`http://localhost:8081/api/questions/listener/getcomments?questionID=${q.questionID}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("评论数据：", data);
+                // 在这里你可以把获取到的评论渲染到页面上
+                displayComments(data);
+            })
+            .catch(error => {
+                console.error('获取评论失败:', error);
+            });
     }
+
+    // 显示评论的函数
+    function displayComments(comments) {
+        const commentsList = document.getElementById('commentsList');
+        commentsList.innerHTML = ''; // 清空评论区内容
+
+        comments.forEach(comment => {
+            // 获取评论者的信息
+            getListenerInfo(comment.listenerID)
+                .then(listener => {
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
+                    commentElement.style.border = '1px solid #ccc';
+                    commentElement.style.marginBottom = '10px';
+                    commentElement.style.padding = '10px';
+
+                    // 获取评论者的名字或者匿名状态
+                    let commenterName = listener.anonymous === 1 ? '匿名' : listener.uname;
+
+                    // 将用户名和评论内容显示在评论框中
+                    commentElement.innerHTML = `<strong>${commenterName}</strong>: ${comment.comcontent}`;
+                    commentsList.appendChild(commentElement);
+                })
+                .catch(error => {
+                    console.error('获取用户信息失败:', error);
+                });
+        });
+    }
+
+    // 获取用户信息的函数
+    function getListenerInfo(listenerID) {
+        return fetch(`http://localhost:8081/users/listener/${listenerID}`)
+            .then(response => response.json())
+            .then(data => {
+                return data; // 返回获取到的用户信息
+            })
+            .catch(error => {
+                console.error('获取用户信息失败:', error);
+                return {}; // 发生错误时返回空对象
+            });
+    }
+
+
+    // 提交评论
+    function submitComment(questionID, listenerID) {
+        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+        if (!questionData) {
+            console.error("没有找到题目数据");
+            return;
+        }
+        const q = questionData;
+        //const urlParams = new URLSearchParams(window.location.search);
+        //const listenerID = parseInt(urlParams.get('listenerID'));  // 确保 listenerID 为整数
+        const txt = document.getElementById('commentInput').value.trim();
+        if (!txt) {
+            alert('请输入评价内容');
+            return;
+        }
+
+        // 调用插入评论的接口
+        fetch(`http://localhost:8081/api/questions/listener/addComment?listenerID=${listenerID}&questionID=${q.questionID}&comcontent=${encodeURIComponent(txt)}`, {
+            method: 'POST',
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert('评价已提交：' + txt);
+                // 清空评论输入框
+                document.getElementById('commentInput').value = '';
+                // 刷新评论区
+                getCommentsForQuestion(q.questionID);
+            })
+            .catch(error => {
+                console.error('提交评论失败:', error);
+            });
+    }
+
+    // 初始化页面时加载评论（如果有的话）
+    window.onload = function() {
+        // 假设获取 QuestionID 为 2 的评论
+        getCommentsForQuestion(2);
+    };
+
 
 
     /* ========== 上一题 / 下一题 ========== */
-    function prev(){
-        if(currentIndex>0){
-            currentIndex--;
-            renderQuestion(currentIndex);
-        }
-    }
-    function next(){
-        if(currentIndex<questions.length-1){
-            currentIndex++;
-            renderQuestion(currentIndex);
-        }
-    }
+    // function prev(){
+    //     if(currentIndex>0){
+    //         currentIndex--;
+    //         renderQuestion(currentIndex);
+    //     }
+    // }
+    // function next(){
+    //     if(currentIndex<questions.length-1){
+    //         currentIndex++;
+    //         renderQuestion(currentIndex);
+    //     }
+    // }
 
-    /* ========== 报告弹窗 ========== */
-    function showReport(){
-        const answeredCnt = userAnswers.filter(x=>x!==null).length;
-        const rightCnt = correctFlags.filter(x=>x).length;
-        const rate = answeredCnt? (rightCnt/answeredCnt*100).toFixed(1)+'%' : '0%';
-        let html = `已答题：${answeredCnt}/${questions.length}<br>答对：${rightCnt}<br>正确率：${rate}<br><hr>`;
-        questions.forEach((q,i)=>{
-            if(userAnswers[i]!==null){
-                html += `第${i+1}题：${correctFlags[i]?'✅':'❌'} 你的选择：${q.options[userAnswers[i]]} | 正确答案：${q.options[q.answer]}<br>`;
-            }else{
-                html += `第${i+1}题：未作答<br>`;
-            }
-        });
-        document.getElementById('reportText').innerHTML = html;
-        document.getElementById('reportModal').style.display='flex';
-    }
-    function closeReport(){
-        document.getElementById('reportModal').style.display='none';
-    }
-
-    /* 收藏/取消收藏 */
-    function toggleFav(idx,el){
+    //收藏-----------------------------------------------------------------------------------
+    // 更新的收藏操作
+    async function toggleFav(idx, el) {
         const key = `fav-${idx}`;
-        if(localStorage.getItem(key)==='1'){
-            localStorage.removeItem(key);
-            el.classList.replace('fas','far');     // 实心→空心
-        }else{
-            localStorage.setItem(key,'1');
-            el.classList.replace('far','fas');     // 空心→实心
+
+        // 获取 URL 参数和题目数据
+        const urlParams = new URLSearchParams(window.location.search);
+        const listenerID = parseInt(urlParams.get('listenerID'));  // 确保 listenerID 为整数
+        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+
+        if (!questionData) {
+            console.error("没有找到题目数据");
+            return;
+        }
+
+        const q = questionData;
+        const questionID = q.questionID;
+
+        try {
+            // 检查收藏状态
+            const checkResponse = await fetch(`http://localhost:8081/api/questions/listener/checktocollect?questionID=${questionID}&listenerID=${listenerID}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (!checkResponse.ok) {
+                throw new Error('检查收藏状态失败');
+            }
+
+            const checkResult = await checkResponse.text();  // 获取纯文本响应
+            console.log("checkResult:", checkResult);  // 打印检查结果
+
+            // 判断是否已收藏
+            if (checkResult === "The question has already been collected.") {
+                // 已收藏 - 更新UI状态
+                el.classList.replace('far', 'fas');
+                console.log("题目已收藏");
+            } else {
+                // 未收藏 - 执行收藏操作
+                const addResponse = await fetch(`http://localhost:8081/api/questions/listener/addtocollect?listenerID=${listenerID}&questionID=${questionID}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    //body: JSON.stringify({ listenerID, questionID })  // 确保传递整数类型的参数
+                });
+
+                if (!addResponse.ok) {
+                    throw new Error('收藏操作失败');
+                }
+
+                // 收藏成功后更新UI
+                el.classList.replace('far', 'fas');
+                localStorage.setItem(key, '1');
+                console.log("题目已成功收藏");
+            }
+        } catch (error) {
+            console.error('收藏操作出错:', error);
+        }
+    }
+    // 页面加载时初始化收藏图标状态
+    async function initializeFavIcons() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const listenerID = parseInt(urlParams.get('listenerID'));
+        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+
+        // 修改选择器为 star-icon
+        const icon = document.querySelector('.star-icon');
+
+        if (!questionData || !listenerID || !icon) {
+            console.log("初始化条件不足，跳过收藏状态检查");
+            return;
+        }
+
+        const questionID = questionData.questionID;
+
+        try {
+            const response = await fetch(`http://localhost:8081/api/questions/listener/checktocollect?questionID=${questionID}&listenerID=${listenerID}`);
+
+            if (response.ok) {
+                const result = await response.text();
+                if (result === "The question has already been collected.") {
+                    // 已收藏 -> 实心 (fas)
+                    icon.classList.replace('far', 'fas');
+                } else {
+                    // 未收藏 -> 空心 (far)
+                    icon.classList.replace('fas', 'far');
+                }
+            }
+        } catch (error) {
+            console.error("初始化收藏状态失败", error);
         }
     }
 
-    /* ========== 初始化 ========== */
-    renderQuestion(currentIndex);
+    // 页面加载时执行
+    document.addEventListener('DOMContentLoaded', initializeFavIcons);
+
+
+
+
 </script>
 </body>
 </html>
