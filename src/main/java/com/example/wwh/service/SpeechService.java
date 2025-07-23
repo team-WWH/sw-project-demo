@@ -78,12 +78,6 @@ public class SpeechService {
 
 
     }
-    public List<Speech> getEndedSpeechesByListenerID(Integer ListenerID) {
-        List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
-        List<Speech> speechList = new ArrayList<>();
-        for (int i : speechid) {
-            speechList.add(speechMapper.getEndedSpeechesByID(i));
-        }
 
     public List<Speech> getEndedSpeechesByListenerID(Integer ListenerID) {
         List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
