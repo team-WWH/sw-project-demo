@@ -202,7 +202,7 @@ public class QuestionController {
         return ResponseEntity.ok(questions);  // 返回题目数据
     }
 
-    // 获取没抽到的题目(未测试)
+    // 获取没抽到的题目
     @GetMapping("/listener/getNogetQuestions")
     public ResponseEntity<List<QuestionDTO>> getNogetQuestions(
             @RequestParam int speechID,
@@ -214,7 +214,7 @@ public class QuestionController {
         return ResponseEntity.ok(questions);  // 返回题目数据
     }
 
-    // 获取某个题目的评论（未测试）
+    // 获取某个题目的评论
     @GetMapping("/listener/getcomments")
     public ResponseEntity<List<Comment>> getCommentsForQuestion(
             @RequestParam int questionID) {
@@ -227,10 +227,10 @@ public class QuestionController {
 
     // 获取某个听众收藏的题目
     @GetMapping("/listener/collect")
-    public ResponseEntity<List<Question>> getQuestionsByListener(
+    public ResponseEntity<List<QuestionDTO>> getQuestionsByListener(
             @RequestParam int listenerID) {
 
-        List<Question> questions = questionService.getQuestionsByListenerAndStatus(listenerID);
+        List<QuestionDTO> questions = questionService.getQuestionsByListenerAndStatus(listenerID);
         return ResponseEntity.ok(questions);
     }
 
@@ -243,7 +243,7 @@ public class QuestionController {
     }
 
 
-    // 根据 QuestionID 和 ListenerID 查询是否已收藏（未测试）
+    // 根据 QuestionID 和 ListenerID 查询是否已收藏
     @GetMapping("listener/checktocollect")
     public ResponseEntity<String> checkIfCollected(@RequestParam int questionID, @RequestParam int listenerID) {
         boolean isCollected = questionService.isAlreadyCollected(questionID, listenerID);
