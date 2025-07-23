@@ -334,7 +334,7 @@
     /* ========== 底部结果条 ========== */
     function showResult(){
         const questionData = JSON.parse(sessionStorage.getItem('questionData'));
-        if (!questionData) {
+        if (!questionData.sanscontent) {
             console.error("没有找到题目数据");
             return;
         }

@@ -48,10 +48,11 @@ public interface QuestionMapper {
 
 
     // 获取听众收藏的题目
-    @Select("SELECT q.* FROM Question q " +
+    @Select("SELECT q.* ,sa.State ,sa.Sanscontent FROM Question q " +
             "JOIN Collect c ON q.QuestionID = c.QuestionID " +
+            "JOIN Stuanswers sa ON q.QuestionID = sa.QuestionID " +
             "WHERE c.ListenerID = #{listenerID} AND q.Qstatus = 2")
-    List<Question> findQuestionsByListenerAndStatus(@Param("listenerID") int listenerID);
+    List<QuestionDTO> findQuestionsByListenerAndStatus(@Param("listenerID") int listenerID);
 
 
     //听众进行题目收藏

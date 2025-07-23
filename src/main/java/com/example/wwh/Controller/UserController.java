@@ -32,7 +32,7 @@ public class UserController {
         return listener;
     }
 
-    // 根据 SpeakerID 获取听众信息
+    // 根据 SpeakerID 获取演讲者信息
     @GetMapping("/speaker/{speakerID}")
     public Speaker getSpeakerById(@PathVariable int speakerID) {
         return userService.getSpeakerInfo(speakerID);

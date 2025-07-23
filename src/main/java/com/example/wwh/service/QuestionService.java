@@ -38,7 +38,7 @@ public class QuestionService {
     }
 
     // 获取某个听众收藏的题目
-    public List<Question> getQuestionsByListenerAndStatus(int listenerID) {
+    public List<QuestionDTO> getQuestionsByListenerAndStatus(int listenerID) {
         return questionMapper.findQuestionsByListenerAndStatus(listenerID);
     }
 
