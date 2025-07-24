@@ -224,14 +224,15 @@
     </div>
 <script>
 /* 1. 解析 URL 参数 */
-const speechID = 2;
+
 const params = new URLSearchParams(location.search);
 const course = params.get('name') || '未知课程';
 const ppt    = params.get('ppt')     || '123456.pptx';   // 默认示例
+const speechID = params.get('SpeechID');
 
 /* 2. 回显头部信息 */
 document.getElementById('courseName').textContent = course;
-document.getElementById('className').textContent  = cls;
+
 
 /* 3. 组装预览地址（本地相对路径或在线预览） */
 let pptUrl   = encodeURIComponent('ppt/' + ppt);       // 本地相对路径
@@ -651,10 +652,10 @@ async function loadQuestionDetails() {
       // 根据题目状态跳转到不同的页面
       if (parseInt(question.qstatus) === 1) {
         // 进行中的题目跳转到 ongoingQuestionDetail.html
-        window.location.href = `QuestionDetail.html?listenerID=${listenerID}`;
+        window.location.href = `SpeakerQuestionDetail.html?listenerID=${listenerID}`;
       } else if (parseInt(question.qstatus) === 2) {
         // 已结束的题目跳转到 endedQuestionDetail.html
-        window.location.href = `EndQuestionDetail.html?listenerID=${listenerID}`;
+        window.location.href = `SpeakerEndQuestionDetail.html?listenerID=${listenerID}`;
       }
     }
 

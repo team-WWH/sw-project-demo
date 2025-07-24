@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <title>泰拉演讲团-题目详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        body{background:#f5f5f5;color:#333}
+        header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
+        header .brand{font-size:18px;font-weight:bold;margin-right:40px}
+        header nav a{color:#fff;margin-right:20px;text-decoration:none;font-size:14px}
+        header nav a.active{color:#1890ff}
+        .sub-nav{background:#fff;border-bottom:1px solid #e8e8e8;padding:12px 20px;font-size:14px}
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .card{background:#fff;border-radius:4px;padding:20px}
+        .toolbar{display:flex;align-items:center;margin-bottom:16px}
+        .toolbar input{width:240px;padding:6px 10px;border:1px solid #d9d9d9;border-radius:2px;margin-right:12px}
+        .btn{padding:6px 14px;border:none;border-radius:2px;font-size:14px;cursor:pointer}
+        .btn-primary{background:#1890ff;color:#fff}
+        .btn-danger{background:#ff4d4f;color:#fff}
+        table{width:100%;border-collapse:collapse;font-size:14px}
+        th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
+        th{background:#fafafa}
+        .top-bar{background:#fff;border-bottom:1px solid #e5e5e5;position:sticky;top:0;z-index:1000;}
+        .card-question{background:#fff;border-radius:8px;margin-top:12px;padding:18px;}
+        .option-block{margin:8px 0;padding:12px;border:1px solid #ced4da;border-radius:6px;cursor:pointer;transition:.2s;}
+        .option-block:hover{background:#f1f3f5;}
+        .option-block.selected{background:#e8f5e9;border-color:#a5d6a7;color:#388e3c;}
+        .bottom-result{
+            margin-top:12px;
+            font-weight:600;
+            display:none;
+            line-height:1.8;
+        }
+        .bottom-result span{
+            margin:0 6px;
+            padding:2px 8px;
+            border-radius:4px;
+            color:#fff;
+        }
+        .bottom-result .correct{background:#28a745;}
+        .bottom-result .wrong{background:#dc3545;}
+        /* 弹窗报告样式 */
+        .report-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:2000;}
+        .report-content{background:#fff;border-radius:8px;padding:20px;max-width:400px;width:90%;}
+
+    </style>
+</head>
+<body>
+<!-- 顶部主导航 -->
+<header>
+    <div class="brand">泰拉演讲团</div>
+    <nav>
+        <a href="ListenerHomepage.html">首页</a>
+        <a href="History.html">历史演讲</a>
+        <a href="PersonInfo.html">个人信息</a>
+
+    </nav>
+</header>
+<!-- 顶部返回栏 -->
+<nav class="top-bar d-flex align-items-center px-3 py-2">
+    <a href="javascript:history.back()" class="text-dark me-3">＜ 返回</a>
+    <span class="fw-bold">演讲-练习</span>
+
+</nav>
+
+<!-- 题目区域 -->
+<div class="container">
+    <div class="card-question" id="questionBox">
+        <!-- JS 渲染 -->
+    </div>
+</div>
+
+<!-- 结果条 -->
+<!-- <div class="bottom-result" id="resultBar"></div> -->
+
+<!-- 评价区 -->
+<!-- <div class="container mt-3">
+    <div id="commentBox" style="display:none;width: 1150px;">
+        <textarea id="commentInput" class="form-control mb-2" rows="2" placeholder="请对该题进行评价或留言……"></textarea>
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-primary btn-sm" onclick="submitComment()">提交评价</button>
+        </div>
+    </div>
+</div> -->
+
+
+
+<!-- 报告弹窗 -->
+<div class="report-modal" id="reportModal" onclick="closeReport()">
+    <div class="report-content" onclick="event.stopPropagation()">
+        <h5 class="mb-3">答题报告</h5>
+        <p id="reportText"></p>
+        <button class="btn btn-secondary" onclick="closeReport()">关闭</button>
+    </div>
+</div>
+
+<script>
+
+    /* ========== 初始化 ========== */
+    document.addEventListener('DOMContentLoaded', function() {
+        renderQuestion(currentIndex);
+    });
+
+    /* ========== 题库 ========== */
+    const questions = [
+        {
+            stem: `年度热词,大事小情,不仅反映国家大事、时代主旋律,还有对老百姓日常生活的深切____,展现了过去一年的社会变迁和生活万象。而透过“内卷”“躺平”“鸡娃”“双减”“干饭人”等热词,我们还可____当下独特的社会景观。`,
+            options: [
+                'A. 描绘 切合 感触 了解',
+                'B. 体现 把握 体验 感受',
+                'C. 勾勒 蕴含 体察 窥见',
+                'D. 叙写 贴近 关怀 透视'
+            ],
+            answer: 2, // C
+            classRate: '62.3%'
+        },
+        {
+            stem: `算法歧视是以算法为手段实施的歧视，主要指在大数据背景下、依靠机器计算的自动决策系统在对数据主体做出决策分析时，由于数据和算法本身不具有中立性或者隐含错误、被人为操控等原因，对数据主体进行差别对待，造成歧视性后果。根据上述定义，下列属于算法歧视的是：`,
+            options: [
+                'A. 某平台根据性别推荐不同职位',
+                'B. 某 App 根据用户历史推荐新闻',
+                'C. 某医院按病情严重程度排队',
+                'D. 某银行随机抽选客户赠礼'
+            ],
+            answer: 0, // A
+            classRate: '45.7%'
+        },
+        {
+            stem: `公民、法人或者其他组织认为行政机关的具体行政行为所依据的规定不合法，在对具体行政行为申请行政复议时，可以一并向行政复议机关提出对（ ）的审查申请。`,
+            options: [
+                'A. 国务院部门的规定',
+                'B. 国务院的规定',
+                'C. 国务院部门规章',
+                'D. 地方人民政府规章'
+            ],
+            answer: 0, // A
+            classRate: '78.9%'
+        },
+        {
+            stem: `短期来看，日趋激烈的竞争必将导致相应区域的主题公园________ ；而从中长期来看，________了国内外主题公园精粹的集群区域将更有助于吸引来自国内外的增量游客，这对身处其中的本土主题公园而言，将是难得的机遇。`,
+            options: [
+                'A. 此消彼长 会聚',
+                'B. 弱肉强食 荟萃',
+                'C. 优胜劣汰 聚集',
+                'D. 物竞天择 融汇'
+            ],
+            answer: 2, // C
+            classRate: '53.1%'
+        }
+    ];
+
+    /* ========== 状态 ========== */
+    let currentIndex = Number(new URLSearchParams(location.search).get('id') || 1) - 1;
+    const userAnswers = Array(questions.length).fill(null); // 每题用户答案
+    const finishedQuestions = JSON.parse(localStorage.getItem('finishedQuestions') || '[]'); // 已完成的题目
+
+    /* ========== 渲染题目 ========== */
+    let countdownInterval; // 用于存储 setInterval 的返回值，以便后续清除定时器
+
+    function renderQuestion(currentIndex) {
+
+        //const q = questions[currentIndex];
+        // 获取存储在 sessionStorage 中的 questionData
+        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+        if (questionData) {
+            console.log(questionData);  // 在控制台输出 questionData 对象（调试用）
+        } else {
+            console.error("没有找到题目数据");
+            return;
+        }
+        // 使用 questionData 中的数据渲染题目内容
+        const q = questionData;
+
+        //document.getElementById('counter').textContent = `第 ${currentIndex + 1} 题 / 共 ${questions.length} 题`;
+        const box = document.getElementById('questionBox');
+        const isFav = localStorage.getItem(`fav-${currentIndex}`) === '1';
+
+        // 渲染题目框架
+        box.innerHTML = `
+        <div class="mb-3 position-relative">
+          <span class="badge bg-primary me-2">单选题</span>
+
+          <div class="position-absolute top-0 end-0 me-3 mt-3" id="countdown">30s</div> <!-- 倒计时显示 -->
+        </div>
+
+        <div class="mb-3">${q.questioncontent}</div>  <!-- 显示题目 -->
+
+        <div id="optionArea"></div>
+        <div id="resultBar" class="bottom-result"></div>
+      `;
+        //   <i class="star-icon fa-star ${isFav ? 'fas' : 'far'}" onclick="toggleFav(${currentIndex}, this)"></i>
+        // 渲染选项
+        const optionArea = document.getElementById('optionArea');
+
+        const options = [q.a, q.b, q.c, q.d];  // 从 questionData 中提取选项
+        options.forEach((opt, i) => {
+
+            const div = document.createElement('div');
+            div.className = 'option-block';
+            div.dataset.currentIndex = i;
+            div.innerHTML = opt;  // 显示选项内容
+            div.onclick = () => selectAnswer(i);
+            optionArea.appendChild(div);
+        });
+// 禁用选项的点击事件
+        optionArea.querySelectorAll('.option-block').forEach(div => {
+            div.onclick = null; // 禁用点击事件
+        });
+
+        // 显示底部结果条
+        const resultBar = document.getElementById('resultBar');
+        if (!resultBar) {
+            console.error('Result Bar element not found');
+            return;
+        }
+
+        resultBar.style.display = 'block';
+        resultBar.style.visibility = 'visible';
+        resultBar.style.opacity = '1';
+
+        // 检查用户是否选择了答案
+        const userAnswer = q.sanscontent;
+        if (userAnswer === 0) {
+            // 用户未选择答案
+            // resultBar.innerHTML = `
+            //     <div class="result-item">
+            //         <span class="result-label">我的答案：</span>
+            //         <span class="result-answer">空</span>
+            //     </div>
+            // `;
+            showResult();
+            console.log('Result Bar Content:', resultBar.innerHTML);
+        } else {
+            // 用户选择了答案
+            // resultBar.innerHTML = `
+            //     <div class="result-item">
+            //         <span class="result-label">我的答案：</span>
+            //         <span class="result-answer">${options[userAnswer]}</span>
+            //     </div>
+            // `;
+            showResult();
+            console.log('Result Bar Content:', resultBar.innerHTML);
+        }
+        console.log(q);
+        const letterToIndex = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+
+        const correctAnswer = letterToIndex[q.Answer];  // 正确答案的索引
+        const userAnswerIndex = letterToIndex[q.sanscontent];  // 用户选择的答案索引
+        // 标记正确选项和错误选项
+        const correctOption = document.querySelector(`.option-block[data-current-index="${correctAnswer}"]`);
+        if (correctOption) {
+            correctOption.classList.add('correct');
+        }
+
+        if (userAnswer !== 0 && userAnswer !== q.Answer) {
+            const wrongOption = document.querySelector(`.option-block[data-current-index="${userAnswerIndex}"]`);
+            if (wrongOption) {
+                wrongOption.classList.add('incorrect');
+            }
+        }
+
+
+        // 启动倒计时
+        startCountdown();
+
+    }
+    /* ========== 底部结果条 ========== */
+    function showResult(){
+        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+
+        const q = questionData;
+        const bar = document.getElementById('resultBar');
+        //const q = questions[currentIndex];
+        const myLetter   = String.fromCharCode(65 + userAnswers[currentIndex]);
+        const trueLetter = String.fromCharCode(65 + q.answer);
+
+        bar.innerHTML = `
+
+    正确答案：<span class="correct">${q.answer}</span>
+    答案解析：<span class="text-primary">${q.answercon}</span>
+`;
+
+
+        bar.style.display='block';
+
+    }
+
+    //倒计时函数
+    function startCountdown() {
+        const currentTime = Date.now(); // 当前时间（毫秒）
+        const endTime = currentTime + 30000; // 创建时间 + 30秒
+        let timeLeft = Math.max(0, (endTime - currentTime) / 1000); // 剩余时间（秒）
+        const countdownElement = document.getElementById('countdown');
+
+        // 清除之前的倒计时（如果有）
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+
+        // 更新倒计时显示
+        countdownElement.textContent = `${timeLeft.toFixed(0)}s`;
+
+        // 开始倒计时
+        countdownInterval = setInterval(() => {
+            timeLeft -= 1;
+            countdownElement.textContent = `${timeLeft}s`;
+
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval); // 停止倒计时
+                handleCountdownEnd(); // 处理倒计时结束
+            }
+        }, 1000);
+    }
+
+
+////未实现
+    function handleCountdownEnd() {
+        // 标记当前题目为已结束
+        finishedQuestions.push(currentIndex);
+        localStorage.setItem('finishedQuestions', JSON.stringify(finishedQuestions));
+
+        // 返回上一个页面
+        history.back();
+    }
+
+
+
+
+
+
+    /* ========== 初始化 ========== */
+    renderQuestion(currentIndex);
+</script>
+</body>
+</html>

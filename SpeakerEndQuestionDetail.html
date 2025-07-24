@@ -48,16 +48,7 @@
         /* 弹窗报告样式 */
         .report-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:2000;}
         .report-content{background:#fff;border-radius:8px;padding:20px;max-width:400px;width:90%;}
-        /* 收藏星星 */
-        .star-icon{
-            position:absolute;
-            top:8px;
-            right:12px;
-            font-size:20px;
-            color:#ffc107;
-            cursor:pointer;
-            user-select:none;
-        }
+
         .correct {
             border-color: #28a745; /* 绿色 */
             background-color: #d4edda;
@@ -124,13 +115,7 @@
         <div id="commentsList"></div>
     </div>
 
-    <!-- 提交评论区 -->
-    <div id="commentBox" style="margin-bottom: 20px;">
-        <textarea id="commentInput" class="form-control mb-2" rows="2" placeholder="请对该题进行评价或留言……"></textarea>
-        <div class="d-flex justify-content-end">
-            <button class="btn btn-primary btn-sm" onclick="submitComment(2, 1)">提交评价</button> <!-- 假设 QuestionID = 2，ListenerID = 1 -->
-        </div>
-    </div>
+
 </div>
 
 
@@ -225,7 +210,7 @@
         box.innerHTML = `
         <div class="mb-3 position-relative">
           <span class="badge bg-primary me-2">单选题</span>
-          <i class="star-icon fa-star ${isFav ? 'fas' : 'far'}" onclick="toggleFav(${currentIndex}, this)"></i>
+
         </div>
         <div class="mb-3">${q.questioncontent}</div>
         <div id="optionArea"></div>
@@ -282,7 +267,7 @@
             showResult();
             console.log('Result Bar Content:', resultBar.innerHTML);
         }
-    console.log(q);
+        console.log(q);
         const letterToIndex = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
 
         const correctAnswer = letterToIndex[q.Answer];  // 正确答案的索引
@@ -300,44 +285,12 @@
             }
         }
     }
-    // 标记选项的函数
-    function markOptions() {
-        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
-        if (!questionData) {
-            console.error("没有找到题目数据");
-            return;
-        }
-        const q = questionData;
-        const optionArea = document.getElementById('optionArea');
-        const options = optionArea.getElementsByClassName('option-block');
-        // 将字母映射到索引
-        const letterToIndex = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
 
-        const correctAnswer = letterToIndex[q.Answer];  // 正确答案的索引
-        const userAnswer = letterToIndex[q.sanscontent];  // 用户选择的答案索引
-
-        for (let i = 1; i < options.length+1; i++) {
-            if (i === correctAnswer) {
-                options[i].classList.add('correct');
-            } else if (i === userAnswer) {
-                options[i].classList.add('incorrect');
-            }
-        }
-    }
-
-    // 选择答案的函数
-    function selectAnswer(index) {
-        userAnswers[currentIndex] = index;  // 保存用户选择的答案
-        renderQuestion(currentIndex);  // 重新渲染题目
-    }
 
     /* ========== 底部结果条 ========== */
     function showResult(){
         const questionData = JSON.parse(sessionStorage.getItem('questionData'));
-        if (!questionData) {
-            console.error("没有找到题目数据");
-            return;
-        }
+
         const q = questionData;
         const bar = document.getElementById('resultBar');
         //const q = questions[currentIndex];
@@ -345,29 +298,16 @@
         const trueLetter = String.fromCharCode(65 + q.answer);
 
         bar.innerHTML = `
-    我的答案：<span class="${q.sanscontent === '0' ? 'text-muted' : (correctFlags[currentIndex] ? 'correct' : 'wrong')}">
-                ${q.sanscontent === '0' ? '未做答' : q.sanscontent}
-              </span>
+
     正确答案：<span class="correct">${q.answer}</span>
     答案解析：<span class="text-primary">${q.answercon}</span>
 `;
 
 
         bar.style.display='block';
-        // 显示评价输入框
-        document.getElementById('commentBox').style.display = 'block';
+
     }
 
-    /* ========== 评价区 ========== ================================================================*/
-    // function submitComment(){
-    //     const txt = document.getElementById('commentInput').value.trim();
-    //     if(!txt){ alert('请输入评价内容'); return; }
-    //     alert('评价已提交：' + txt);
-    //     // 这里可换成 fetch 调用接口保存
-    //     document.getElementById('commentInput').value='';
-    //     document.getElementById('commentBox').style.display='block';
-    // }
-    // 获取某个题目的评论
     // 获取某个题目的评论
     function getCommentsForQuestion(questionID) {
         const questionData = JSON.parse(sessionStorage.getItem('questionData'));
@@ -430,38 +370,8 @@
     }
 
 
-    // 提交评论
-    function submitComment(questionID, listenerID) {
-        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
-        if (!questionData) {
-            console.error("没有找到题目数据");
-            return;
-        }
-        const q = questionData;
-        //const urlParams = new URLSearchParams(window.location.search);
-        //const listenerID = parseInt(urlParams.get('listenerID'));  // 确保 listenerID 为整数
-        const txt = document.getElementById('commentInput').value.trim();
-        if (!txt) {
-            alert('请输入评价内容');
-            return;
-        }
 
-        // 调用插入评论的接口
-        fetch(`http://localhost:8081/api/questions/listener/addComment?listenerID=${listenerID}&questionID=${q.questionID}&comcontent=${encodeURIComponent(txt)}`, {
-            method: 'POST',
-        })
-            .then(response => response.text())
-            .then(data => {
-                alert('评价已提交：' + txt);
-                // 清空评论输入框
-                document.getElementById('commentInput').value = '';
-                // 刷新评论区
-                getCommentsForQuestion(q.questionID);
-            })
-            .catch(error => {
-                console.error('提交评论失败:', error);
-            });
-    }
+
 
     // 初始化页面时加载评论（如果有的话）
     window.onload = function() {
@@ -470,120 +380,13 @@
             console.error("没有找到题目数据");
             return;
         }
+
         const q = questionData;
         getCommentsForQuestion(q.questionID);
     };
 
 
 
-    /* ========== 上一题 / 下一题 ========== */
-    // function prev(){
-    //     if(currentIndex>0){
-    //         currentIndex--;
-    //         renderQuestion(currentIndex);
-    //     }
-    // }
-    // function next(){
-    //     if(currentIndex<questions.length-1){
-    //         currentIndex++;
-    //         renderQuestion(currentIndex);
-    //     }
-    // }
-
-    //收藏-----------------------------------------------------------------------------------
-    // 更新的收藏操作
-    async function toggleFav(idx, el) {
-        const key = `fav-${idx}`;
-
-        // 获取 URL 参数和题目数据
-        const urlParams = new URLSearchParams(window.location.search);
-        const listenerID = parseInt(urlParams.get('listenerID'));  // 确保 listenerID 为整数
-        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
-
-        if (!questionData) {
-            console.error("没有找到题目数据");
-            return;
-        }
-
-        const q = questionData;
-        const questionID = q.questionID;
-
-        try {
-            // 检查收藏状态
-            const checkResponse = await fetch(`http://localhost:8081/api/questions/listener/checktocollect?questionID=${questionID}&listenerID=${listenerID}`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            if (!checkResponse.ok) {
-                throw new Error('检查收藏状态失败');
-            }
-
-            const checkResult = await checkResponse.text();  // 获取纯文本响应
-            console.log("checkResult:", checkResult);  // 打印检查结果
-
-            // 判断是否已收藏
-            if (checkResult === "The question has already been collected.") {
-                // 已收藏 - 更新UI状态
-                el.classList.replace('far', 'fas');
-                console.log("题目已收藏");
-            } else {
-                // 未收藏 - 执行收藏操作
-                const addResponse = await fetch(`http://localhost:8081/api/questions/listener/addtocollect?listenerID=${listenerID}&questionID=${questionID}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    //body: JSON.stringify({ listenerID, questionID })  // 确保传递整数类型的参数
-                });
-
-                if (!addResponse.ok) {
-                    throw new Error('收藏操作失败');
-                }
-
-                // 收藏成功后更新UI
-                el.classList.replace('far', 'fas');
-                localStorage.setItem(key, '1');
-                console.log("题目已成功收藏");
-            }
-        } catch (error) {
-            console.error('收藏操作出错:', error);
-        }
-    }
-    // 页面加载时初始化收藏图标状态
-    async function initializeFavIcons() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const listenerID = parseInt(urlParams.get('listenerID'));
-        const questionData = JSON.parse(sessionStorage.getItem('questionData'));
-
-        // 修改选择器为 star-icon
-        const icon = document.querySelector('.star-icon');
-
-        if (!questionData || !listenerID || !icon) {
-            console.log("初始化条件不足，跳过收藏状态检查");
-            return;
-        }
-
-        const questionID = questionData.questionID;
-
-        try {
-            const response = await fetch(`http://localhost:8081/api/questions/listener/checktocollect?questionID=${questionID}&listenerID=${listenerID}`);
-
-            if (response.ok) {
-                const result = await response.text();
-                if (result === "The question has already been collected.") {
-                    // 已收藏 -> 实心 (fas)
-                    icon.classList.replace('far', 'fas');
-                } else {
-                    // 未收藏 -> 空心 (far)
-                    icon.classList.replace('fas', 'far');
-                }
-            }
-        } catch (error) {
-            console.error("初始化收藏状态失败", error);
-        }
-    }
-
-    // 页面加载时执行
-    document.addEventListener('DOMContentLoaded', initializeFavIcons);
 
 
 

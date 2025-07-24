@@ -60,71 +60,53 @@
     <div class="card-body">
         <!-- 字段 -->
         <div class="form-item">
-            <label>学号：</label>
-            <span>20231234</span>
+            <label>用户名：</label>
+            <span id="username">20231234</span>  <!-- 这里用一个id来填充用户名 -->
         </div>
         <div class="form-item">
-            <label>学生姓名：</label>
-            <span>陈红</span>
+            <label>邮箱：</label>
+            <span id="email">陈红</span>  <!-- 这里用一个id来填充邮箱 -->
+        </div>
+        <div class="form-item">
+            <label>是否匿名：</label>
+            <span id="isAnonymous">未知</span>  <!-- 这里用一个id来填充是否匿名 -->
         </div>
         <div class="form-item">
             <label>性别：</label>
-            <label><input type="radio" name="gender" value="男"> 男</label>
-            <label style="margin-left:15px"><input type="radio" name="gender" value="女" checked> 女</label>
-        </div>
-      
-    </div>
-</div>
-
-
-
-<!-- 修改密码弹窗 -->
-<div class="modal" id="pwdModal">
-    <div class="modal-content">
-        <div class="modal-header">修改密码</div>
-        <div class="form-item"><label>原密码：</label><input type="password" id="oldPwd"></div>
-        <div class="form-item"><label>新密码：</label><input type="password" id="newPwd"></div>
-        <div class="form-item"><label>确认密码：</label><input type="password" id="confirmPwd"></div>
-        <div class="modal-footer">
-            <button class="btn" onclick="closeModal()">取消</button>
-            <button class="btn btn-primary" onclick="changePwd()">确定</button>
+            <span id="gender">未知</span>  <!-- 这里用一个id来填充性别 -->
         </div>
     </div>
 </div>
+
+
+
+
 
 <script>
-    /* 头像预览 */
-    function previewAvatar(input){
-        if(input.files && input.files[0]){
-            const reader = new FileReader();
-            reader.onload = function(e){
-                const img = document.getElementById('avatarImg');
-                img.src = e.target.result;
-                img.style.display = 'block';
-                document.querySelector('.avatar-uploader .icon').style.display='none';
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
 
-    /* 弹窗控制 */
-    function openModal(){ document.getElementById('pwdModal').style.display='flex'; }
-    function closeModal(){ document.getElementById('pwdModal').style.display='none'; }
 
-    /* 修改密码逻辑 */
-    function changePwd(){
-        const oldPwd = document.getElementById('oldPwd').value.trim();
-        const newPwd = document.getElementById('newPwd').value.trim();
-        const confirmPwd = document.getElementById('confirmPwd').value.trim();
-        if(!oldPwd || !newPwd || !confirmPwd){
-            alert('请完整填写'); return;
-        }
-        if(newPwd !== confirmPwd){
-            alert('两次密码不一致'); return;
-        }
-        alert('修改成功');
-        closeModal();
-    }
+    // 获取 URL 中的 listenerID 参数
+    // const urlParams = new URLSearchParams(window.location.search);
+    // const listenerID = urlParams.get('listenerID');  // 假设 URL 中有 listenerID 参数
+    const listenerID = 1;
+
+    // 发送 GET 请求来获取听众信息
+    fetch(`http://localhost:8081/users/listener/${listenerID}`)
+        .then(response => response.json())  // 解析返回的 JSON 数据
+        .then(listener => {
+            // 填充页面中的信息
+            document.getElementById('username').textContent = listener.anonymous ? '匿名' : listener.uname || '未知';
+            document.getElementById('email').textContent = listener.mail || '未知';
+            document.getElementById('isAnonymous').textContent = listener.anonymous ? '是' : '否';
+            document.getElementById('gender').textContent = listener.sex ? '男' : '女';
+        })
+        .catch(error => {
+            console.error('Error fetching listener info:', error);
+            // 如果发生错误，给出提示
+            alert('加载听众信息失败');
+        });
+
+
 </script>
 
 </body>
