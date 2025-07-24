@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>组织者首页 - 泰拉演讲团</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
+        header .brand{font-size:18px;font-weight:bold;margin-right:40px}
+        header nav a{color:#fff;margin-right:20px;text-decoration:none;font-size:14px}
+        header nav a.active{color:#1890ff}      
+        body{background:#f5f5f5;color:#333}       
+        /* 右侧区域 */
+        .main{flex:1;display:flex;flex-direction:column}
+        /* 面包屑 */
+        .breadcrumb{background:#fff;padding:12px 20px;border-bottom:1px solid #e8e8e8;font-size:14px}
+        /* 内容区 */
+        .content{flex:1;padding:20px;overflow:auto}
+        .card{background:#fff;border-radius:4px;padding:20px}
+        .toolbar{display:flex;gap:12px;margin-bottom:16px}
+        .toolbar input,.toolbar button{padding:6px 12px}
+        table{width:100%;border-collapse:collapse}
+        th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left;font-size:14px}
+        th{background:#fafafa}
+        .avatar{width:32px;height:32px;border-radius:50%}
+        .btn{padding:4px 8px;margin-right:4px;border:none;border-radius:2px;cursor:pointer;font-size:12px}
+        .btn-primary{background:#1890ff;color:#fff}
+        .btn-danger{background:#ff4d4f;color:#fff}
+    </style>
+</head>
+<body>
+    <!-- 顶部主导航 -->
+<header>
+    <div class="brand">泰拉演讲团</div>
+    <nav>
+        <a href="OrganizerHomepage.html"class="active">首页</a>
+        <!-- <a href="SpeakerHistory.html">历史演讲</a> -->
+        <a href="OrganizerInfo.html">个人信息</a>
+    </nav>
+</header>
+
+
+
+
+<!-- 右侧主体 -->
+<div class="main">
+    <!-- 面包屑 -->
+    <div class="breadcrumb">
+         演讲者列表
+    </div>
+    <!-- 卡片内容 -->
+    <div class="content">
+        <div class="card">
+            <!-- 搜索栏 -->
+            <div class="toolbar">
+                <input id="keyword" placeholder="请输入演讲者姓名">
+                <button class="btn btn-primary" onclick="search()">查询</button>
+                <button class="btn btn-primary" style="margin-left:auto" onclick="alert('添加演讲者')">添加</button>
+            </div>
+            <!-- 表格 -->
+            <table>
+                <thead>
+                <tr>
+                    <th>序号</th><th>姓名</th>
+                    <th>邮箱</th><th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                <!-- 数据行 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="addModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+  <div style="background:#fff; padding:20px; border-radius:4px; width:300px;">
+    <h4>添加演讲者</h4>
+    <input id="newName" placeholder="姓名" style="width:100%; margin-bottom:10px;">
+    <input id="newEmail" placeholder="邮箱" style="width:100%; margin-bottom:10px;">
+    <div style="text-align:right;">
+      <button onclick="closeAddModal()" class="btn">取消</button>
+      <button onclick="confirmAdd()" class="btn btn-primary">确认</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 模拟数据
+const speakers = [
+    {id:'1',name:'甲',mail:'773890001@qq.com'},
+    {id:'2',name:'乙',mail:'773890002@qq.com'},
+    {id:'3',name:'丙',mail:'773890003@qq.com'},
+    {id:'4',name:'丁',mail:'773890004@qq.com'},
+    {id:'5',name:'戊',mail:'773890005@qq.com'},
+    {id:'6',name:'己',mail:'773890006@qq.com'}
+];
+
+function render(list){
+    const tbody=document.getElementById('tbody');
+    tbody.innerHTML='';
+    list.forEach(speaker=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+            <td>${speaker.id}</td>
+            <td>${speaker.name}</td>
+            <td>${speaker.mail}</td>
+            <td>
+                <button class="btn btn-primary" onclick="view('${speaker.id}')">查看</button>
+                <button class="btn btn-danger" onclick="del('${speaker.id}')">删除</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function search(){
+    const kw=document.getElementById('keyword').value.trim().toLowerCase();
+    if(!kw){render(speakers);return;}
+    const res=speakers.filter(s=>s.id.toLowerCase().includes(kw)||s.name.toLowerCase().includes(kw));
+    render(res);
+}
+function view(id) {
+  window.location.href = `SpeakerHomepage.html?id=${id}`;
+}
+// function edit(id){alert('修改 '+id);}
+function del(id){
+    if(confirm('确认删除 '+id+' ?')){
+        const idx=speakers.findIndex(s=>s.id===id);
+        speakers.splice(idx,1);
+        render(speakers);
+    }
+}
+
+function alert(msg) {
+  if (msg === '添加演讲者') {
+    document.getElementById('addModal').style.display = 'flex';
+  }
+}
+
+function closeAddModal() {
+  document.getElementById('addModal').style.display = 'none';
+  document.getElementById('newName').value = '';
+  document.getElementById('newEmail').value = '';
+}
+
+function confirmAdd() {
+  const name = document.getElementById('newName').value.trim();
+  const mail = document.getElementById('newEmail').value.trim();
+  if (!name || !mail) {
+    alert('姓名和邮箱不能为空');
+    return;
+  }
+
+  const newId = (Math.max(...speakers.map(s => +s.id)) + 1).toString();
+  speakers.push({ id: newId, name, mail });
+  render(speakers);
+  closeAddModal();
+}
+
+render(speakers);
+</script>
+</body>
+</html>
