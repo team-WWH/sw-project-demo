@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>DT502</title>
+<title>个人信息</title>
 <style>
     /* 全局样式 */
      *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
@@ -55,17 +55,27 @@
 </header>
  <!-- 主卡片 -->
  <div class="card">
-     <div class="card-header">DT502</div>
+     <div class="card-header">个人信息</div>
      <div class="card-body">
          <!-- 字段 -->
          <div class="form-item">
              <label>用户名：</label>
-             <span id="username">20231234</span>  <!-- 这里用一个id来填充用户名 -->
+             <span id="username">陈红</span>  <!-- 这里用一个id来填充用户名 -->
          </div>
          <div class="form-item">
              <label>邮箱：</label>
-             <span id="email">陈红</span>  <!-- 这里用一个id来填充邮箱 -->
+             <span id="email">123@qq.com</span>  <!-- 这里用一个id来填充邮箱 -->
          </div>
+          <!-- 匿名开关 -->
+    <div class="form-item">
+      <label>是否匿名：</label>
+      <label style="margin-right:10px">
+        <input type="radio" name="anonymous" value="0" checked> 不匿名
+      </label>
+      <label>
+        <input type="radio" name="anonymous" value="1"> 匿名
+      </label>
+    </div>
 
          <div class="form-item">
              <label>性别：</label>
@@ -96,6 +106,17 @@
             // 如果发生错误，给出提示
             alert('加载听众信息失败');
         });
+        /* 匿名逻辑 */
+const realUserName = '陈红';                  // 真实用户名
+const userSpan     = document.getElementById('username');
+
+document.querySelectorAll('input[name="anonymous"]').forEach(r =>
+  r.addEventListener('change', () => {
+    userSpan.textContent = r.value === '1'
+      ? 'X'.repeat(realUserName.length)   // ← 关键改动
+      : realUserName;
+  })
+);
 
 </script>
 
