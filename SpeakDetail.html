@@ -106,13 +106,10 @@
 
 <div class="header">
   <h1 id="title">演讲详情</h1>
-  <p id="info">课程：<span id="courseName"></span> &nbsp;&nbsp; </p>
+
 </div>
 
-<!--<div class="actions" style="margin-top: 20px;">-->
-<!--  <button class="btn-primary" onclick="loadSpeechContent()">演讲内容</button>-->
-<!--  <button class="btn-secondary" onclick="loadQuestionDetails()">题目详情</button>-->
-<!--</div>-->
+
 
 <div class="main" style="display:flex;gap:20px;">
   <!-- 左侧 PPT 预览 -->
@@ -130,18 +127,11 @@
       结束演讲
     </button>
   </div>
-  <!-- 听众展示列表 -->
-  <div class="audience-list" style="margin-top: 20px; overflow-y: auto; height: 150px; border: 1px solid #ddd; border-radius: 6px;">
-    <div class="audience-item" style="padding: 5px; border-bottom: 1px solid #eee;">
-      <img src="avatar1.png" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-      <span>听众1</span>
+
+    <!-- 听众展示列表 -->
+    <div class="audience-list" style="margin-top: 20px; overflow-y: auto; height: 150px; border: 1px solid #ddd; border-radius: 6px;">
+      <!-- 听众项会通过 JavaScript 动态添加 -->
     </div>
-    <div class="audience-item" style="padding: 5px; border-bottom: 1px solid #eee;">
-      <img src="avatar2.png" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-      <span>听众2</span>
-    </div>
-    <!-- 添加更多听众项 -->
-  </div>
     <!-- 聊天区 -->
     <div class="chat-container" style="margin-top:20px;">
       <div class="chat-header">
@@ -230,8 +220,7 @@ const course = params.get('name') || '未知课程';
 const ppt    = params.get('ppt')     || '123456.pptx';   // 默认示例
 const speechID = params.get('SpeechID');
 
-/* 2. 回显头部信息 */
-document.getElementById('courseName').textContent = course;
+
 
 
 /* 3. 组装预览地址（本地相对路径或在线预览） */
@@ -279,13 +268,7 @@ const listenerID = 0;
 
 const endpointUrl = 'http://localhost:8081/listener/tofeedback';
 
-// function displayMessage(message, isSent) {
-//     const messageDiv = document.createElement('div');
-//     messageDiv.className = `message ${isSent ? 'message-sent' : 'message-received'}`;
-//     messageDiv.textContent = message;
-//     messagesContainer.appendChild(messageDiv);
-//     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-// }
+
 function displayMessage(message, isSent) {
   const messageDiv = document.createElement('div');
 
@@ -420,19 +403,54 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 //-------------------------------------------------------------------------------------
+//听众展示区============================================================================
+// 发起 GET 请求获取所有 Listener 信息
+fetch(`http://localhost:8081/Speaker/AllListener?speechID=${speechID}`)
+        .then(response => response.json())
+        .then(data => {
+          // 在成功获取到数据后，动态更新听众列表
+          displayAudience(data);
+        })
+        .catch(error => console.error('获取 Listener 信息失败:', error));
+function displayAudience(listeners) {
+  // 获取容器元素
+  const audienceList = document.querySelector('.audience-list');
+
+  // 清空现有的内容
+  audienceList.innerHTML = '';
+
+  // 遍历所有 listener，创建新的项
+  listeners.forEach(listener => {
+    const item = document.createElement('div');
+    item.classList.add('audience-item');
+    item.style.padding = '5px';
+    item.style.borderBottom = '1px solid #eee';
+
+    const span = document.createElement('span');
+
+    // 根据 anonymous 字段判断是否显示匿名
+    if (listener.anonymous === 1) {
+      span.textContent = '匿名';  // 显示匿名
+    } else {
+      span.textContent = listener.uname;  // 显示真实用户名
+    }
+
+    item.appendChild(span);
+    audienceList.appendChild(item);
+  });
+}
+
+
+//===================================================================================
 function confirmPublish() {
   const progress = document.getElementById('progressSelect').value;
   alert(`题目已发布，进度：${progress}%`);
   closePublishModal();
 }
 
-function viewQuestion() {
-  window.location.href = 'SpeakerQuestion.html?course=' + encodeURIComponent(document.getElementById('courseName').innerText);
-}
 
-function viewFeedback() {
-  window.location.href = 'FeedbackList.html?course=' + encodeURIComponent(document.getElementById('courseName').innerText);
-}
+
+
 
 function endSpeech() {
   if(confirm('确定要结束当前演讲吗？')) {
@@ -592,7 +610,7 @@ async function loadSpeechContent() {
    alert('加载演讲内容失败');
   }
 }
-
+//===================================================================///
 // 加载题目详情
 // 在页面加载时自动加载题目信息
 window.addEventListener('DOMContentLoaded', async function() {

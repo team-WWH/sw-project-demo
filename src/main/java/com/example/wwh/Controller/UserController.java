@@ -70,4 +70,15 @@ public class UserController {
     public List<Speaker> getSpeakers(@RequestParam("OrganizerID") int organizerID) {
         return userService.getSpeakersByOrganizer(organizerID);
     }
+
+//添加组织者的演讲者
+    @GetMapping("/organizer/actions/addOrgconspe")
+    public String addOrgconspe(@RequestParam("OrganizerID") int organizerID, @RequestParam("Smail") String smail) {
+        System.out.println("Received OrganizerID: " + organizerID);
+        System.out.println("Received Smail: " + smail);
+        userService.addOrgconspe(organizerID, smail);
+        return "Data added successfully!";
+    }
+
+
 }

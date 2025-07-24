@@ -37,6 +37,7 @@ public class AnalysisService {
         AccurayAndNumber accurayAndNumber = new AccurayAndNumber();
             accurayAndNumber.setAccuray((double) Accuracy /(QuestionIDList.size()));
             accurayAndNumber.setNumber(number);
+        System.out.println("ListenerID = " + accurayAndNumber.getAccuray());
             return accurayAndNumber;
         }
 
@@ -44,6 +45,7 @@ public class AnalysisService {
     public List<ListenerAccuracyResponse> getspeechAccuracy(Integer SpeechID) {
         List<Listener> ListenerIDList = speechService.getAllListenerBySpeechID(SpeechID);
         List<ListenerAccuracyResponse> Listeneraccuracy = new ArrayList<>();
+        //System.out.println(ListenerIDList.get(0).getListenerID());
         for (Listener listener : ListenerIDList) {
 
           double accuracy  =getlistenerAccuracy(listener.getListenerID(),SpeechID).getAccuray();
@@ -57,7 +59,9 @@ public class AnalysisService {
             listenerAccuracyResponse.setNumber(number);
             Listeneraccuracy.add(listenerAccuracyResponse);
         }
-        Listeneraccuracy.sort(Comparator.comparingDouble(ListenerAccuracyResponse::getAccuracy).reversed());;
+
+        Listeneraccuracy.sort(Comparator.comparingDouble(ListenerAccuracyResponse::getAccuracy).reversed());
+
         return Listeneraccuracy;
     }
     //演讲的平均正确率

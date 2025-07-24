@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>历史演讲 - 泰拉演讲团</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        body{background:#f5f5f5;color:#333}
+        header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
+        header .brand{font-size:18px;font-weight:bold;margin-right:40px}
+        header nav a{color:#fff;margin-right:20px;text-decoration:none;font-size:14px}
+        header nav a.active{color:#1890ff}
+        .sub-nav{background:#fff;border-bottom:1px solid #e8e8e8;padding:12px 20px;font-size:14px}
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .card{background:#fff;border-radius:4px;padding:20px}
+        .toolbar{display:flex;align-items:center;margin-bottom:16px}
+        .toolbar input{width:240px;padding:6px 10px;border:1px solid #d9d9d9;border-radius:2px;margin-right:12px}
+        .btn{padding:6px 14px;border:none;border-radius:2px;font-size:14px;cursor:pointer}
+        .btn-primary{background:#1890ff;color:#fff}
+        .btn-danger{background:#ff4d4f;color:#fff}
+        table{width:100%;border-collapse:collapse;font-size:14px}
+        th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
+        th{background:#fafafa}
+        .brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        nav a.active {
+            color: #007bff;
+        }
+
+        .sub-nav {
+            background-color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sub-nav-left h2 {
+            margin: 0;
+        }
+
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .card {
+            background: linear-gradient(to bottom right, #ff70a6, #ff9770);
+            border-radius: 12px;
+            padding: 20px;
+            width: 300px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .card-header {
+            align-self: flex-start;
+        }
+        .card-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .card-body {
+            flex-grow: 1;
+        }
+        .card-info {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+        }
+        .card-invite-code {
+            font-size: 12px;
+        }
+        .card-copy-btn {
+            width: auto; /* 自动宽度 */
+            height: 24px;
+            background-color: #f0f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+            padding: 0 8px; /* 添加内边距 */
+        }
+        .card-copy-btn:hover {
+            background-color: #ddd;
+        }
+        .fa-copy {
+            margin-right: 5px;
+        }
+        .card-footer {
+            align-self: flex-end;
+            display: flex;
+            gap: 10px;
+        }
+        .card-btn {
+            background-color: #fff;
+            color: #333;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            width: auto; /* 自动宽度 */
+            height: 24px;
+            padding: 0 8px; /* 添加内边距 */
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 顶部主导航 -->
+<header>
+    <div class="brand">泰拉演讲团</div>
+    <nav>
+        <a href="OtoSpeakerHomepage.html">演讲者首页</a>
+        <a href="OtoSpeakerHistory.html"class="active">历史演讲</a>
+        <a href="OtoSpeakerInfo.html">演讲者个人信息</a>
+        <a href="OrganizerHomepage.html">返回组织者首页</a>
+    </nav>
+</header>
+
+<!-- 二级头部 -->
+<div class="sub-nav">
+    <div class="sub-nav-left">
+        <h2>历史演讲</h2>
+    </div>
+
+</div>
+
+<!-- 主体内容 -->
+<div class="container">
+    <div id="speechCardsContainer"></div>
+</div>
+
+<script>
+    const speakerID = 1;
+
+    // 获取历史的演讲数据
+    fetch(`http://localhost:8081/Speaker/ended?SpeakerID=${speakerID}`)
+        .then(response => response.json())
+        .then(data => {
+            render(data);  // 调用渲染函数将数据展示到页面
+        })
+        .catch(error => console.error('Error fetching speeches:', error));
+
+
+
+
+
+
+    function renderSpeechCard(speech) {
+        const container = document.getElementById('speechCardsContainer');
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+        <div class="card-header" >
+            <div class="card-name">${speech.speechname}</div>
+        <div class="card-body" style="margin-top:30px">
+            <div class="card-info" >
+               <div class="card-invite-code"  style="">${speech.inviteCode}</div>
+                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
+            border-radius: 2px;">☇</button>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px;margin-left:190px">进入</button>
+            <button class="btn btn-primary card-btn" onClick="ASpeech(${speech.speechID})" style="height:30px;">查看</button>
+        </div>
+    `;
+        container.appendChild(card);
+    }
+
+    function render(data) {
+        const container = document.getElementById('speechCardsContainer');
+        container.innerHTML = '';
+        data.forEach(speech => { // 使用speech而不是item
+            renderSpeechCard(speech); // 传入当前演讲数据
+        });
+    }
+
+
+    function view(SpeechID) {
+        const speechID = SpeechID;  // 获取当前演讲的 SpeechID
+        const url = `http://localhost:8080/SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${speechID}`;
+        window.location.href = url;
+    }
+
+    //查看演讲分析
+    function ASpeech(SpeechID) {
+        const speechID = SpeechID;  // 获取当前演讲的 SpeechID
+        const url = `http://localhost:8080/SpeakAnalysis.html?SpeakerID=${speakerID}&SpeechID=${speechID}`;
+        window.location.href = url;
+
+    }
+
+    function deleteSpeech(idx) {
+        const confirmed = confirm('确定要删除这个演讲吗？');
+        if (confirmed) {
+            const speech = list[idx];
+            if (speech) {
+                // 这里可以添加删除演讲的逻辑
+                console.log('演讲已删除', speech);
+                // 重新渲染列表
+                list.splice(idx, 1);
+                render(list);
+            } else {
+                alert('演讲未找到');
+            }
+        }
+    }
+
+    function addSpeech() {
+        alert('跳转到“新增在线测评”页面');
+    }
+
+
+
+    function addSpeech() {
+        alert('跳转到“新增在线测评”页面');
+    }
+
+    const list = [
+        { speechID: 1, sname: '十万个为什么', otime: '2024-07-22', inviteCode: 'ABC123DEF', filePath: 'path/to/file' },
+        // 添加更多演讲数据...
+    ];
+
+
+    render(list);
+</script>
+</body>
+</html>

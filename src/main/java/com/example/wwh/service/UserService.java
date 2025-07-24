@@ -88,5 +88,15 @@ public class UserService {
     }
 
 
+//添加组织者手下的演讲者
+    public void addOrgconspe(int organizerID, String smail) {
+        // 获取 SpeakerID
+        int speakerID = userMapper.getSpeakerIDBySmail(smail);
+
+        // 插入数据到 orgconspe 表
+        userMapper.insertOrgconspe(organizerID, speakerID);
+    }
+
+
 }
 
