@@ -1,4 +1,5 @@
 package com.example.wwh.service;
+import com.example.wwh.Data.RegisterRequest;
 import com.example.wwh.Mapper.SpeechMapper;
 import com.example.wwh.pojo.Listener;
 import com.example.wwh.pojo.Speaker;
@@ -52,5 +53,33 @@ public class UserService {
         return userMapper.getOrganizerByMail(omail);
     }
 
+    public void addListener(RegisterRequest request){
+        Listener listener = new Listener();
+        listener.setMail(request.getMail());
+        listener.setAnonymous(0);
+        listener.setPhone(request.getPhone());
+        listener.setUname(request.getUname());
+        listener.setSex(request.getSex());
+        listener.setPassword(request.getPassword());
+        userMapper.addListener(listener);
+    }
+    public void addSpeaker(RegisterRequest request){
+        Speaker listener = new Speaker();
+        listener.setSmail(request.getMail());
+        listener.setSphone(request.getPhone());
+        listener.setSname(request.getUname());
+        listener.setSsex(request.getSex());
+        listener.setSpassword(request.getPassword());
+        userMapper.addSpeaker(listener);
+    }
+    public void addOrganizer(RegisterRequest request){
+        Organizer listener = new Organizer();
+        listener.setOmail(request.getMail());
+        listener.setOphone(request.getPhone());
+        listener.setOname(request.getUname());
+        listener.setOsex(request.getSex());
+        listener.setOpassword(request.getPassword());
+        userMapper.addOrganizer(listener);
+    }
 }
 

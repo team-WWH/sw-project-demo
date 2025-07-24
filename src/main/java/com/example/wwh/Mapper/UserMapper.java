@@ -1,4 +1,5 @@
 package com.example.wwh.Mapper;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import java.util.List;
@@ -49,5 +50,12 @@ public interface UserMapper {
     @Select("SELECT * FROM Organizer WHERE Omail = #{omail}")
     Organizer getOrganizerByMail(String omail);
 
+    @Insert("INSERT INTO Listener (Uname,Password,Mail,Phone,Anonymous,Sex) VALUES (#{Uname},#{Password},#{Mail},#{Phone},#{Anonymous},#{Sex})")
+    void addListener(Listener listener);
 
+    @Insert("INSERT INTO speaker (Sname,Spassword,Smail,Sphone,Ssex) VALUES (#{Sname},#{Spassword},#{Smail},#{Sphone},#{Ssex})")
+    void addSpeaker(Speaker speaker);
+
+    @Insert("INSERT INTO orgnizer (Oname,Opassword,Omail,Ophone,Osex) VALUES (#{Oname},#{Opassword},#{Omail},#{Ophone},#{Osex})")
+    void addOrganizer(Organizer organizer);
 }
