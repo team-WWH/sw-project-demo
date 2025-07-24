@@ -25,7 +25,8 @@ public class AnalysisController {
     }
     //Speech全部Listener的正确率
     @GetMapping("Speaker/AllListenerAccuracy")
-    public List<ListenerAccuracyResponse> getAllListenerAccuracyAndNumber(@Param("SpeechID") Integer SpeechID){
+    public List<ListenerAccuracyResponse> getAllListenerAccuracyAndNumber(@Param("speechID") Integer SpeechID){
+        System.out.println(SpeechID);
         return analysisService.getspeechAccuracy(SpeechID);
     }
     //题目正确率分布

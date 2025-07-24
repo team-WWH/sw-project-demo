@@ -16,6 +16,36 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        header {
+            background: #001529;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            height: 56px;  /* 你可以根据需要调整高度 */
+            width: 100%;  /* 确保头部宽度为 100% */
+            position: fixed;  /* 如果你希望导航栏固定在顶部 */
+            top: 0;  /* 定位到顶部 */
+            left: 0;
+            z-index: 1000;  /* 确保它覆盖其他内容 */
+        }
+
+        header .brand {
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 40px;
+        }
+
+        header nav a {
+            color: #fff;
+            margin-right: 20px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        header nav a.active {
+            color: #1890ff;
+        }
         
         body {
             background: linear-gradient(135deg, #1a2980, #26d0ce);
@@ -23,6 +53,7 @@
             min-height: 100vh;
             padding: 20px;
         }
+
         
         .container {
             max-width: 1400px;
@@ -365,9 +396,21 @@
     </style>
 </head>
 <body>
+
+<!-- 顶部主导航 -->
+<header>
+    <div class="brand">泰拉演讲团</div>
+    <nav>
+        <a href="SpeakerHomepage.html" >首页</a>
+        <a href="SpeakerHistory.html">历史演讲</a>
+        <a href="SpeakerInfo.html" >个人信息</a>
+    </nav>
+</header>
+
     <div class="container">
         <div class="header">
             <div>
+                <h3>——————————</h3>
                 <h1>演讲分析</h1>
             </div>
 
@@ -378,15 +421,15 @@
             <div class="stats-section">
                 <div class="stat-card">
                     <i class="fas fa-users fa-2x"></i>
-                    <div class="value">48</div>
+                    <div class="value audience-value">48</div> <!-- 听众总人数 -->
                     <div class="label">听众总人数</div>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-chart-line fa-2x"></i>
-                    <div class="value">86.5</div>
+                    <div class="value accuracy-value">86.5</div> <!-- 平均正确率 -->
                     <div class="label">平均正确率</div>
                     <div class="progress-container">
-                        <div class="progress-bar" style="width: 86.5%"></div>
+                        <div class="progress-bar" style="width: 86.5%"></div> <!-- 进度条 -->
                     </div>
                 </div>
 
@@ -395,7 +438,7 @@
             <div class="chart-section">
                 <div class="chart-container">
                     <div class="chart-header">
-                        <div class="chart-title">成绩排名柱状图</div>
+                        <div class="chart-title">正确率排名柱状图</div>
 
                     </div>
                     <div id="rankingChart" class="chart"></div>
@@ -403,10 +446,10 @@
                 
                 <div class="chart-container">
                     <div class="chart-header">
-                        <div class="chart-title">答题正确数分布</div>
+                        <div class="chart-title">题目正确率分布</div>
 
                     </div>
-                    <canvas id="scoreDistributionChart"></canvas>
+                    <canvas id="questionDistributionChart"></canvas>
                 </div>
             </div>
 
@@ -414,7 +457,7 @@
                 <!-- 左侧：成绩排名表 -->
                 <div class="chart-container" style="flex: 1;">
                     <div class="chart-header">
-                        <div class="chart-title">班级成绩排名表</div>
+                        <div class="chart-title">答题数排名表</div>
                     </div>
                     <div class="ranking-table">
                         <table>
@@ -422,8 +465,7 @@
                             <tr>
                                 <th>排名</th>
                                 <th>姓名</th>
-                                <th>成绩</th>
-                                <th>答题正确数</th>
+                                <th>答题数</th>
                             </tr>
                             </thead>
                             <tbody id="rankingTableBody">
@@ -475,13 +517,7 @@
 
         const endpointUrl = 'http://localhost:8081/listener/tofeedback';
 
-        // function displayMessage(message, isSent) {
-        //     const messageDiv = document.createElement('div');
-        //     messageDiv.className = `message ${isSent ? 'message-sent' : 'message-received'}`;
-        //     messageDiv.textContent = message;
-        //     messagesContainer.appendChild(messageDiv);
-        //     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        // }
+
         function displayMessage(message, isSent) {
             const messageDiv = document.createElement('div');
 
@@ -614,297 +650,188 @@
 
 
         //-------------------------------------------------------------------------------------
+        //人数和正确率
+        // 获取所有听众信息
+        fetch(`http://localhost:8081/Speaker/AllListener?speechID=${speechID}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.length);
+                // 更新听众总人数
+                document.querySelector('.audience-value').textContent = data.length;  // 更新听众总人数
+            })
+            .catch(error => console.error('获取 Listener 信息失败:', error));
+
+        // 获取演讲的平均正确率
+        fetch(`http://localhost:8081/Speaker/SpeechAccuracy?SpeechID=${speechID}`)
+            .then(response => response.json())
+            .then(accuracy => {
+                console.log(accuracy);
+                // 更新平均正确率
+                document.querySelector('.accuracy-value').textContent = accuracy * 100 +'%';  // 更新平均正确率
+                document.querySelector('.progress-bar').style.width = `${accuracy * 100}%`;  // 更新进度条
+            })
+            .catch(error => console.error('获取 Speech Accuracy 失败:', error));
+
+
+        // 请求所有听众的准确率数据
+        fetch(`http://localhost:8081/Speaker/AllListenerAccuracy?SpeechID=${speechID}`)
+            .then(response => response.json())
+            .then(data => {
+                const sortedNames = data.map(listener => listener.uname); // 获取所有听众的姓名
+                const sortedAccuracies = data.map(listener => listener.accuracy); // 获取所有听众的准确率
+
+                // 初始化 ECharts 柱状图
+                const chartDom = document.getElementById('rankingChart');
+                const myChart = echarts.init(chartDom);
+
+                const option = {
+                    title: {
+                        text: '正确率排名',
+                        left: 'center',
+                        textStyle: {
+                            fontSize: 18,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: { type: 'shadow' },
+                        formatter: function(params) {
+                            const data = params[0];
+                            return `<b>${sortedNames[data.dataIndex]}</b><br/>排名: ${data.dataIndex + 1}<br/>准确率: ${data.value}%`;
+                        }
+                    },
+                    grid: { left: '3%', right: '19%', bottom: '3%', containLabel: true },
+                    xAxis: {
+                        type: 'value',
+                        name: '正确率 (%)',
+                        axisLabel: { formatter: '{value}%' },
+                        splitLine: { lineStyle: { type: 'dashed' } }
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: sortedNames,
+                        axisLabel: { interval: 0, rotate: 0 }
+                    },
+                    series: [{
+                        name: '准确率',
+                        type: 'bar',
+                        data: sortedAccuracies,
+                        itemStyle: {
+                            color: '#64b5f6',
+                        },
+                        label: {
+                            show: true,
+                            position: 'right',
+                            formatter: '{c}%'
+                        }
+                    }]
+                };
+
+                myChart.setOption(option);
+            })
+            .catch(error => console.error('获取正确率数据失败:', error));
+        // 请求题目正确率分析数据
+        fetch(`http://localhost:8081/Speaker/QuestionAnalysis?SpeechID=${speechID}`)
+            .then(response => response.json())
+            .then(data => {
+                const questionAnalysis = data;
+
+                // 提取题目正确率分布数据
+                const questionDistribution = [questionAnalysis.high, questionAnalysis.middle, questionAnalysis.low];
+                const questionLabels = ['高分（> 60%）', '中分（30%-60%）', '低分（< 30%）'];
+
+                // 获取用于绘制图表的 canvas 元素
+                const questionChartCtx = document.getElementById('questionDistributionChart').getContext('2d');
+
+                // 绘制题目正确率分布饼图
+                const questionDistributionChart = new Chart(questionChartCtx, {
+                    type: 'pie',  // 饼图
+                    data: {
+                        labels: questionLabels,
+                        datasets: [{
+                            data: questionDistribution,
+                            backgroundColor: ['#66bb6a', '#ffeb3b', '#f44336'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: '题目正确率分布'
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('获取题目分析数据失败:', error));
+
+        ///------------------------------------------------------------------------------------
 
         document.addEventListener('DOMContentLoaded', function() {
 
             connect();
 
 
-            // 生成随机学生数据
-            function generateStudentData(count) {
-                const classes = ['一班', '二班', '三班'];
-                const surnames = ['张', '李', '王', '赵', '刘', '陈', '杨', '周', '黄', '吴', '郑', '孙', '马', '朱', '胡', '林', '高'];
-                const names = ['明', '华', '芳', '强', '伟', '晓', '帆', '婷', '洋', '浩', '莉', '进', '琳', '超', '杰', '涛', '敏', '翔', '旭', '宁', '宇'];
-                
-                const students = [];
-                for (let i = 1; i <= count; i++) {
-                    const surname = surnames[Math.floor(Math.random() * surnames.length)];
-                    const name = names[Math.floor(Math.random() * names.length)];
-                    const fullName = surname + name;
-                    const score = Math.floor(Math.random() * 21) + 80; // 80-100
-                    const correctAnswers = Math.floor(Math.random() * 6); // 0-5
-                    const cls = classes[Math.floor(Math.random() * classes.length)];
-                    
-                    students.push({
-                        id: `2024${String(i).padStart(4, '0')}`,
-                        name: fullName,
-                        score: score,
-                        correctAnswers: correctAnswers,
-                        class: cls,
-                        rank: i
-                    });
-                }
-                
-                // 按成绩从高到低排序
-                students.sort((a, b) => b.score - a.score);
-                
-                // 分配排名
-                students.forEach((student, index) => {
-                    student.rank = index + 1;
-                });
-                
-                return students;
-            }
-            
-            // 渲染排名表格
-            function renderRankingTable(students) {
-                const tableBody = document.getElementById('rankingTableBody');
-                tableBody.innerHTML = '';
-                
-                students.forEach(student => {
-                    const row = document.createElement('tr');
-                    
-                    // 添加奖牌样式
-                    let rankCell = '';
-                    if (student.rank === 1) {
-                        rankCell = `<td><span class="medal gold">${student.rank}</span></td>`;
-                    } else if (student.rank === 2) {
-                        rankCell = `<td><span class="medal silver">${student.rank}</span></td>`;
-                    } else if (student.rank === 3) {
-                        rankCell = `<td><span class="medal bronze">${student.rank}</span></td>`;
-                    } else {
-                        rankCell = `<td>${student.rank}</td>`;
-                    }
-                    
-                    row.innerHTML = `
+            // 请求所有听众的准确率数据
+            fetch(`http://localhost:8081/Speaker/AllListenerAccuracy?SpeechID=${speechID}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 提取 uname 和 number
+                    const sortedNames = data.map(listener => listener.uname);  // 获取所有听众的姓名
+                    const sortedNumbers = data.map(listener => listener.number);  // 获取所有听众的答题正确数
+
+                    // 按照答题正确数排序，从高到低
+                    const sortedData = data.sort((a, b) => b.number - a.number);
+
+                    const sortedNamesRanked = sortedData.map(listener => listener.uname); // 排序后的姓名
+                    const sortedNumbersRanked = sortedData.map(listener => listener.number); // 排序后的正确数
+
+                    // 渲染排名表格
+                    function renderRankingTable(students) {
+                        const tableBody = document.getElementById('rankingTableBody');
+                        tableBody.innerHTML = '';  // 清空现有内容
+
+                        students.forEach((student, index) => {
+                            const row = document.createElement('tr');
+
+                            // 添加奖牌样式
+                            let rankCell = '';
+                            if (index === 0) {
+                                rankCell = `<td><span class="medal gold">${index + 1}</span></td>`;
+                            } else if (index === 1) {
+                                rankCell = `<td><span class="medal silver">${index + 1}</span></td>`;
+                            } else if (index === 2) {
+                                rankCell = `<td><span class="medal bronze">${index + 1}</span></td>`;
+                            } else {
+                                rankCell = `<td>${index + 1}</td>`;
+                            }
+
+                            row.innerHTML = `
                         ${rankCell}
-
-                        <td>${student.name}</td>
-                        <td>${student.score}</td>
-                        <td>${student.correctAnswers}</td>
-
+                        <td>${student.uname}</td>
+                        <td>${student.number}</td>
                     `;
-                    tableBody.appendChild(row);
-                });
-            }
-            
-            // 生成学生数据
-            const studentData = generateStudentData(48);
-            renderRankingTable(studentData);
-            
-            // 初始化饼图
-            const ctx = document.getElementById('scoreDistributionChart').getContext('2d');
-            
-            // 计算答题正确数分布
-            const answerDistribution = [0, 0, 0, 0, 0, 0];
-            studentData.forEach(student => {
-                if (student.correctAnswers >= 0 && student.correctAnswers <= 5) {
-                    answerDistribution[student.correctAnswers]++;
-                }
-            });
-            
-            const scoreDistributionChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['0题', '1题', '2题', '3题', '4题', '5题'],
-                    datasets: [{
-                        data: answerDistribution,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.7)',
-                            'rgba(54, 162, 235, 0.7)',
-                            'rgba(255, 206, 86, 0.7)',
-                            'rgba(75, 192, 192, 0.7)',
-                            'rgba(153, 102, 255, 0.7)',
-                            'rgba(255, 159, 64, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                        },
-                        title: {
-                            display: true,
-                            text: '答题正确数分布',
-                            font: {
-                                size: 16
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.label}: ${context.parsed}人 (${Math.round(context.parsed/48*100)}%)`;
-                                }
-                            }
-                        }
+                            tableBody.appendChild(row);
+                        });
                     }
-                }
-            });
-            
-            // 提取排序后的姓名和成绩
-            const sortedNames = studentData.map(student => student.name);
-            const sortedScores = studentData.map(student => student.score);
-            
-            // 初始化柱状图
-            const chartDom = document.getElementById('rankingChart');
-            const myChart = echarts.init(chartDom);
-            
-            // 计算初始显示的数据量（大约显示15个）
-            const initialShowCount = 15;
-            const endPercent = Math.min(100, (initialShowCount / sortedNames.length) * 100);
-            
-            const option = {
-                title: {
-                    text: '学生成绩排名',
-                    left: 'center',
-                    textStyle: {
-                        fontSize: 18,
-                        fontWeight: 'bold'
-                    }
-                },
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'shadow'
-                    },
-                    formatter: function(params) {
-                        const data = params[0];
-                        const student = studentData[data.dataIndex];
-                        return `
-                            <b>${student.name}</b><br/>
-                            排名: ${student.rank}<br/>
-                            成绩: ${student.score}分<br/>
-                            学号: ${student.id}<br/>
-                            班级: ${student.class}
-                        `;
-                    }
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    top: '15%',
-                    containLabel: true
-                },
-                xAxis: {
-                    type: 'value',
-                    name: '成绩',
-                    nameLocation: 'middle',
-                    nameGap: 30,
-                    axisLabel: {
-                        formatter: '{value} 分'
-                    },
-                    splitLine: {
-                        lineStyle: {
-                            type: 'dashed'
-                        }
-                    }
-                },
-                yAxis: {
-                    type: 'category',
-                    data: sortedNames,
-                    axisLabel: {
-                        interval: 0,
-                        rotate: 0,
-                        fontSize: 12
-                    },
-                    axisLine: {
-                        show: true
-                    }
-                },
-                series: [
-                    {
-                        name: '成绩',
-                        type: 'bar',
-                        data: sortedScores,
-                        showBackground: true,
-                        backgroundStyle: {
-                            color: 'rgba(180, 180, 180, 0.2)'
-                        },
-                        itemStyle: {
-                            color: function(params) {
-                                // 根据排名设置不同颜色
-                                const rank = params.dataIndex + 1;
-                                if (rank === 1) return new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                                    {offset: 0, color: '#FFD700'},
-                                    {offset: 1, color: '#FFA500'}
-                                ]);
-                                if (rank === 2) return new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                                    {offset: 0, color: '#C0C0C0'},
-                                    {offset: 1, color: '#A9A9A9'}
-                                ]);
-                                if (rank === 3) return new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                                    {offset: 0, color: '#CD7F32'},
-                                    {offset: 1, color: '#8B4513'}
-                                ]);
-                                return new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                                    {offset: 0, color: '#1a2980'},
-                                    {offset: 1, color: '#26d0ce'}
-                                ]);
-                            },
-                            borderRadius: [0, 5, 5, 0]
-                        },
-                        label: {
-                            show: true,
-                            position: 'right',
-                            formatter: '{c}分'
-                        }
-                    }
-                ],
-                dataZoom: [
-                    {
-                        type: 'slider',
-                        orient: 'vertical',
-                        yAxisIndex: [0],
-                        right: 10,
-                        width: 12,
-                        start: 0,
-                        end: endPercent,
-                        handleSize: 8,
-                        zoomLock: true,
-                        brushSelect: false
-                    },
-                    {
-                        type: 'inside',
-                        yAxisIndex: [0],
-                        zoomLock: true
-                    }
-                ]
-            };
-            
-            myChart.setOption(option);
-            
 
-            
+                    // 渲染表格内容
+                    const studentData = sortedData.map(listener => ({
+                        uname: listener.uname,
+                        number: listener.number
+                    }));
+                    renderRankingTable(studentData);
 
-
-            
-
-            
-            // 响应窗口变化
-            window.addEventListener('resize', function() {
-                myChart.resize();
-                scoreDistributionChart.resize();
-            });
-
-
-
-
+                })
+                .catch(error => console.error('获取正确数数据失败:', error));
 
         });
-
 
 
 

@@ -1,7 +1,7 @@
 package com.example.wwh.Mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import java.util.List;
 import com.example.wwh.pojo.Listener;
 import com.example.wwh.pojo.Speaker;
@@ -56,4 +56,15 @@ public interface UserMapper {
             "JOIN orgconspe os ON s.SpeakerID = os.SpeakerID " +
             "WHERE os.OrganizerID = #{organizerID}")
     List<Speaker> getSpeakersByOrganizerID(@Param("organizerID") int organizerID);
+
+
+    // 根据 Smail 获取 SpeakerID
+    @Select("SELECT SpeakerID FROM speaker WHERE Smail = #{smail}")
+    int getSpeakerIDBySmail(@Param("smail") String smail);
+
+    // 向 orgconspe 表插入数据
+    @Insert("INSERT INTO orgconspe (OrganizerID, SpeakerID) VALUES (#{organizerID}, #{speakerID})")
+    void insertOrgconspe(@Param("organizerID") int organizerID, @Param("speakerID") int speakerID);
+
+
 }
