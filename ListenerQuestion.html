@@ -408,7 +408,7 @@
             <!-- <i class="fas fa-history"></i> -->
             历史演讲
         </a>
-        <a href="OrganizerInfo.html" class="active">
+        <a href="OrganizerInfo.html" >
             <!-- <i class="fas fa-user"></i> -->
             个人信息
         </a>
@@ -597,69 +597,48 @@
         }
     ];
 
-    // 渲染题目列表
-    function renderQuestions(questions, containerId) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = '';
+   function renderQuestions(questions, containerId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
 
-        if (questions.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="far fa-folder-open"></i>
-                    <h4>暂无题目</h4>
-                    <p>当前没有${containerId === 'ongoingQuestions' ? '进行中' : '已结束'}的题目，请稍后再来查看</p>
-                </div>
-            `;
-            return;
+    if (questions.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="far fa-folder-open"></i>
+                <h4>暂无题目</h4>
+                <p>当前没有${containerId === 'ongoingQuestions' ? '进行中' : '已结束'}的题目，请稍后再来查看</p>
+            </div>
+        `;
+        return;
+    }
+
+    questions.forEach(question => {
+        const card = document.getElementById('questionCardTemplate').cloneNode(true); // 假设你有一个模板元素用于复制
+        const btn = card.querySelector('button');
+        const createDate = new Date(question.createTime).toLocaleDateString();
+        const endDate = new Date(question.endTime).toLocaleDateString();
+        let statusIcon = '';
+        
+        if (question.answered) {
+            statusIcon = question.correct ? 
+                '<i class="fas fa-check-circle text-success"></i>' : 
+                '<i class="fas fa-times-circle text-danger"></i>';
         }
 
-        questions.forEach(question => {
-            const card = document.createElement('div');
-            card.className = 'card question-card';
-            
-            // 格式化时间
-            const createDate = new Date(question.createTime).toLocaleDateString();
-            const endDate = new Date(question.endTime).toLocaleDateString();
-            
-            // 确定状态图标
-            let statusIcon = '';
-            if (question.answered) {
-                statusIcon = question.correct ? 
-                    '<i class="fas fa-check-circle text-success"></i>' : 
-                    '<i class="fas fa-times-circle text-danger"></i>';
-            }
-            
-            card.innerHTML = `
-                <div class="card-body">
-                    <p class="card-text">${question.questioncontent}</p>
-                    <button class="btn btn-primary">
-                        ${question.status === "进行中" ? '进入练习' : '查看详情'}
-                    </button>
-                    <div class="answer-status">
-                        ${statusIcon}
-                    </div>
-                    <div class="meta-info">
-                        <span>
-                            <i class="far fa-calendar-alt"></i>
-                            创建: ${createDate}
-                        </span>
-                        <span>
-                            <i class="far fa-clock"></i>
-                            截止: ${endDate}
-                        </span>
-                    </div>
-                </div>
-            `;
-            
-            // 动态绑定事件
-            const btn = card.querySelector('button');
-            btn.addEventListener('click', () => {
-                alert(`进入题目: ${question.questioncontent}`);
-            });
-            
-            container.appendChild(card);
+        card.querySelector('.card-text').textContent = question.questioncontent;
+        btn.textContent = question.status === "进行中" ? '进入练习' : '查看详情';
+        card.querySelector('.answer-status').innerHTML = statusIcon;
+        card.querySelector('.meta-info span:first-child').textContent = `创建: ${createDate}`;
+        card.querySelector('.meta-info span:last-child').textContent = `截止: ${endDate}`;
+
+        btn.addEventListener('click', () => {
+            const url = question.status === "进行中" ? `QuestionDetail.html?listenerID=${listenerID}&SpeechID=${speechID}` : `EndQuestionDetail.html?listenerID=${listenerID}&SpeechID=${speechID}`;
+            window.location.href = url;
         });
-    }
+            
+        container.appendChild(card);
+    });
+}
 
     // 初始化页面
     document.addEventListener('DOMContentLoaded', function() {
