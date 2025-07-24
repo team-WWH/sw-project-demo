@@ -19,4 +19,7 @@ public interface StuAnswerMapper {
 
     @Select("SELECT * FROM stuanswers WHERE QuestionID = #{QuestionID} AND QS != 0 ")
     List<Stuanswers> getStuanswerByQuestionID(Integer QuestionID);
+
+    @Update("UPDATE stuanswers SET State = #{State},Sanscontent=#{answers} WHERE StuanswersID=#{StuanswersID} ")
+    void updataAnswersByID(Integer StuanswersID,String answers,Integer State);
 }
