@@ -41,9 +41,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             // 从Token中获取角色类型
             UserType roleType = jwtProvider.getRoleTypeFromToken(token);
             String username = jwtProvider.getUsernameFromToken(token);
-
+            System.out.println(roleType);
+            System.out.println(username);
             // 根据角色类型动态加载用户
             UserDetails userDetails = authService.loadUserByRole(username, roleType);
+            System.out.println(userDetails.getUsername());
+            System.out.println(userDetails.getAuthorities());
 
             // 构建Authentication对象
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
@@ -72,14 +75,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // 4. 备选方案：从Cookie获取Token
         Cookie[] cookies = request.getCookies();
+        System.out.println(cookies);
         if (cookies != null) {
             for (Cookie cookie : cookies) {
+                System.out.println(cookie.getName());
                 if ("AUTH_TOKEN".equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }
         }
-
+        System.out.println("没有token");
         // 5. 未找到有效Token
         return null;
     }

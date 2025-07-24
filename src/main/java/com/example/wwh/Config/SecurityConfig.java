@@ -33,11 +33,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
-                        //.requestMatchers("/auth/login").permitAll()
-                        //.requestMatchers("/listener/**").hasRole("LISTENER")
-                        //.requestMatchers("/speaker/**").hasRole("SPEAKER")
-                        //.requestMatchers("/organizer/**").hasRole("ORGANIZER")
+                        //.requestMatchers("/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/Listener/**").hasRole("LISTENER")
+                        .requestMatchers("/Speaker/**").hasRole("SPEAKER")
+                        .requestMatchers("/organizer/**").hasRole("ORGANIZER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->

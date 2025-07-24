@@ -21,6 +21,7 @@ public class SpeakerService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) {
+        System.out.println("Speaker被调用");
         Speaker speaker = speakerRepo.findSpeakerByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
 

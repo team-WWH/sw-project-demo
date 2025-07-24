@@ -54,7 +54,9 @@ public class SpeechController {
         return ResponseEntity.ok("文件添加成功");
     }
     @PutMapping("Speaker/createSpeech")
-    public ResponseEntity<CreateResponse> CreateSpeech(String title, Integer SpeakerID) throws Exception {
+    public ResponseEntity<CreateResponse> CreateSpeech(@RequestParam("title") String title,@RequestParam("SpeakerID") Integer SpeakerID) throws Exception {
+        System.out.println("调用");
+        System.out.println(title);
         //int durationHours = 24;
         //Duration duration = Duration.ofHours(durationHours);
         LocalDateTime now = LocalDateTime.now();
