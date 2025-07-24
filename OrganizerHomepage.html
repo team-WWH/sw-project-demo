@@ -22,10 +22,86 @@
         table{width:100%;border-collapse:collapse}
         th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left;font-size:14px}
         th{background:#fafafa}
-        .avatar{width:32px;height:32px;border-radius:50%}
         .btn{padding:4px 8px;margin-right:4px;border:none;border-radius:2px;cursor:pointer;font-size:12px}
         .btn-primary{background:#1890ff;color:#fff}
         .btn-danger{background:#ff4d4f;color:#fff}
+        .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn .25s ease;
+}
+
+/* 弹窗主体 */
+.modal-box {
+  width: 320px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  animation: popIn .3s ease;
+}
+
+/* 标题与输入框横向对齐 */
+.modal-box h4 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* label 占满一行 */
+.modal-box label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* 输入框占满一行 */
+.modal-box input {
+  width: 100%;
+  height: 38px;
+  margin-top: 4px;
+  padding: 0 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* 按钮区：右下角 */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.btn {
+  padding: 6px 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.btn-primary {
+  background: #1677ff;
+  color: #fff;
+  border-color: #1677ff;
+}
+
+.btn-primary:hover {
+  background: #0f6bff;
+}
+
+@keyframes fadeIn { from {opacity:0} to {opacity:1} }
+@keyframes popIn  { from {transform:scale(.9);opacity:0} to {transform:scale(1);opacity:1} }
     </style>
 </head>
 <body>
@@ -73,14 +149,23 @@
     </div>
 </div>
 
-<div id="addModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
-  <div style="background:#fff; padding:20px; border-radius:4px; width:300px;">
-    <h4>添加演讲者</h4>
-    <input id="newName" placeholder="姓名" style="width:100%; margin-bottom:10px;">
-    <input id="newEmail" placeholder="邮箱" style="width:100%; margin-bottom:10px;">
-    <div style="text-align:right;">
-      <button onclick="closeAddModal()" class="btn">取消</button>
-      <button onclick="confirmAdd()" class="btn btn-primary">确认</button>
+<div id="addModal" style="display:none;">
+  <div class="modal-overlay">
+    <div class="modal-box">
+      <h4>添加演讲者</h4>
+
+      <label>姓名
+        <input id="newName" placeholder="请输入姓名">
+      </label>
+
+      <label>邮箱
+        <input id="newEmail" placeholder="请输入邮箱">
+      </label>
+
+      <div class="modal-actions">
+        <button onclick="closeAddModal()" class="btn">取消</button>
+        <button onclick="confirmAdd()" class="btn btn-primary">确认</button>
+      </div>
     </div>
   </div>
 </div>
@@ -107,7 +192,7 @@ function render(list){
             <td>${speaker.mail}</td>
             <td>
                 <button class="btn btn-primary" onclick="view('${speaker.id}')">查看</button>
-                <button class="btn btn-danger" onclick="del('${speaker.id}')">删除</button>
+                <button class="btn " onclick="del('${speaker.id}')">删除</button>
             </td>
         `;
         tbody.appendChild(tr);

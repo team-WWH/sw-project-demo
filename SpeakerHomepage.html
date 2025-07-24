@@ -22,7 +22,7 @@
         .sub-nav-left h2 {
             margin: 0;
         }
-
+        
         .container{max-width:1200px;margin:20px auto;padding:0 20px}
         .card {
             background: linear-gradient(to bottom right, #ff70a6, #ff9770);
@@ -218,64 +218,6 @@
 </div>
 
 <script>
-    const speakerID = 1;
-
-    //===================================================================================
-    // 获取正在进行中的演讲数据
-    fetch(`http://localhost:8081/Speaker/ongoing?SpeakerID=${speakerID}`)
-        .then(response => response.json())
-        .then(data => {
-            render(data);  // 调用渲染函数将数据展示到页面
-        })
-        .catch(error => console.error('Error fetching speeches:', error));
-
-    function renderSpeechCard(speech) {
-        const container = document.getElementById('speechCardsContainer');
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-        <div class="card-header" >
-            <div class="card-name">${speech.speechname}</div>
-        </div>
-        <div class="card-body" style="margin-top:30px">
-            <div class="card-info" >
-               <div class="card-invite-code" style="">${speech.inviteCode || '暂无邀请代码'}</div>
-                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')">☇</button>
-            </div>
-        </div>
-        <div class="card-footer">
-            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px;margin-left:220px">上课</button>
-        </div>
-    `;
-        container.appendChild(card);
-    }
-
-    function render(data) {
-        const container = document.getElementById('speechCardsContainer');
-        container.innerHTML = '';
-
-        if (Array.isArray(data)) {
-            data.forEach(speech => {
-                if (speech && speech.speechname && speech.speechID) {
-                    renderSpeechCard(speech);  // 渲染有效的演讲数据
-                } else {
-                    console.warn('Invalid speech data:', speech);
-                }
-            });
-        } else {
-            console.error('Data is not an array:', data);
-        }
-    }
-
-    function view(SpeechID) {
-        const url = `http://localhost:8080/SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${SpeechID}`;
-        window.location.href = url;
-    }
-    //===========================================================================================
-
-
-
-
 function addSpeech() {
     document.getElementById('createSpeechModal').style.display = 'block';
 }
@@ -339,6 +281,36 @@ function generateInviteCode() {
     return code;
 }
 
+function renderSpeechCard(speech) {
+    const container = document.getElementById('speechCardsContainer');
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+        <div class="card-header" >
+            <div class="card-name">${speech.name}</div>
+        </div>
+        <div class="card-body" style="margin-top:30px">
+            <div class="card-info" >
+                <div class="card-invite-code"  style="">${speech.inviteCode}</div>
+                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
+            border-radius: 3px;margin-left:10px;height:15px;color:grey">↓</button>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary card-btn" onclick="startSpeech(${speech.id})" style="height:30px">上课</button>
+            <button class="btn btn-danger card-btn" onclick="deleteSpeech(${speech.id})" style="height:30px">删除</button>
+        </div>
+    `;
+    container.appendChild(card);
+}
+
+function render(data) {
+    const container = document.getElementById('speechCardsContainer');
+    container.innerHTML = '';
+    data.forEach(speech => {
+        renderSpeechCard(speech);
+    });
+}
 
 function copyInviteCode(code) {
     navigator.clipboard.writeText(code).then(() => {
@@ -349,7 +321,14 @@ function copyInviteCode(code) {
     });
 }
 
-
+function deleteSpeech(id) {
+    if (confirm('确定要删除这个演讲吗？')) {
+        // 这里可以添加删除演讲的逻辑
+        alert('演讲已删除');
+        // 重新渲染列表
+        render(list.filter(speech => speech.id !== id));
+    }
+}
 
 function startSpeech(id) {
     const speech = list.find(speech => speech.id === id);
@@ -381,8 +360,12 @@ function saveFile(file, filePath) {
     reader.readAsText(file);
 }
 
+const list = [
+    { id: 1, name: '十万个为什么', inviteCode: 'ABC123DEF' },
+    // 添加更多演讲数据...
+];
 
-//render(list);
+render(list);
 </script>
 </body>
 </html>

@@ -22,36 +22,34 @@
         th,td{padding:10px 12px;border:1px solid #e8e8e8;text-align:left}
         th{background:#fafafa}
         .brand {
+        font-size: 24px;
+        font-weight: bold;
+    }
 
-            font-size: 24px;
-            font-weight: bold;
-        }
+    nav a {
+        margin-left: 20px;
+        text-decoration: none;
+        color: #333;
+    }
 
-        nav a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: #333;
-        }
+    nav a.active {
+        color: #007bff;
+    }
 
-        nav a.active {
-            color: #007bff;
-        }
+    .sub-nav {
+        background-color: #fff;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 
-        .sub-nav {
-            background-color: #fff;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+    .sub-nav-left h2 {
+        margin: 0;
+    }
 
-        .sub-nav-left h2 {
-            margin: 0;
-        }
-
-        .container{max-width:1200px;margin:20px auto;padding:0 20px}
-
+     .container{max-width:1200px;margin:20px auto;padding:0 20px}
         .card {
             background: linear-gradient(to bottom right, #40e0d0, #00cda0);
             border-radius: 12px;
@@ -129,22 +127,18 @@
         <a href="ListenerHomepage.html"class="active">首页</a>
         <a href="History.html">历史演讲</a>
         <a href="PersonInfo.html">个人信息</a>
-
-        <a href="ListenerFavor.html">我的收藏</a>
-
+         <a href="ListenerFavor.html">我的收藏</a>
     </nav>
 </header>
 
 <!-- 二级头部 -->
 <div class="sub-nav">
     <div class="toolbar">
-
-        <input type="text" id="inviteCodeInput" placeholder="请输入邀请码">
-        <button class="btn btn-primary" onclick="searchByInviteCode()">搜索</button>
-    </div>
+            <input type="text" id="inviteCodeInput" placeholder="请输入邀请码">
+            <button class="btn btn-primary" onclick="searchByInviteCode()">搜索</button>
+        </div>
 
 </div>
-
 
         
  <!-- 主体内容 -->
@@ -154,67 +148,72 @@
 
 
 <script>
-    // 模拟数据
-    const listenerID = 1;
-    // 获取正在进行中的演讲数据
-    fetch(`http://localhost:8081/Listener/ongoing?ListenerID=${listenerID}`)
-        .then(response => response.json())
-        .then(data => {
-            render(data);  // 调用渲染函数将数据展示到页面
-        })
-        .catch(error => console.error('Error fetching speeches:', error));
-    // 搜索演讲数据
-    function searchByInviteCode() {
-        const inviteCode = document.getElementById('inviteCodeInput').value.trim();
-        if (!inviteCode) {
-            alert('请输入邀请码');
-            return;
-        }
+// 模拟数据
+const listenerID = 1;
 
-
+// 搜索演讲数据
+function searchByInviteCode() {
+    const inviteCode = document.getElementById('inviteCodeInput').value.trim();
+    if (!inviteCode) {
+        alert('请输入邀请码');
+        return;
     }
 
-    function renderSpeechCard(speech) {
-        const container = document.getElementById('speechCardsContainer');
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
+    // 调用后端接口获取演讲数据
+    fetch(`http://localhost:8081/Listener/searchByInviteCode?ListenerID=${listenerID}&InviteCode=${inviteCode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length === 0) {
+                alert('未找到对应的演讲');
+            } else {
+                render(data);  // 调用渲染函数将数据展示到页面
+            }
+        })
+        .catch(error => console.error('Error fetching speeches:', error));
+}
+
+function renderSpeechCard(speech) {
+    const container = document.getElementById('speechCardsContainer');
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
         <div class="card-header" >
-            <div class="card-name">${speech.speechname}</div>
+            <div class="card-name">${speech.sname}</div> 
         <div class="card-body" style="margin-top:30px">
             <div class="card-info" >
                <div class="card-invite-code"  style="">${speech.inviteCode}</div>
                 <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
-            border-radius: 2px;">☇</button>
+            border-radius: 3px;margin-left:10px;height:15px;color:grey">↓</button>
             </div>
         </div>
         <div class="card-footer">
-            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px;margin-left:220px">上课</button>
+            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px;margin-left:220px">上课</button> 
         </div>
     `;
-        container.appendChild(card);
-    }
+    container.appendChild(card);
+}
 
-    function render(data) {
-        const container = document.getElementById('speechCardsContainer');
-        container.innerHTML = '';
-        data.forEach(speech => { // 使用speech而不是item
-            renderSpeechCard(speech); // 传入当前演讲数据
-        });
-    }
-
-
-    function view(SpeechID) {
-        const speechID = SpeechID;  // 获取当前演讲的 SpeechID
-        const url = `http://localhost:8080/ListenerQuestion.html?ListenerID=${listenerID}&SpeechID=${speechID}`;
-        window.location.href = url;
-    }
+function render(data) {
+    const container = document.getElementById('speechCardsContainer');
+    container.innerHTML = '';
+    data.forEach(speech => { // 使用speech而不是item
+        renderSpeechCard(speech); // 传入当前演讲数据
+    });
+}
 
 
+function view(SpeechID) {
+    const speechID = SpeechID;  // 获取当前演讲的 SpeechID
+    const url = `http://localhost:8080/ListenerQuestion.html?ListenerID=${listenerID}&SpeechID=${speechID}`;
+    window.location.href = url;
+}
 
-    //render(list);
+const list = [
+    { speechID: 1, sname: '十万个为什么',otime: '2024-07-22',inviteCode: 'ABC123DEF' },
+    // 添加更多演讲数据...
+];
 
-
+render(list);
 </script>
 </body>
 </html>
