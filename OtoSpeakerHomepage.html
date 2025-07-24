@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>首页 - 泰拉演讲团</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+        body{background:#f5f5f5;color:#333}
+        header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
+        header .brand{font-size:18px;font-weight:bold;margin-right:40px}
+        header nav a{color:#fff;margin-right:20px;text-decoration:none;font-size:14px}
+        header nav a.active{color:#1890ff}
+        .sub-nav {
+            background: #fff;
+            border-bottom: 1px solid #e8e8e8;
+            padding: 12px 20px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sub-nav-left h2 {
+            margin: 0;
+        }
+
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        .card {
+            background: linear-gradient(to bottom right, #ff70a6, #ff9770);
+            border-radius: 12px;
+            padding: 20px;
+            width: 300px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .card-header {
+            align-self: flex-start;
+        }
+        .card-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .card-body {
+            flex-grow: 1;
+        }
+        .card-info {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+        }
+        .card-invite-code {
+            font-size: 12px;
+        }
+        .card-copy-btn {
+            width: auto; /* 自动宽度 */
+            height: 24px;
+            background-color: #f0f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+            padding: 0 8px; /* 添加内边距 */
+        }
+        .card-copy-btn:hover {
+            background-color: #ddd;
+        }
+        .fa-copy {
+            margin-right: 5px;
+        }
+        .card-footer {
+            align-self: flex-end;
+            display: flex;
+            gap: 10px;
+        }
+        .card-btn {
+            background-color: #fff;
+            color: #333;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            width: auto; /* 自动宽度 */
+            height: 24px;
+            padding: 0 8px; /* 添加内边距 */
+            font-size: 12px;
+        }
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+
+        .create-speech-link {
+            color: #1890ff; /* 链接颜色 */
+            text-decoration: none; /* 去除下划线 */
+            font-size: 16px; /* 字体大小 */
+            display: inline-flex; /* 使链接具有弹性盒布局特性 */
+            align-items: center; /* 垂直居中对齐 */
+        }
+
+        .create-speech-link::before {
+            content: '+'; /* 添加“+”符号 */
+            margin-right: 6px; /* 与文本之间的间距 */
+            font-size: 18px; /* “+”符号的字体大小 */
+        }
+    </style>
+</head>
+<body>
+
+<!-- 顶部主导航 -->
+<header>
+    <div class="brand">泰拉演讲团</div>
+    <nav>
+        <a href="SpeakerHomepage.html"class="active">首页</a>
+        <a href="SpeakerHistory.html">历史演讲</a>
+        <a href="SpeakerInfo.html">个人信息</a>
+        <a href="SpeakerInfo.html">返回组织者首页</a>
+    </nav>
+</header>
+
+<!-- 二级头部 -->
+<div class="sub-nav">
+    <div class="sub-nav-left">
+        <h2>演讲列表</h2>
+    </div>
+
+</div>
+
+
+
+<!-- 主体内容 -->
+<div class="container">
+    <div id="speechCardsContainer"></div>
+</div>
+
+<script>
+    const speakerID = 1;
+
+    //===================================================================================
+    // 获取正在进行中的演讲数据
+    fetch(`http://localhost:8081/Speaker/ongoing?SpeakerID=${speakerID}`)
+        .then(response => response.json())
+        .then(data => {
+            render(data);  // 调用渲染函数将数据展示到页面
+        })
+        .catch(error => console.error('Error fetching speeches:', error));
+
+    function renderSpeechCard(speech) {
+        const container = document.getElementById('speechCardsContainer');
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+        <div class="card-header" >
+            <div class="card-name">${speech.speechname}</div>
+        </div>
+        <div class="card-body" style="margin-top:30px">
+            <div class="card-info" >
+               <div class="card-invite-code" style="">${speech.inviteCode || '暂无邀请代码'}</div>
+                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')">☇</button>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px;margin-left:220px">进入</button>
+        </div>
+    `;
+        container.appendChild(card);
+    }
+
+    function render(data) {
+        const container = document.getElementById('speechCardsContainer');
+        container.innerHTML = '';
+
+        if (Array.isArray(data)) {
+            data.forEach(speech => {
+                if (speech && speech.speechname && speech.speechID) {
+                    renderSpeechCard(speech);  // 渲染有效的演讲数据
+                } else {
+                    console.warn('Invalid speech data:', speech);
+                }
+            });
+        } else {
+            console.error('Data is not an array:', data);
+        }
+    }
+
+    function view(SpeechID) {
+        const url = `http://localhost:8080/SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${SpeechID}`;
+        window.location.href = url;
+    }
+    //===========================================================================================
+
+
+
+
+    function addSpeech() {
+        document.getElementById('createSpeechModal').style.display = 'block';
+    }
+
+    function closeCreateSpeechModal() {
+        document.getElementById('createSpeechModal').style.display = 'none';
+        document.getElementById('createSpeechForm').reset();
+    }
+
+    function createSpeech() {
+        const name = document.getElementById('speechName').value.trim();
+        const fileInput = document.getElementById('speechFile');
+        const file = fileInput.files[0];
+
+        if (!name) {
+            alert('请输入演讲名称');
+            return;
+        }
+
+        // 创建新演讲的逻辑
+        const newSpeech = {
+            id: Date.now(), // 使用时间戳作为唯一标识
+            name: name,
+            inviteCode: generateInviteCode(), // 生成邀请码
+            // 其他属性...
+        };
+
+        if (file) {
+            // 上传文件到后端接口
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    newSpeech.filePath = data.filePath; // 保存文件路径
+                    list.push(newSpeech);
+                    render(list);
+                    closeCreateSpeechModal();
+                })
+                .catch(err => {
+                    console.error('文件上传失败:', err);
+                    alert('文件上传失败');
+                });
+        } else {
+            list.push(newSpeech);
+            render(list);
+            closeCreateSpeechModal();
+        }
+    }
+
+    function generateInviteCode() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let code = '';
+        for (let i = 0; i < 9; i++) {
+            code += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return code;
+    }
+
+
+    function copyInviteCode(code) {
+        navigator.clipboard.writeText(code).then(() => {
+            alert('邀请码已复制到剪贴板');
+        }).catch(err => {
+            console.error('复制失败:', err);
+            alert('复制失败，请手动复制');
+        });
+    }
+
+
+
+    function startSpeech(id) {
+        const speech = list.find(speech => speech.id === id);
+        if (!speech) {
+            alert('演讲未找到');
+            return;
+        }
+
+        // 如果有文件路径，传递到 SpeakDetail 页面
+        let queryParams = `?name=${encodeURIComponent(speech.name)}`;
+        if (speech.filePath) {
+            queryParams += `&filePath=${encodeURIComponent(speech.filePath)}`;
+        }
+
+        window.location.href = `SpeakDetail.html${queryParams}`;
+    }
+
+    function saveFile(file, filePath) {
+        // 如果是前端实现，可以使用 FileReader 或其他方法
+        // 如果需要后端支持，可以使用 AJAX 上传文件
+        console.log('文件保存到:', filePath);
+        // 示例：使用 FileReader 读取文件内容
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const fileContent = event.target.result;
+            console.log('文件内容:', fileContent);
+            // 这里可以将文件内容保存到本地存储或其他地方
+        };
+        reader.readAsText(file);
+    }
+
+
+    //render(list);
+</script>
+</body>
+</html>

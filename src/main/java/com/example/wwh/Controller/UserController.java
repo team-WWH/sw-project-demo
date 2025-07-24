@@ -6,10 +6,8 @@ import com.example.wwh.service.UserService;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -66,4 +64,10 @@ public class UserController {
         return userService.getOrganizerInfoMail(omail);
     }
 
+
+    // 根据 OrganizerID 获取所有 Speaker 信息
+    @GetMapping("/organizer/getSpeakers")
+    public List<Speaker> getSpeakers(@RequestParam("OrganizerID") int organizerID) {
+        return userService.getSpeakersByOrganizer(organizerID);
+    }
 }
