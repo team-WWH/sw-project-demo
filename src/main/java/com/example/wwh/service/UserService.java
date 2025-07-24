@@ -52,5 +52,10 @@ public class UserService {
         return userMapper.getOrganizerByMail(omail);
     }
 
+    // 根据 OrganizerID 获取所有 Speaker 信息
+    public List<Speaker> getSpeakersByOrganizer(int organizerID) {
+        return userMapper.getSpeakersByOrganizerID(organizerID);
+    }
+
 }
 

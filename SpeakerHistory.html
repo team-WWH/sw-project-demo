@@ -174,7 +174,7 @@
             </div>
         </div>
         <div class="card-footer">
-            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px;margin-left:190px">上课</button>
+            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px;margin-left:190px">进入</button>
             <button class="btn btn-primary card-btn" onClick="ASpeech(${speech.speechID})" style="height:30px;">查看</button>
         </div>
     `;
@@ -199,7 +199,7 @@
     //查看演讲分析
     function ASpeech(SpeechID) {
         const speechID = SpeechID;  // 获取当前演讲的 SpeechID
-        const url = `http://localhost:8080/ListenerQuestion.html?ListenerID=${listenerID}&SpeechID=${speechID}`;
+        const url = `http://localhost:8080/SpeakAnalysis.html?SpeakerID=${speakerID}&SpeechID=${speechID}`;
         window.location.href = url;
 
     }
