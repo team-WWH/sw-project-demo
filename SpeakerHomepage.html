@@ -222,7 +222,9 @@
 
     //===================================================================================
     // 获取正在进行中的演讲数据
-    fetch(`http://localhost:8081/Speaker/ongoing?SpeakerID=${speakerID}`)
+    fetch(`http://localhost:8081/Speaker/ongoing?SpeakerID=${speakerID}`,{
+        credentials: 'include',
+    })
         .then(response => response.json())
         .then(data => {
             render(data);  // 调用渲染函数将数据展示到页面
@@ -294,40 +296,63 @@ function createSpeech() {
         alert('请输入演讲名称');
         return;
     }
-
-    // 创建新演讲的逻辑
-    const newSpeech = {
-        id: Date.now(), // 使用时间戳作为唯一标识
-        name: name,
-        inviteCode: generateInviteCode(), // 生成邀请码
-        // 其他属性...
-    };
-
-    if (file) {
-        // 上传文件到后端接口
-        const formData = new FormData();
-        formData.append('file', file);
-
-        fetch('/upload', {
-            method: 'POST',
+    console.log(name);
+    const formData = new FormData();
+    formData.append('title',name);
+    formData.append('SpeakerID',speakerID);
+    console.log(formData)
+        fetch('http://localhost:8081/Speaker/createSpeech', {
+            method: 'PUT',
+            credentials: 'include',
             body: formData
         })
         .then(response => response.json())
         .then(data => {
-            newSpeech.filePath = data.filePath; // 保存文件路径
-            list.push(newSpeech);
-            render(list);
-            closeCreateSpeechModal();
+            alert('上传成功');
+            window.location.href="SpeakerHomepage.html";
+            // newSpeech.filePath = data.filePath; // 保存文件路径
+            // list.push(newSpeech);
+            // render(list);
+            // closeCreateSpeechModal();
         })
         .catch(err => {
             console.error('文件上传失败:', err);
             alert('文件上传失败');
         });
-    } else {
-        list.push(newSpeech);
-        render(list);
-        closeCreateSpeechModal();
-    }
+
+    // // 创建新演讲的逻辑
+    // const newSpeech = {
+    //     id: Date.now(), // 使用时间戳作为唯一标识
+    //     name: name,
+    //     inviteCode: generateInviteCode(), // 生成邀请码
+    //     // 其他属性...
+    // };
+    //
+    // if (file) {
+    //     // 上传文件到后端接口
+    //     const formData = new FormData();
+    //     formData.append('file', file);
+    //
+    //     fetch('/upload', {
+    //         method: 'POST',
+    //         body: formData
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         newSpeech.filePath = data.filePath; // 保存文件路径
+    //         list.push(newSpeech);
+    //         render(list);
+    //         closeCreateSpeechModal();
+    //     })
+    //     .catch(err => {
+    //         console.error('文件上传失败:', err);
+    //         alert('文件上传失败');
+    //     });
+    // } else {
+    //     list.push(newSpeech);
+    //     render(list);
+    //     closeCreateSpeechModal();
+    // }
 }
 
 function generateInviteCode() {

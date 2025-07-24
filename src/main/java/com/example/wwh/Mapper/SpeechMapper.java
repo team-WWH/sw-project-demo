@@ -47,8 +47,8 @@ public interface SpeechMapper {
         @Select("SELECT SpeechID FROM speech WHERE SpeakerID = #{SpeakerID}")
         List<Integer> getSpeechidBySpeakerID(Integer SpeakerID);
 
-        @Insert("INSERT INTO speech (SpeakerID,Sstatus,Stime) " +
-                "VALUES (#{SpeakerID},#{Sstatus},#{Stime})")
+        @Insert("INSERT INTO speech (SpeakerID,Sstatus,Stime,Speechname) " +
+                "VALUES (#{SpeakerID},#{Sstatus},#{Stime},#{Sname})")
         @Options(useGeneratedKeys = true, keyProperty = "SpeechID")
         void addSpeech(Speech speech);
 

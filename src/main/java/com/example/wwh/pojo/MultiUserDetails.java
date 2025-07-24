@@ -18,7 +18,7 @@ public class MultiUserDetails implements UserDetails {
         this.username = username;
         this.roleType = roleType;
         List<GrantedAuthority> allAuths = new ArrayList<>();
-        allAuths.add(new SimpleGrantedAuthority("ROLE_" + roleType));
+        //allAuths.add(new SimpleGrantedAuthority("ROLE_" + roleType));
         this.authorities = allAuths;
     }
 

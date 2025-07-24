@@ -5,6 +5,7 @@ import com.example.wwh.Data.RegisterRequest;
 import com.example.wwh.pojo.UserType;
 import com.example.wwh.service.MultiRoleAuthService;
 import com.example.wwh.service.UserService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
@@ -30,24 +31,19 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> UserRegister(String Uname,
-                                          String Password,
-                                          String Mail,
-                                          String Phone,
-                                          Integer Sex,
-                                          String role){
-        RegisterRequest request = new RegisterRequest();
-        request.setPassword(passwordEncoder.encode(Password));
-        request.setSex(Sex);
-        request.setMail(Mail);
-        request.setUname(Uname);
-        request.setPhone(Phone);
-
-        if(Objects.equals(role, "Listener")){
+    public ResponseEntity<?> UserRegister(@RequestBody RegisterRequest request){
+        System.out.println(request.getUname());
+        System.out.println(request.getSex());
+        System.out.println(request.getRole());
+        System.out.println(request.getMail());
+        System.out.println(request.getPhone());
+        System.out.println(request.getPassword());
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        if(Objects.equals(request.getRole(), "Listener")){
             userService.addListener(request);
-        }else if(Objects.equals(role, "Speaker")){
+        }else if(Objects.equals(request.getRole(), "Speaker")){
             userService.addSpeaker(request);
-        }else if(Objects.equals(role, "Organizer")){
+        }else if(Objects.equals(request.getRole(), "Organizer")){
             userService.addOrganizer(request);
         }else{
             return ResponseEntity.badRequest().body("身份错误");

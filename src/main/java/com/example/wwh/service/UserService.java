@@ -59,7 +59,7 @@ public class UserService {
         listener.setAnonymous(0);
         listener.setPhone(request.getPhone());
         listener.setUname(request.getUname());
-        listener.setSex(request.getSex());
+        listener.setSex(Integer.parseInt(request.getSex()));
         listener.setPassword(request.getPassword());
         userMapper.addListener(listener);
     }
@@ -68,7 +68,7 @@ public class UserService {
         listener.setSmail(request.getMail());
         listener.setSphone(request.getPhone());
         listener.setSname(request.getUname());
-        listener.setSsex(request.getSex());
+        listener.setSsex(Integer.parseInt(request.getSex()));
         listener.setSpassword(request.getPassword());
         userMapper.addSpeaker(listener);
     }
@@ -77,7 +77,7 @@ public class UserService {
         listener.setOmail(request.getMail());
         listener.setOphone(request.getPhone());
         listener.setOname(request.getUname());
-        listener.setOsex(request.getSex());
+        listener.setOsex(Integer.parseInt(request.getSex()));
         listener.setOpassword(request.getPassword());
         userMapper.addOrganizer(listener);
     }
