@@ -31,7 +31,7 @@ public class AIService {
             【要求】
             1. 每道题目都是一个包含四个选项的选择题
             2. 标注答案和解析
-            3. 难度适中，考察核心知识点
+            3. 难度适中，考察核心知识点,题目描述要详细，不能省略成“根据幻灯片”和“根据pdf”
             4.严格按照以下josn返回，不要包含任何额外文本、注释或Markdown代码块，只返回josn，同时大小写也要与下列示例对应：
             {
                 "Questioncontent":"题目内容",
@@ -43,6 +43,7 @@ public class AIService {
                 "Analysis":"解析"
             }
             5.请以josn数组的形式进行返回
+           
             """, content.substring(0, Math.min(content.length(), 6000)));
 
         // 构造请求体
