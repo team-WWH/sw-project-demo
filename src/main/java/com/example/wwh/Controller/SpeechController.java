@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,8 @@ public class SpeechController {
     private SpeechService speechService;
     @Autowired
     private MinioService minioService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
     // 获取正在进行中的演讲
     @GetMapping("Listener/ongoing")
     public List<Speech> getOngoingSpeechesByListenerID(@RequestParam("ListenerID") Integer ListenerID) {
@@ -36,7 +39,16 @@ public class SpeechController {
     }
     @GetMapping("Comment/Speaker/ongoing")
     public List<Speech> getOngoingSpeechesBySpeakerID(@Param("SpeakerID") Integer SpeakerID) {
-        return speechService.getOngoingSpeechesBySpeakerID(SpeakerID);
+       List<Speech> speeches = speechService.getOngoingSpeechesBySpeakerID(SpeakerID);
+        System.out.println("speeches"+speeches.size());
+       for(Speech speech:speeches){
+          // System.out.println(speeches);
+           Integer i = speech.getSpeechID();
+          String code =  speechService.getCodeBySpeechID(i);
+          speech.setCode(code);
+       }
+       return speeches;
+
     }
     // 获取已结束的演讲
     @GetMapping("Listener/ended")
@@ -51,9 +63,12 @@ public class SpeechController {
     public ResponseEntity<String> addFile(@Param("title") String title,
                                           @Param("SpeakerID") Integer SpeakerID,
                                           @Param("file") MultipartFile file,
-                                          @Param("type") String type) throws Exception {
+                                          @Param("type") String type,
+                                          @Param("SpeechID") Integer SpeechID) throws Exception {
         String filename = title + SpeakerID+'.'+type;
         minioService.uploadFile(file,filename);
+        System.out.println("addfileid"+SpeechID);
+        speechService.updateFilename(filename,SpeechID);
         return ResponseEntity.ok("文件添加成功");
     }
     @GetMapping("Comment/getfile")
@@ -82,12 +97,15 @@ public class SpeechController {
         return ResponseEntity.ok().body(createResponse);
     }
     @GetMapping("Listener/Intend")
-    public ResponseEntity<?> ComeInSpeech(String code){
-        return speechService.IntendSpeech(code);
+    public ResponseEntity<?> ComeInSpeech(@Param("code") String code,
+                                            @Param("ListenerID") Integer ListenerID){
+        return speechService.IntendSpeech(code,ListenerID);
     }
     @PutMapping("Speaker/EndSpeech")
-    public ResponseEntity<?> endSpeech(Integer SpeechID){
+    public ResponseEntity<?> endSpeech(@Param("SpeechID") Integer SpeechID){
         speechService.UpdateEndStatus(SpeechID);
+        String topic = "/topic/chat/" + SpeechID;
+        messagingTemplate.convertAndSend(topic, "SPEECH_END");
         return ResponseEntity.ok("已经结束");
     }
     @GetMapping("Comment/Speaker/AllListener")
@@ -101,6 +119,11 @@ public class SpeechController {
         String url =  minioService.getPresignedUrl( filename, expiryTimeInSeconds);
         System.out.println(url);
         return url;
+    }
+    @GetMapping("Speaker/getCode")
+    public ResponseEntity<String> getCode(Integer SpeechID){
+        String code = speechService.getCodeBySpeechID(SpeechID);
+        return ResponseEntity.ok(code);
     }
 
 

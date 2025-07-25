@@ -170,6 +170,21 @@
             alert('请输入邀请码');
             return;
         }
+       const response =  fetch(`http://localhost:8081/Listener/Intend?code=${inviteCode}&ListenerID=${listenerID}`,{
+           method:"GET",
+           credentials: 'include',}).then(response=>{
+               if(!response.ok){
+                   alert("识别码错误");
+               }
+           window.location.reload();
+       });
+        // console.log(response.text());
+        // if(response.text() === "chenggong"){
+        //     alert("识别码错误");
+        //     window.location.reload();
+        // }
+
+
 
 
     }

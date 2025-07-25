@@ -32,6 +32,7 @@ public class StuAnswerController {
         Stuanswers answer = stuanswersService.getAnswerByListenerAndQuestion(listenerID, questionID);
         return ResponseEntity.ok(answer);  // 返回数据
     }
+
     @GetMapping("Listener/UpdataAnswers")
     public ResponseEntity<Map<String, String>> updataStuanswers(
             @RequestParam Integer StuanswersID,
@@ -45,6 +46,7 @@ public class StuAnswerController {
         response.put("message", "更改成功");
 
         return ResponseEntity.ok(response);  // 返回 JSON 格式的响应
+
     }
 
 
