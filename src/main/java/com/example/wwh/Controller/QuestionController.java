@@ -194,8 +194,8 @@ public class QuestionController {
 
     //获取个人的进行中的题目
     @GetMapping("/listener/getOpeningQuestions")
-    public ResponseEntity<List<Question>> getQuestions(@RequestParam int speechID, @RequestParam int listenerID) {
-        List<Question> questions = questionService.getQuestions(speechID, listenerID);
+    public ResponseEntity<List<QuestionDTO>> getQuestions(@RequestParam int speechID, @RequestParam int listenerID) {
+        List<QuestionDTO> questions = questionService.getQuestions(speechID, listenerID);
         return ResponseEntity.ok(questions);
     }
 
@@ -288,4 +288,14 @@ public class QuestionController {
         questionService.addComment(listenerID, questionID, comcontent);
         return "Comment added successfully!";
     }
+
+//更改题目状态
+    @GetMapping("/updateStatus")
+    public String updateStatus(@RequestParam("QuestionID") int questionID) {
+        System.out.println(questionID);
+        questionService.updateQstatus(questionID);
+        return "更新成功";
+    }
+
+
 }

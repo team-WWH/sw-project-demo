@@ -4,6 +4,8 @@ package com.example.wwh.pojo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.LocalDateTime;
+
 //题目
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Question {
@@ -27,7 +29,15 @@ public class Question {
     private int Qstatus;
     @JsonProperty("Analysis")
     private String Answercon;//答案解析
+    private LocalDateTime Qtime;
 
+    public LocalDateTime getQtime() {
+        return Qtime;
+    }
+
+    public void setQtime(LocalDateTime qtime) {
+        Qtime = qtime;
+    }
 
     public String getAnswercon() {
         return Answercon;

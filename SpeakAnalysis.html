@@ -697,7 +697,7 @@
                         axisPointer: { type: 'shadow' },
                         formatter: function(params) {
                             const data = params[0];
-                            return `<b>${sortedNames[data.dataIndex]}</b><br/>排名: ${data.dataIndex + 1}<br/>准确率: ${data.value}%`;
+                            return `<b>${sortedNames[data.dataIndex]}</b><br/>排名: ${data.dataIndex + 1}<br/>准确率: ${data.value * 100}%`;
                         }
                     },
                     grid: { left: '3%', right: '19%', bottom: '3%', containLabel: true },
@@ -715,7 +715,7 @@
                     series: [{
                         name: '准确率',
                         type: 'bar',
-                        data: sortedAccuracies,
+                        data: sortedAccuracies.map(acc => acc * 100),
                         itemStyle: {
                             color: '#64b5f6',
                         },
