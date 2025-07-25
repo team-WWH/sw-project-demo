@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 @RestController
 public class StuAnswerController {
 
@@ -30,10 +33,22 @@ public class StuAnswerController {
         return ResponseEntity.ok(answer);  // 返回数据
     }
 
-    @PutMapping("Listener/UpdataAnswers")
-    public ResponseEntity<String> updataStuanswers(Integer StuanswersID,String answers,Integer State){
-        stuanswersService.updataAnswers(StuanswersID,answers,State);
-        return ResponseEntity.ok("更改成功");
+    @GetMapping("Listener/UpdataAnswers")
+    public ResponseEntity<Map<String, String>> updataStuanswers(
+            @RequestParam Integer StuanswersID,
+            @RequestParam String answers,
+            @RequestParam Integer State) {
+
+        stuanswersService.updataAnswers(StuanswersID, answers, State);
+
+        // 返回一个包含状态信息的 JSON 对象
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "更改成功");
+
+        return ResponseEntity.ok(response);  // 返回 JSON 格式的响应
+
     }
+
+
 
 }

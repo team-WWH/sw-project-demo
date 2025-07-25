@@ -4,6 +4,7 @@ import com.example.wwh.pojo.Comment;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 public class QuestionDTO
 {
@@ -28,12 +29,29 @@ public class QuestionDTO
     private String QresultsID;//题目分析结果ID
     @JsonProperty("Answer")
     private String Answer;//答案
-    private int StuconQueID;//学生答案--题目链接ID
+
     private int ComconQueID;//评论--题目链接ID
     private int Qstatus;
     @JsonProperty("Analysis")
     private String Answercon;//答案解析
+    private LocalDateTime Qtime;
+    private int StuanswersID;
 
+    public int getStuanswersID() {
+        return StuanswersID;
+    }
+
+    public void setStuanswersID(int stuanswersID) {
+        StuanswersID = stuanswersID;
+    }
+
+    public LocalDateTime getQtime() {
+        return Qtime;
+    }
+
+    public void setQtime(LocalDateTime qtime) {
+        Qtime = qtime;
+    }
 
     public String getAnswercon() {
         return Answercon;
@@ -104,13 +122,7 @@ public class QuestionDTO
         this.Answer = Answer;
     }
 
-    public int getStuconQueID() {
-        return StuconQueID;
-    }
 
-    public void setStuconQueID(int StuconQueID) {
-        this.StuconQueID = StuconQueID;
-    }
 
     public int getComconQueID() {
         return ComconQueID;

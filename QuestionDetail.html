@@ -96,10 +96,7 @@
 </div> -->
 
 <!-- 底部导航 -->
-<div class="d-flex justify-content-between px-3 py-2 bg-white fixed-bottom border-top">
-    <button class="btn btn-outline-secondary" onclick="prev()" style="margin-left: 500px;">上一题</button>
-    <button class="btn btn-outline-secondary" onclick="next()" style="margin-right: 500px;">下一题</button>
-</div>
+
 
 <!-- 报告弹窗 -->
 <div class="report-modal" id="reportModal" onclick="closeReport()">
@@ -165,6 +162,9 @@
         }
     ];
 
+    const questionData = JSON.parse(sessionStorage.getItem('questionData'));
+    //const stuanswersID = JSON.parse(sessionStorage.getItem('stuanswersID'));
+    //console.log(stuanswersID);
     /* ========== 状态 ========== */
     let currentIndex = Number(new URLSearchParams(location.search).get('id') || 1) - 1;
     const userAnswers = Array(questions.length).fill(null); // 每题用户答案
@@ -189,7 +189,7 @@
 
         //document.getElementById('counter').textContent = `第 ${currentIndex + 1} 题 / 共 ${questions.length} 题`;
         const box = document.getElementById('questionBox');
-        const isFav = localStorage.getItem(`fav-${currentIndex}`) === '1';
+        //const isFav = localStorage.getItem(`fav-${currentIndex}`) === '1';
 
         // 渲染题目框架
         box.innerHTML = `
@@ -230,9 +230,19 @@
     }
 
     function startCountdown() {
-        const currentTime = Date.now(); // 当前时间（毫秒）
-        const endTime = currentTime + 30000; // 创建时间 + 30秒
-        let timeLeft = Math.max(0, (endTime - currentTime) / 1000); // 剩余时间（秒）
+        // 获取当前时间（毫秒）
+        const currentTime = Date.now();
+
+        // 确保 qtime 是一个有效的时间戳，假设 qtime 是 "2025-07-25T12:30:13" 格式的字符串
+        const qtime = new Date(questionData.qtime).getTime(); // 转换为时间戳（毫秒）
+
+        // 计算倒计时结束时间，假设倒计时为 30 秒（30000 毫秒）
+        const endTime = qtime + 30000; // 题目创建时间 + 30秒
+
+        // 计算剩余时间（秒）
+        let timeLeft = Math.max(0, (endTime - currentTime) / 1000); // 转换为秒，并确保剩余时间不为负数
+
+        // 获取倒计时显示元素
         const countdownElement = document.getElementById('countdown');
 
         // 清除之前的倒计时（如果有）
@@ -240,34 +250,68 @@
             clearInterval(countdownInterval);
         }
 
-        // 更新倒计时显示
-        countdownElement.textContent = `${timeLeft.toFixed(0)}s`;
+        // 更新倒计时显示（只显示整数部分）
+        countdownElement.textContent = `${Math.floor(timeLeft)}s`;
 
         // 开始倒计时
         countdownInterval = setInterval(() => {
             timeLeft -= 1;
-            countdownElement.textContent = `${timeLeft}s`;
+            countdownElement.textContent = `${Math.floor(timeLeft)}s`;  // 只显示整数部分
 
+            // 如果倒计时结束
             if (timeLeft <= 0) {
                 clearInterval(countdownInterval); // 停止倒计时
-                handleCountdownEnd(); // 处理倒计时结束
+                handleCountdownEnd(); // 处理倒计时结束（例如执行某个操作）
             }
-        }, 1000);
+        }, 1000);  // 每秒更新一次
     }
+
+
+
 
     function handleCountdownEnd() {
         // 标记当前题目为已结束
         finishedQuestions.push(currentIndex);
         localStorage.setItem('finishedQuestions', JSON.stringify(finishedQuestions));
 
-        // 返回上一个页面
-        history.back();
+        // 获取用户选择的答案
+        const selectedAnswer = userAnswers[currentIndex];
+        const correctAnswer = questionData.answer;  // 正确答案
+
+        // 判断答案的对错
+        const state = selectedAnswer === correctAnswer ? 1 : 0;  // 1 为正确，0 为错误
+
+        // 调用接口更新答案
+        //const StuanswersID = questionData.stuanswersID;  // 假设这是学生答案的ID，根据实际情况修改
+
+        fetch(`http://localhost:8081/Listener/UpdataAnswers?StuanswersID=${questionData.stuanswersID}&answers=${encodeURIComponent(selectedAnswer)}&State=${state}`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())  // 解析为 JSON
+            .then(data => {
+                console.log('答案已更新:', data);  // 处理 JSON 数据
+                history.back();
+            })
+            .catch(error => {
+                console.error('更新答案时出错:', error);
+            });
+
+
+
     }
+
 
     /* ========== 选择答案 ========== */
     function selectAnswer(selectIdx) {
-        // 保存当前选择
-        userAnswers[currentIndex] = selectIdx;
+        // 设定答案为 A, B, C, D
+        const answerOptions = ['A', 'B', 'C', 'D'];
+
+        // 保存当前选择的答案
+        userAnswers[currentIndex] = answerOptions[selectIdx];
 
         // 清除之前的选中状态
         document.querySelectorAll('.option-block').forEach(div => {
@@ -279,25 +323,8 @@
     }
 
 
-    /* ========== 报告弹窗 ========== */
-    function showReport() {
-        const answeredCnt = userAnswers.filter(x => x !== null).length;
-        const rightCnt = userAnswers.filter((ans, idx) => ans === questions[idx].answer).length;
-        const rate = answeredCnt ? (rightCnt / answeredCnt * 100).toFixed(1) + '%' : '0%';
-        let html = `已答题：${answeredCnt}/${questions.length}<br>答对：${rightCnt}<br>正确率：${rate}<br><hr>`;
-        questions.forEach((q, i) => {
-            if (userAnswers[i] !== null) {
-                html += `第${i + 1}题：${userAnswers[i] === q.answer ? '✅' : '❌'} 你的选择：${q.options[userAnswers[i]]} | 正确答案：${q.options[q.answer]}<br>`;
-            } else {
-                html += `第${i + 1}题：未作答<br>`;
-            }
-        });
-        document.getElementById('reportText').innerHTML = html;
-        document.getElementById('reportModal').style.display = 'flex';
-    }
-    function closeReport() {
-        document.getElementById('reportModal').style.display = 'none';
-    }
+
+
 
 
 

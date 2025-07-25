@@ -865,32 +865,58 @@
                 <p class="card-text">${question.questioncontent}</p>
                 <button class="btn btn-primary btn-sm">进入</button>
                 <span class="answer-status" style="font-size: 1.5em; margin-left: 10px;">
-                    ${question.sanscontent === '0' ? '' : (question.answer === question.sanscontent ? '✅' : '❌')}
+                       ${question.sanscontent ? (question.answer === question.sanscontent ? '✅' : '❌') : ''}
                 </span>
+
             </div>
         `;
             console.log(question);
-
+            //console.log(question.sanscontent);
             // 动态绑定事件
             const btn = card.querySelector('button');
             btn.addEventListener('click', () => saveQuestionAndRedirect(question));
 
             container.appendChild(card);
+            if (containerId === "ongoingQuestions") {
+                checkAndRefresh(question);
+            }
         });
 
         // 保存数据到 sessionStorage 并跳转到不同页面
         function saveQuestionAndRedirect(question) {
             // 将 question 对象存储到 sessionStorage 中
             sessionStorage.setItem('questionData', JSON.stringify(question));  // 存储 question 对象
-
+            //sessionStorage.setItem('stuanswersID', JSON.stringify(question.stuanswersID));
             // 根据题目状态跳转到不同的页面
             if (parseInt(question.qstatus) === 1) {
                 // 进行中的题目跳转到 ongoingQuestionDetail.html
-                window.location.href = `QuestionDetail.html?listenerID=${listenerID}&${nowtime}`;
+                window.location.href = `QuestionDetail.html?listenerID=${listenerID}`;
             } else if (parseInt(question.qstatus) === 2) {
                 // 已结束的题目跳转到 endedQuestionDetail.html
-                window.location.href = `EndQuestionDetail.html?listenerID=${listenerID}`;
+                window.location.href = `EndQuestionDetail.html?listenerID=${listenerID}&stuanswersID=${question.stuanswersID}`;
             }
+        }
+        // 检查每个题目是否超过1分钟，如果超过则刷新页面
+        function checkAndRefresh(question) {
+            // 定期检查时间差
+            setInterval(async () => {
+                // 正确解析服务器时间（无需添加'Z'）
+                const qtimeDate = new Date(question.qtime.replace(' ', 'T'));
+
+                const currentTime = new Date();
+                const timeDiff = (currentTime - qtimeDate) / 60000;  // 分钟
+
+                console.log(`
+      QuestionID: ${question.questionID}
+      Server time: ${qtimeDate.toLocaleString()}
+      Current time: ${currentTime.toLocaleString()}
+      Difference: ${timeDiff.toFixed(2)} minutes
+    `);
+
+                if (timeDiff > 0.52) { // 如果超过1分钟
+                    window.location.reload();
+                }
+            }, 1000);  // 每5秒检查一次
         }
     }
 

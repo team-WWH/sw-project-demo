@@ -564,7 +564,7 @@
         const questionID = questionData.questionID;
 
         try {
-            const response = await fetch(`http://localhost:8081/Comment/listener/checktocollect?questionID=${questionID}&listenerID=${listenerID}`, {credentials: 'include'});
+            const response = await fetch(`http://localhost:8081/Comment/questions/listener/checktocollect?questionID=${questionID}&listenerID=${listenerID}`, {credentials: 'include'});
 
             if (response.ok) {
                 const result = await response.text();

@@ -353,50 +353,14 @@ function createSpeech() {
                     alert("创建成功,唯一识别码为："+code);
                     window.location.href = url;
                 })
-            //window.location.href="SpeakerHomepage.html";
-            // newSpeech.filePath = data.filePath; // 保存文件路径
-            // list.push(newSpeech);
-            // render(list);
-            // closeCreateSpeechModal();
+
         })
         .catch(err => {
             console.error('文件上传失败:', err);
             alert('文件上传失败');
         });
 
-    // // 创建新演讲的逻辑
-    // const newSpeech = {
-    //     id: Date.now(), // 使用时间戳作为唯一标识
-    //     name: name,
-    //     inviteCode: generateInviteCode(), // 生成邀请码
-    //     // 其他属性...
-    // };
-    //
-    // if (file) {
-    //     // 上传文件到后端接口
-    //     const formData = new FormData();
-    //     formData.append('file', file);
-    //
-    //     fetch('/upload', {
-    //         method: 'POST',
-    //         body: formData
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         newSpeech.filePath = data.filePath; // 保存文件路径
-    //         list.push(newSpeech);
-    //         render(list);
-    //         closeCreateSpeechModal();
-    //     })
-    //     .catch(err => {
-    //         console.error('文件上传失败:', err);
-    //         alert('文件上传失败');
-    //     });
-    // } else {
-    //     list.push(newSpeech);
-    //     render(list);
-    //     closeCreateSpeechModal();
-    // }
+
 }
 
 function generateInviteCode() {
