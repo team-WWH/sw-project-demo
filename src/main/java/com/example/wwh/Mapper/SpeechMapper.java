@@ -52,6 +52,7 @@ public interface SpeechMapper {
         @Options(useGeneratedKeys = true, keyProperty = "SpeechID")
         void addSpeech(Speech speech);
 
+
         @Select("SELECT * FROM speech WHERE SpeechID = #{SpeechID}")
         Speech getSpeechById(Integer SpeechID);
 
@@ -60,5 +61,11 @@ public interface SpeechMapper {
 
         @Select("SELECT QuestionID FROM queconspe WHERE SpeechID = #{SpeechID}")
         List<Integer> getAllQuestionIDBySpeechID(Integer SpeechID);
+
+        @Insert("INSERT INTO lisconspe (SpeechID,ListenerID) VALUES (#{SpeechID},#{ListenerID})")
+        void addlisconspe(Integer SpeechID,Integer ListenerID);
+
+        @Update("UPDATE speech SET filename = #{filename} WHERE SpeechID = #{SpeechID}")
+        void updateFilename(String filename,Integer SpeechID);
 }
 

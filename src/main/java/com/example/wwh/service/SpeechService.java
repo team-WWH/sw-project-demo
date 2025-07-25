@@ -38,7 +38,7 @@ public class SpeechService {
     public List<Speech> getOngoingSpeechesByListenerID (Integer ListenerID){
         List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
         List<Speech> speechList = new ArrayList<>();
-        for (int i : speechid) {
+        for (Integer i:speechid) {
             Speech speech = speechMapper.getOngoingSpeechesByID(i);
 
             // 仅添加非null的演讲数据
@@ -50,21 +50,30 @@ public class SpeechService {
     }
     public List<Speech> getOngoingSpeechesBySpeakerID (Integer SpeakerID){
         List<Integer> speechid = speechMapper.getSpeechidBySpeakerID(SpeakerID);
+        System.out.println("SpeakerID"+SpeakerID);
+        System.out.println("size"+speechid.size());
         List<Speech> speechList = new ArrayList<>();
-        for (int i : speechid) {
-            speechList.add(speechMapper.getOngoingSpeechesByID(i));
+        for(Integer i:speechid) {
+            System.out.println("speechid"+i);
+            //Speech speech = ;
+           // speech.setSpeechID(i);
+            Speech speech = speechMapper.getOngoingSpeechesByID(i);
+            if(speech!=null)
+            speechList.add(speech);
+            System.out.println("speechlistsize"+speechList.size());
         }
         return speechList;
     }
 
-    public ResponseEntity<?> IntendSpeech(String joinCode){
+    public ResponseEntity<?> IntendSpeech(String joinCode,Integer ListenerID){
         Object speechId = redisutil.get(buildJoinCodeKey(joinCode));
+        speechMapper.addlisconspe((Integer) speechId,ListenerID);
         Speech speech = speechMapper.getSpeechById((Integer) speechId);
         if(speech.getSstatus()==0){
             return ResponseEntity.badRequest().body("演讲已结束");
         }
 
-        return ResponseEntity.ok(speech);
+        return ResponseEntity.ok("chenggong");
 
     }
     public List<Speech> getEndedSpeechesBySpeakerID(Integer SpeakerID) {
@@ -159,6 +168,13 @@ public class SpeechService {
 
     public List<Listener> getAllListenerBySpeechID(Integer SpeechID){
         return speechMapper.findAllListenerBySpeechID(SpeechID);
+    }
+    public String getCodeBySpeechID(Integer SpeechID){
+        Object code = redisutil.get(buildPresentationCodeKey(String.valueOf(SpeechID)));
+        return (String) code;
+    }
+    public void updateFilename(String filename , Integer SpeechID){
+        speechMapper.updateFilename(filename,SpeechID);
     }
 }
 

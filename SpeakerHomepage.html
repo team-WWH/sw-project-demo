@@ -224,7 +224,7 @@
 
     const params = new URLSearchParams(location.search);
     //const speakerID = 1;
-    let filename = params.get("filename");
+   // let filename = params.get("filename");
 
     //===================================================================================
     // 获取正在进行中的演讲数据
@@ -247,13 +247,13 @@
         </div>
         <div class="card-body" style="margin-top:30px">
             <div class="card-info" >
-               <div class="card-invite-code" style="">${speech.inviteCode || '暂无邀请代码'}</div>
-                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
+               <div class="card-invite-code" style="">${speech.code || '暂无邀请代码'}</div>
+                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.code}')"  style="width:5px;border: 1px solid #ddd;
             border-radius: 3px;margin-left:10px;height:15px;color:grey">↓</button>
             </div>
         </div>
         <div class="card-footer">
-            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px;margin-left:220px">上课</button>
+            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID},'${speech.filename}')" style="height:30px;margin-left:220px">上课</button>
         </div>
     `;
         container.appendChild(card);
@@ -265,8 +265,13 @@
 
         if (Array.isArray(data)) {
             data.forEach(speech => {
-                //filename = speechname + speakerID + '.' +
-                if (speech && speech.speechname && speech.speechID) {
+                const name = encodeURIComponent(speech.filename);
+                console.log("nananananaa",name);
+              //  filename = speech.filename;
+               // console.log(filename);
+                //speech.filename = (speech.filename);
+               // console.log(speech.filename);
+                if (speech && speech.speechname && speech.speechID&&speech.code) {
                     renderSpeechCard(speech);  // 渲染有效的演讲数据
                 } else {
                     console.warn('Invalid speech data:', speech);
@@ -277,9 +282,10 @@
         }
     }
 
-    function view(SpeechID) {
-
-        const url = `SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${SpeechID}&filename=${filename}`;
+    function view(SpeechID,fileName) {
+        //const name = encodeURIComponent(fileName);
+        console.log("fileName",fileName);
+        const url = `SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${SpeechID}&filename=${fileName}`;
 
         window.location.href = url;
     }
@@ -321,8 +327,9 @@ function createSpeech() {
     fileData.append('file',file);
     fileData.append('type',fileExtension);
     //console.log(fileType);
-    filename = name + speakerID+'.'+fileExtension;
-    const url = `SpeakerHomepage.html?SpeakerID=${speakerID}&filename=${filename}`;
+    //filename = name + speakerID+'.'+fileExtension;
+
+    const url = `SpeakerHomepage.html?SpeakerID=${speakerID}`;
 
     console.log(formData)
         fetch('http://localhost:8081/Speaker/createSpeech', {
@@ -333,6 +340,10 @@ function createSpeech() {
         .then(response => response.json())
         .then(data => {
             const code = data.code;
+            const sID = data.speech.speechID;
+            console.log("datashishishsihsi",data);
+            console.log("datashishishsihsi",sID);
+            fileData.append('SpeechID',sID);
             fetch('http://localhost:8081/Speaker/addfile', {
                 method: 'POST',
                 credentials: 'include',

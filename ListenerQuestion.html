@@ -723,7 +723,11 @@
                         if(message.body === 'QUESTION_PUBLISH'){
                             getquestion();
 
-                        }else {
+                        }else if(message.body === 'SPEECH_END'){
+                            alert("演讲已经结束");
+                            window.location.href = 'ListenerHomepage.html'
+                        }
+                        else {
                             const receivedMsg = JSON.parse(message.body);
 
                             // 正确过滤：只显示其他人发送的消息

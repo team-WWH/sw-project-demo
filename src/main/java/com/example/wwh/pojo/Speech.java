@@ -16,6 +16,24 @@ public class Speech {
     private int Sstatus;
     private String Sname;//演讲者名字
     private String Speechname;//演讲名字
+    private String code;
+    private String filename;
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getSpeechname() {
         return Speechname;

@@ -29,6 +29,7 @@ public class StuAnswerController {
         Stuanswers answer = stuanswersService.getAnswerByListenerAndQuestion(listenerID, questionID);
         return ResponseEntity.ok(answer);  // 返回数据
     }
+
     @PutMapping("Listener/UpdataAnswers")
     public ResponseEntity<String> updataStuanswers(Integer StuanswersID,String answers,Integer State){
         stuanswersService.updataAnswers(StuanswersID,answers,State);

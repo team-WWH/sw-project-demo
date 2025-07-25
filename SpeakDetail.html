@@ -785,7 +785,7 @@
 
   const params = new URLSearchParams(location.search);
   const course = params.get('name') || '未知课程';
-  const ppt    = params.get('ppt')     || '123456.pptx';   // 默认示例
+ // const ppt    = params.get('filename')     || '123456.pptx';   // 默认示例
   const speechID = params.get('SpeechID');
   const filename = params.get('filename');
 
@@ -795,7 +795,7 @@
   let pptUrl   = '';       // 本地相对路径
   let viewerSrc = '';
 
-  const response = fetch(`http://localhost:8081/Comment/questions/getfileurl?filename=${filename}`,{
+  const response = fetch(`http://localhost:8081/Comment/getfileurl?filename=${filename}`,{
     method:'GET',
     credentials: 'include',
   }).then(response => {
@@ -805,28 +805,32 @@
   }).then(data=>{
     console.log("data:::::",data);
     pptUrl = data;
-    getPPTPreviewUrl(pptUrl);
+    const fileExtension = filename.split('.').pop().toLowerCase();
+    getPPTPreviewUrl(filename);
   });
 
 
-  function getPPTPreviewUrl(pptUrl) {
+  function getPPTPreviewUrl(filename) {
     console.log("url是：",pptUrl);
     /* 3.1 如果是 pdf，直接用浏览器 iframe 即可 */
-    if (ppt.toLowerCase().endsWith('.pdf')) {
+    if (filename.toLowerCase().endsWith('.pdf')) {
       viewerSrc = pptUrl;
     }
     /* 3.2 如果是 pptx，使用微软在线预览（支持外链） */
-    else if (ppt.toLowerCase().endsWith('.pptx') || ppt.toLowerCase().endsWith('.ppt')) {
-      viewerSrc = `https://view.officeapps.live.com/op/embed.aspx?src=${location.origin}/${pptUrl}`;
+    else if (filename.toLowerCase().endsWith('.pptx') || filename.toLowerCase().endsWith('.ppt')) {
+     // viewerSrc = `https://docs.google.com/gview?url=${pptUrl}&embedded=true`;
+      const encodedUrl = encodeURIComponent(encodeURIComponent(pptUrl));
+      viewerSrc = `https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`;
+      console.log("ceshishishis" , viewerSrc);
     }
     /* 3.3 兜底：Google Docs 预览 */
     else {
-      viewerSrc = `https://docs.google.com/gview?url=${location.origin}/${pptUrl}&embedded=true`;
+      viewerSrc = `https://docs.google.com/gview?url=${pptUrl}&embedded=true`;
     }
 
 
     /* 4. 加载到 iframe */
-    document.getElementById('pptFrame').src = pptUrl;
+    document.getElementById('pptFrame').src = viewerSrc;
   }
   /* 右侧按钮事件 */
   function publishQuestion() {
@@ -1044,12 +1048,28 @@
 
 
   function endSpeech() {
-    function endSpeech() {
+      alert("jieshu");
+      const fordata = new FormData();
+      fordata.append("SpeechID",speechID);
       if (confirm('确定要结束当前演讲吗？')) {
+        fetch(`http://localhost:8081/Speaker/EndSpeech`,{
+          method:"PUT",
+          credentials: 'include',
+          body:fordata
+        })
+                .then(response => {
+                 if(!response.ok){
+                   alert("网络错误，请重试");
+                 }
+                 else{
+                   window.location.href = `SpeakerHomepage.html`;
+                 }
+                })
+
         // 这里可以添加删除演讲的逻辑
-        window.location.href = `SpeakerHomepage.html?${speakerID}`;
+        //window.location.href = `SpeakerHomepage.html?${speakerID}`;
       }
-    }
+
   }
     // 文件上传相关变量
     let uploadedFiles = [];
