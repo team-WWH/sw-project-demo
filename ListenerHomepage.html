@@ -206,7 +206,7 @@
 
     function view(SpeechID) {
         const speechID = SpeechID;  // 获取当前演讲的 SpeechID
-        const url = `http://localhost:8080/ListenerQuestion.html?ListenerID=${listenerID}&SpeechID=${speechID}`;
+        const url = `ListenerQuestion.html?ListenerID=${listenerID}&SpeechID=${speechID}`;
         window.location.href = url;
     }
 

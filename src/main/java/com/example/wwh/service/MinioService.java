@@ -3,6 +3,7 @@ package com.example.wwh.service;
 import com.example.wwh.Config.MinioPropertie;
 import io.minio.*;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,19 @@ public class MinioService {
                             .contentType(file.getContentType())
                             .build());
             //log.info("Uploaded file: {} to bucket: {}", objectName, minioProperties.getBucket());
+        }
+    }
+    public String getPresignedUrl( String objectName, int expiryTimeInSeconds) {
+        try {
+            return minioClient.getPresignedObjectUrl(
+                    io.minio.GetPresignedObjectUrlArgs.builder()
+                            .bucket(minioProperties.getBucket())
+                            .object(objectName)
+                            .method(Method.GET)
+                            .expiry(expiryTimeInSeconds)
+                            .build());
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating presigned URL", e);
         }
     }
 
