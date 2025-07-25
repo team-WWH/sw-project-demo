@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>DT502</title>
+    <title>个人信息</title>
     <style>
-        /* 全局样式 */
+
         *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
         body{background:#f5f5f5;color:#333}
         header{background:#001529;color:#fff;display:flex;align-items:center;padding:0 20px;height:56px}
@@ -54,23 +54,30 @@
 </header>
 <!-- 主卡片 -->
 <div class="card">
-    <div class="card-header">DT502</div>
+    <div class="card-header">个人信息</div>
     <div class="card-body">
         <!-- 字段 -->
         <div class="form-item">
             <label>用户名：</label>
-            <span id="username">20231234</span>  <!-- 这里用一个id来填充用户名 -->
+            <span id="username">陈红</span>  <!-- 这里用一个id来填充用户名 -->
         </div>
         <div class="form-item">
             <label>邮箱：</label>
-            <span id="email">陈红</span>  <!-- 这里用一个id来填充邮箱 -->
+            <span id="email">123@qq.com</span>  <!-- 这里用一个id来填充邮箱 -->
         </div>
+
 
         <div class="form-item">
             <label>性别：</label>
             <span id="gender">未知</span>  <!-- 这里用一个id来填充性别 -->
         </div>
     </div>
+</div>
+<!-- 退出登录按钮 -->
+<div class="card-footer" style="text-align: center; padding: 10px;">
+    <button class="btn btn-danger" onclick="logout()" style="width: 200px; height: 40px; border-radius: 8px; font-size: 16px;">
+        退出登录
+    </button>
 </div>
 
 
@@ -79,22 +86,29 @@
     // 获取 URL 中的 listenerID 参数
     // const urlParams = new URLSearchParams(window.location.search);
     // const listenerID = urlParams.get('listenerID');  // 假设 URL 中有 listenerID 参数
-    const organizerID = 1;
-
+    const organizerID = localStorage.getItem('organizerID');
     // 发送 GET 请求来获取听众信息
-    fetch(`http://localhost:8081/users/organizer/${organizerID}`)
+    fetch(`http://localhost:8081/Comment/organizer/${organizerID}`, {credentials: 'include'})
         .then(response => response.json())  // 解析返回的 JSON 数据
         .then(listener => {
             // 填充页面中的信息
             document.getElementById('username').textContent =  listener.oname || '未知';
             document.getElementById('email').textContent = listener.omail || '未知';
             document.getElementById('gender').textContent = listener.osex ? '男' : '女';
+
         })
         .catch(error => {
             console.error('Error fetching listener info:', error);
             // 如果发生错误，给出提示
             alert('加载听众信息失败');
         });
+    function logout() {
+        // 清除 localStorage 或 cookie（根据你的需求）
+        localStorage.clear();  // 如果使用了 localStorage 保存登录状态
+
+        // 跳转到登录页面
+        window.location.href = 'Login.html';  // 假设你的登录页面是 Login.html
+    }
 
 </script>
 

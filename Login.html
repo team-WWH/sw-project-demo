@@ -298,7 +298,24 @@
             if (response.ok) {
                 // 登录成功，保存token到cookie
                 setCookie('AUTH_TOKEN', data.token, 1);
+                // 根据用户角色获取对应的ID并存储到localStorage
+                if (formData.userType === 'LISTENER') {
+                    // 根据Listener邮箱获取Listener ID
+                    const listenerResponse = await fetch(`http://localhost:8081/Comment/listener/mail/${formData.username}` ,{credentials: 'include',});
+                    const listenerData = await listenerResponse.json();
+                    localStorage.setItem('listenerID', listenerData.listenerID); // 假设返回的数据包含 listenerID
+                } else if (formData.userType === 'SPEAKER') {
+                    // 根据Speaker邮箱获取Speaker ID
+                    const speakerResponse = await fetch(`http://localhost:8081/Comment/speaker/mail/${formData.username}` ,{credentials: 'include',});
+                    const speakerData = await speakerResponse.json();
+                    localStorage.setItem('speakerID', speakerData.speakerID); // 假设返回的数据包含 speakerID
 
+                } else if (formData.userType === 'ORGANIZER') {
+                    // 根据Organizer邮箱获取Organizer ID
+                    const organizerResponse = await fetch(`http://localhost:8081/Comment/organizer/mail/${formData.username}` ,{credentials: 'include',});
+                    const organizerData = await organizerResponse.json();
+                    localStorage.setItem('organizerID', organizerData.organizerID); // 假设返回的数据包含 organizerID
+                }
                 showToast('登录成功！正在跳转...', true);
 
                 // 根据角色跳转

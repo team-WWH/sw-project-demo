@@ -317,7 +317,7 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         } else {
             // 处理正常的消息
-            fetch(`http://localhost:8081/users/listener/${message.listenerID}`)
+            fetch(`http://localhost:8081/Comment/listener/${message.listenerID}`, {credentials: 'include'})
                 .then(response => response.json())
                 .then(listenerInfo => {
                     const messageContent = document.createElement('div');
@@ -362,7 +362,7 @@
 
     // 加载历史消息
     function loadHistory() {
-        fetch(`http://localhost:8081/feedback/history?speechID=${speechID}`)
+        fetch(`http://localhost:8081/Comment/feedback/history?speechID=${speechID}`, {credentials: 'include'})
             .then(response => response.json())
             .then(messages => {
                 messages.forEach(msg => {
@@ -456,13 +456,13 @@
 
     //-----------------------------------------------------------------------
     // 获取你的题目
-    fetch(`http://localhost:8081/api/questions/listener/getfinishedQuestions?speechID=${speechID}&listenerID=${listenerID}`)
+    fetch(`http://localhost:8081/Comment/questions/listener/getfinishedQuestions?speechID=${speechID}&listenerID=${listenerID}`, {credentials: 'include'})
         .then(response => response.json())
         .then(data => renderQuestions(data, 'ongoingQuestions'))  // 渲染进行中的题目
         .catch(error => console.error('Error fetching ongoing questions:', error));
 
     // 获取未抽到的题目
-    fetch(`http://localhost:8081/api/questions/listener/getNogetQuestions?speechID=${speechID}&listenerID=${listenerID}`)
+    fetch(`http://localhost:8081/Comment/questions/listener/getNogetQuestions?speechID=${speechID}&listenerID=${listenerID}`, {credentials: 'include'})
         .then(response => response.json())
         .then(data => renderQuestions(data, 'finishedQuestions'))  // 渲染已结束的题目
         .catch(error => console.error('Error fetching finished questions:', error));
@@ -512,52 +512,7 @@
         }
     }
 
-    // // 渲染静态数据
-    // renderQuestions(updatedOngoingQuestions, 'ongoingQuestions', true);
-    // renderQuestions(updatedFinishedQuestions, 'finishedQuestions', false);
-    //
-    // // 模拟的评论数据
-    // const comments = [
-    //     { author: '用户A', date: '2025-07-20 10:00', content: '这是一个非常有用的演讲练习题目！' },
-    //     { author: '用户B', date: '2025-07-20 10:30', content: '我也觉得这个题目很有帮助，谢谢分享！' },
-    //     { author: '用户C', date: '2025-07-20 11:00', content: '期待更多这样的练习题目！' }
-    // ];
-    //
-    // // 加载评论
-    // function loadComments() {
-    //     const commentsContainer = document.getElementById('comments');
-    //     commentsContainer.innerHTML = '';
-    //     comments.forEach(comment => {
-    //         const commentElement = document.createElement('div');
-    //         commentElement.className = 'comment';
-    //         commentElement.innerHTML = `
-    //             <div class="comment-author">${comment.author}</div>
-    //             <div class="comment-date">${comment.date}</div>
-    //             <div class="comment-content">${comment.content}</div>
-    //         `;
-    //         commentsContainer.appendChild(commentElement);
-    //     });
-    // }
-    //
-    // // 提交评论
-    // document.getElementById('commentForm').addEventListener('submit', (e) => {
-    //     e.preventDefault();
-    //     const commentInput = document.getElementById('commentInput');
-    //     const commentContent = commentInput.value.trim();
-    //     if (commentContent) {
-    //         const comment = {
-    //             author: '用户', // 这里可以根据实际情况获取用户信息
-    //             date: new Date().toLocaleString(),
-    //             content: commentContent
-    //         };
-    //         comments.push(comment);
-    //         commentInput.value = '';
-    //         loadComments();
-    //     }
-    // });
-    //
-    // // 初始加载评论
-    // loadComments();
+
 
 
 

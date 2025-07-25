@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers("/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/Comment/**").hasAnyRole("LISTENER","SPEAKER","ORGANIZER")
                         .requestMatchers("/Listener/**").hasRole("LISTENER")
                         .requestMatchers("/Speaker/**").hasRole("SPEAKER")
                         .requestMatchers("/organizer/**").hasRole("ORGANIZER")

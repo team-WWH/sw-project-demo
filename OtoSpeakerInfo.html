@@ -50,22 +50,32 @@
     <nav>
         <a href="OtoSpeakerHomepage.html">演讲者首页</a>
         <a href="OtoSpeakerHistory.html">历史演讲</a>
-        <a href="OtoSpeakerInfo.html"class="active">演讲者个人信息</a>
-        <a href="OrganizerHomepage.html">返回组织者首页</a>
+        <a href="OtoSpeakerInfo.html"class="active">个人信息</a>
+        <a href="OrganizerHomepage.html">组织者首页</a>
     </nav>
 </header>
 <!-- 主卡片 -->
 <div class="card">
-    <div class="card-header">DT502</div>
+    <div class="card-header">个人信息</div>
     <div class="card-body">
         <!-- 字段 -->
         <div class="form-item">
             <label>用户名：</label>
-            <span id="username">20231234</span>  <!-- 这里用一个id来填充用户名 -->
+            <span id="username">陈红</span>  <!-- 这里用一个id来填充用户名 -->
         </div>
         <div class="form-item">
             <label>邮箱：</label>
-            <span id="email">陈红</span>  <!-- 这里用一个id来填充邮箱 -->
+            <span id="email">123@qq.com</span>  <!-- 这里用一个id来填充邮箱 -->
+        </div>
+        <!-- 匿名开关 -->
+        <div class="form-item">
+            <label>是否匿名：</label>
+            <label style="margin-right:10px">
+                <input type="radio" name="anonymous" value="0" checked> 不匿名
+            </label>
+            <label>
+                <input type="radio" name="anonymous" value="1"> 匿名
+            </label>
         </div>
 
         <div class="form-item">
@@ -74,6 +84,12 @@
         </div>
     </div>
 </div>
+<!-- 退出登录按钮 -->
+<div class="card-footer" style="text-align: center; padding: 10px;">
+    <button class="btn btn-danger" onclick="logout()" style="width: 200px; height: 40px; border-radius: 8px; font-size: 16px;">
+        退出登录
+    </button>
+</div>
 
 
 
@@ -81,22 +97,40 @@
     // 获取 URL 中的 listenerID 参数
     // const urlParams = new URLSearchParams(window.location.search);
     // const listenerID = urlParams.get('listenerID');  // 假设 URL 中有 listenerID 参数
-    const speakerID = 1;
+    const speakerID = localStorage.getItem('speakerID');
 
     // 发送 GET 请求来获取听众信息
-    fetch(`http://localhost:8081/users/speaker/${speakerID}`)
+    fetch(`http://localhost:8081/Comment/speaker/${speakerID}`, {credentials: 'include'})
         .then(response => response.json())  // 解析返回的 JSON 数据
         .then(listener => {
             // 填充页面中的信息
             document.getElementById('username').textContent =  listener.sname || '未知';
             document.getElementById('email').textContent = listener.smail || '未知';
             document.getElementById('gender').textContent = listener.ssex ? '男' : '女';
+            /* 匿名逻辑 */
+            const realUserName = listener.sname ;                  // 真实用户名
+            const userSpan     = document.getElementById('username');
+
+            document.querySelectorAll('input[name="anonymous"]').forEach(r =>
+                r.addEventListener('change', () => {
+                    userSpan.textContent = r.value === '1'
+                        ? 'X'.repeat(realUserName.length)   // ← 关键改动
+                        : realUserName;
+                })
+            );
         })
         .catch(error => {
             console.error('Error fetching listener info:', error);
             // 如果发生错误，给出提示
-            alert('加载听众信息失败');
+            alert('加载演讲者信息失败');
         });
+    function logout() {
+        // 清除 localStorage 或 cookie（根据你的需求）
+        localStorage.clear();  // 如果使用了 localStorage 保存登录状态
+
+        // 跳转到登录页面
+        window.location.href = 'Login.html';  // 假设你的登录页面是 Login.html
+    }
 
 </script>
 

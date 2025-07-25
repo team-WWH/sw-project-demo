@@ -218,11 +218,11 @@
 </div>
 
 <script>
-    const speakerID = 1;
+    const speakerID = localStorage.getItem('speakerID');
 
     //===================================================================================
     // 获取正在进行中的演讲数据
-    fetch(`http://localhost:8081/Speaker/ongoing?SpeakerID=${speakerID}`,{
+    fetch(`http://localhost:8081/Comment/Speaker/ongoing?SpeakerID=${speakerID}`,{
         credentials: 'include',
     })
         .then(response => response.json())
@@ -242,7 +242,8 @@
         <div class="card-body" style="margin-top:30px">
             <div class="card-info" >
                <div class="card-invite-code" style="">${speech.inviteCode || '暂无邀请代码'}</div>
-                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')">☇</button>
+                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
+            border-radius: 3px;margin-left:10px;height:15px;color:grey">↓</button>
             </div>
         </div>
         <div class="card-footer">
@@ -270,7 +271,7 @@
     }
 
     function view(SpeechID) {
-        const url = `http://localhost:8080/SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${SpeechID}`;
+        const url = `/SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${SpeechID}`;
         window.location.href = url;
     }
     //===========================================================================================

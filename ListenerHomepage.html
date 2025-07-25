@@ -155,9 +155,9 @@
 
 <script>
     // 模拟数据
-    const listenerID = 1;
+    const listenerID = localStorage.getItem('listenerID');
     // 获取正在进行中的演讲数据
-    fetch(`http://localhost:8081/Listener/ongoing?ListenerID=${listenerID}`)
+    fetch(`http://localhost:8081/Listener/ongoing?ListenerID=${listenerID}`,{credentials: 'include',})
         .then(response => response.json())
         .then(data => {
             render(data);  // 调用渲染函数将数据展示到页面
@@ -185,7 +185,7 @@
             <div class="card-info" >
                <div class="card-invite-code"  style="">${speech.inviteCode}</div>
                 <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
-            border-radius: 2px;">☇</button>
+            border-radius: 3px;margin-left:10px;height:15px;color:grey">↓</button>
             </div>
         </div>
         <div class="card-footer">
@@ -206,7 +206,7 @@
 
     function view(SpeechID) {
         const speechID = SpeechID;  // 获取当前演讲的 SpeechID
-        const url = `http://localhost:8080/ListenerQuestion.html?ListenerID=${listenerID}&SpeechID=${speechID}`;
+        const url = `ListenerQuestion.html?ListenerID=${listenerID}&SpeechID=${speechID}`;
         window.location.href = url;
     }
 

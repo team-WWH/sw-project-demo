@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("/api/questions")
+@RequestMapping("/Comment/questions")
 @EnableAsync
 public class QuestionController {
 

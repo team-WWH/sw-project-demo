@@ -145,11 +145,12 @@
 
 <script>
 
-    const listenerID=1;
+
+    const listenerID = localStorage.getItem('listenerID');
 
 
     // 获取已经结束的的演讲数据
-    fetch(`http://localhost:8081/Listener/ended?ListenerID=${listenerID}`)
+    fetch(`http://localhost:8081/Listener/ended?ListenerID=${listenerID}`,{credentials: 'include',})
         .then(response => response.json())
         .then(data => {
             render(data);  // 调用渲染函数将数据展示到页面
@@ -169,7 +170,8 @@
     <div class="card-body" style="margin-top:30px">
         <div class="card-info" >
            <div class="card-invite-code">${speech.inviteCode || '无邀请代码'}</div>
-            <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')" style="width:5px;border: 1px solid #ddd; border-radius: 2px;">☇</button>
+            <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')" style="width:5px;border: 1px solid #ddd;
+            border-radius: 3px;margin-left:10px;height:15px;color:grey">↓</button>
         </div>
     </div>
     <div class="card-footer">

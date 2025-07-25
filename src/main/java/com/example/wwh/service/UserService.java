@@ -97,6 +97,9 @@ public class UserService {
         userMapper.insertOrgconspe(organizerID, speakerID);
     }
 
-
+    // 更新 Anonymous 值
+    public void updateAnonymous(int listenerID, int anonymous) {
+        userMapper.updateAnonymous(listenerID, anonymous);
+    }
 }
 
