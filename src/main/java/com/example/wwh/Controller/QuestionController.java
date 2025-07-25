@@ -240,6 +240,7 @@ public class QuestionController {
             @RequestParam int listenerID) {
 
         List<QuestionDTO> questions = questionService.getQuestionsByListenerAndStatus(listenerID);
+        System.out.println(questions);
         return ResponseEntity.ok(questions);
     }
 

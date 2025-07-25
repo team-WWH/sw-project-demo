@@ -21,25 +21,27 @@ public class AnalysisService {
 
     //得到listener在某个speech的正确率
     public AccurayAndNumber getlistenerAccuracy(Integer ListenerID,Integer SpeechID){
-            List<Integer> QuestionIDList =speechService.getAllQuestionIDBySpeechID(SpeechID);
-            Integer Accuracy = 0 ;
-            Integer number = 0;
-            for (Integer questionID:QuestionIDList ){
-                Stuanswers stuanswers = stuAnswerService.getAnswerByListenerAndQuestion(ListenerID,questionID);
-                if(stuanswers.getQS()!=0){
-            Accuracy = Accuracy +stuanswers.getState();
-                }
-                if(stuanswers.getQS()==2){
-                    number+=1;
-                }
-
+        List<Integer> QuestionIDList =speechService.getAllQuestionIDBySpeechID(SpeechID);
+        Integer Accuracy = 0 ;
+        Integer number = 0;
+        Integer total = 0;
+        for (Integer questionID:QuestionIDList ){
+            Stuanswers stuanswers = stuAnswerService.getAnswerByListenerAndQuestion(ListenerID,questionID);
+            if(stuanswers.getQS()!=0){
+                total   += 1;
+                Accuracy = Accuracy +stuanswers.getState();
             }
-        AccurayAndNumber accurayAndNumber = new AccurayAndNumber();
-            accurayAndNumber.setAccuray((double) Accuracy /(QuestionIDList.size()));
-            accurayAndNumber.setNumber(number);
-        System.out.println("ListenerID = " + accurayAndNumber.getAccuray());
-            return accurayAndNumber;
+            if(stuanswers.getQS()==2){
+                number+=1;
+            }
+
         }
+        AccurayAndNumber accurayAndNumber = new AccurayAndNumber();
+        accurayAndNumber.setAccuray((double) Accuracy /(total));
+        accurayAndNumber.setNumber(number);
+        System.out.println("ListenerID = " + accurayAndNumber.getAccuray());
+        return accurayAndNumber;
+    }
 
     //得到speech的全部人的正确率和答题数量
     public List<ListenerAccuracyResponse> getspeechAccuracy(Integer SpeechID) {
@@ -48,8 +50,8 @@ public class AnalysisService {
         //System.out.println(ListenerIDList.get(0).getListenerID());
         for (Listener listener : ListenerIDList) {
 
-          double accuracy  =getlistenerAccuracy(listener.getListenerID(),SpeechID).getAccuray();
-          Integer number = getlistenerAccuracy(listener.getListenerID(),SpeechID).getNumber();
+            double accuracy  =getlistenerAccuracy(listener.getListenerID(),SpeechID).getAccuray();
+            Integer number = getlistenerAccuracy(listener.getListenerID(),SpeechID).getNumber();
             ListenerAccuracyResponse listenerAccuracyResponse= new ListenerAccuracyResponse();
             listenerAccuracyResponse.setAccuracy(accuracy);
             listenerAccuracyResponse.setAnonymous(listener.getAnonymous());
@@ -79,15 +81,15 @@ public class AnalysisService {
         List<Integer> QuestionIDList =speechService.getAllQuestionIDBySpeechID(SpeechID);
         List<QuetionAccuracy> quetionAccuracies = new ArrayList<>();
         for(Integer QuestionID:QuestionIDList){
-           List<Stuanswers> stuanswersList = stuAnswerService.getStuanswerByQuestionID(QuestionID);
+            List<Stuanswers> stuanswersList = stuAnswerService.getStuanswerByQuestionID(QuestionID);
             Integer right = 0;
-           for(Stuanswers stuanswers:stuanswersList){
-               right+=stuanswers.getState();
-           }
-           QuetionAccuracy quetionAccuracy = new QuetionAccuracy();
-           quetionAccuracy.setQuestionID(QuestionID);
-           quetionAccuracy.setAccuracy((double) right/(stuanswersList.size()));
-           quetionAccuracies.add(quetionAccuracy);
+            for(Stuanswers stuanswers:stuanswersList){
+                right+=stuanswers.getState();
+            }
+            QuetionAccuracy quetionAccuracy = new QuetionAccuracy();
+            quetionAccuracy.setQuestionID(QuestionID);
+            quetionAccuracy.setAccuracy((double) right/(stuanswersList.size()));
+            quetionAccuracies.add(quetionAccuracy);
         }
         return quetionAccuracies;
     }

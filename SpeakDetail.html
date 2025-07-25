@@ -581,6 +581,14 @@
         grid-template-columns: 1fr;
       }
     }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #generateButton:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -689,6 +697,10 @@
 <div id="publishModal" class="modal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5);">
   <div style="background:#fff;margin:5% auto;padding:20px;border-radius:6px;width:400px;max-height:90vh;overflow-y:auto;">
     <h3>发布题目</h3>
+    <div id="loadingSpinner" style="display:none; text-align:center;">
+      <i class="bi bi-circle-half" style="font-size: 40px; color: var(--primary); animation: spin 1s infinite linear;"></i>
+      <p>正在生成题目...</p>
+    </div>
 
     <form id="publishForm">
       <!-- 演讲进度选择 -->
@@ -696,28 +708,28 @@
         <label for="progressSelect">演讲进度(输入页数):</label><input id="progressSelect" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
       </div>
 
-      <!-- 文件上传区域 -->
-      <div class="form-group" style="margin:15px 0;">
-        <label>上传文件：</label>
-        <input type="file" id="fileInput" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx"
-               style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
-        <small style="color:#666;">支持图片、视频、音频、PDF、Word、PPT等格式</small>
+<!--      &lt;!&ndash; 文件上传区域 &ndash;&gt;-->
+<!--      <div class="form-group" style="margin:15px 0;">-->
+<!--        <label>上传文件：</label>-->
+<!--        <input type="file" id="fileInput" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx"-->
+<!--               style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">-->
+<!--        <small style="color:#666;">支持图片、视频、音频、PDF、Word、PPT等格式</small>-->
 
-        <!-- 文件预览区域 -->
-        <div id="filePreview" style="margin-top:10px;max-height:200px;overflow:auto;">
-          <div id="previewList"></div>
-        </div>
-      </div>
+<!--        &lt;!&ndash; 文件预览区域 &ndash;&gt;-->
+<!--        <div id="filePreview" style="margin-top:10px;max-height:200px;overflow:auto;">-->
+<!--          <div id="previewList"></div>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <!-- AI生成按钮 -->
-      <button type="button" class="btn-primary" style="width:100%;margin:10px 0;padding:8px;" onclick="generateAIQuestion()">
-        调用AI生成题目
+      <button id="generateButton" type="button" class="btn-primary" style="width:100%;margin:10px 0;padding:8px;" onclick="generateAIQuestion()">
+        调用AI生成并发布题目
       </button>
 
       <!-- 操作按钮 -->
       <div style="display:flex;gap:10px;margin-top:20px;">
         <button type="button" class="btn-secondary" style="flex:1;height:35px;" onclick="closePublishModal()">取消</button>
-        <button type="button" class="btn-primary" style="flex:1;height:35px;" onclick="confirmPublish()">确定发布</button>
+        <button type="button" class="btn-primary" style="flex:1;height:35px;" onclick="closePublishModal()">确定</button>
       </div>
     </form>
   </div>
@@ -763,7 +775,7 @@
     }
     /* 3.2 如果是 pptx，使用微软在线预览（支持外链） */
     else if (filename.toLowerCase().endsWith('.pptx') || filename.toLowerCase().endsWith('.ppt')) {
-     // viewerSrc = `https://docs.google.com/gview?url=${pptUrl}&embedded=true`;
+      //viewerSrc = `https://docs.google.com/gview?url=${pptUrl}&embedded=true`;
       const encodedUrl = encodeURIComponent(encodeURIComponent(pptUrl));
       viewerSrc = `https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`;
       console.log("ceshishishis" , viewerSrc);
@@ -780,6 +792,7 @@
   /* 右侧按钮事件 */
   function publishQuestion() {
     document.getElementById('publishModal').style.display = 'block';
+    document.getElementById('loadingSpinner').style.display = 'none';  // 确保初始时隐藏
   }
 
 
@@ -905,7 +918,7 @@
       stompClient = Stomp.over(socket);
       stompClient.connect({}, function() {
         connected = true;
-        displayMessage('已连接到聊天室', false);
+        //displayMessage('已连接到聊天室', false);
 
         // 订阅消息，接收消息并过滤不属于自己的消息
         stompClient.subscribe(`/topic/chat/${speechID}`, function(message) {
@@ -993,7 +1006,6 @@
 
 
   function endSpeech() {
-      alert("jieshu");
       const fordata = new FormData();
       fordata.append("SpeechID",speechID);
       if (confirm('确定要结束当前演讲吗？')) {
@@ -1020,11 +1032,11 @@
     let uploadedFiles = [];
 
     // 文件选择处理
-    document.getElementById('fileInput').addEventListener('change', function (e) {
-      const files = Array.from(e.target.files);
-      uploadedFiles = [...uploadedFiles, ...files];
-      renderFilePreview();
-    });
+    // document.getElementById('fileInput').addEventListener('change', function (e) {
+    //   const files = Array.from(e.target.files);
+    //   uploadedFiles = [...uploadedFiles, ...files];
+    //   renderFilePreview();
+    // });
 
     // 渲染文件预览
     function renderFilePreview() {
@@ -1136,23 +1148,62 @@
     }
 
     // 原有函数保持不变
-    async function generateAIQuestion() {
-      const currentNumber = document.getElementById('progressSelect').value;
-      const fordata = new FormData();
-      fordata.append('currentNumber', currentNumber);
-      fordata.append('filename', filename);
-      fordata.append('SpeechID', speechID);
+  async function generateAIQuestion() {
+    const currentNumber = document.getElementById('progressSelect').value;
+    const fordata = new FormData();
+    fordata.append('currentNumber', currentNumber);
+    fordata.append('filename', filename);
+    fordata.append('SpeechID', speechID);
+
+    // 禁用生成题目按钮
+    const generateButton = document.getElementById('generateButton');
+    generateButton.disabled = true;
+    generateButton.innerHTML = "生成中...";  // 可选，改变按钮文本显示为“生成中...”
+
+    // 显示加载动画
+    document.getElementById('loadingSpinner').style.display = 'block';
+
+    try {
       const response = await fetch(`http://localhost:8081/Comment/questions/generate?currentNumber=${currentNumber}&filename=${filename}&SpeechID=${speechID}`, {
         method: 'GET',
         credentials: 'include',
-      })
+      });
+
       if (!response.ok) {
         alert("生成错误");
       } else {
         alert("发布完成");
+        window.location.reload();
       }
-      // alert(`AI已根据${progress}%的进度生成题目！`);
+    } catch (error) {
+      console.error("生成题目失败:", error);
+      alert("生成题目失败，请重试");
+    } finally {
+      // 隐藏加载动画
+      document.getElementById('loadingSpinner').style.display = 'none';
+
+      // 启用生成题目按钮
+      generateButton.disabled = false;
+      generateButton.innerHTML = "调用AI生成题目";  // 还原按钮文本
     }
+  }
+    // async function generateAIQuestion() {
+    //   const currentNumber = document.getElementById('progressSelect').value;
+    //   const fordata = new FormData();
+    //   fordata.append('currentNumber', currentNumber);
+    //   fordata.append('filename', filename);
+    //   fordata.append('SpeechID', speechID);
+    //   const response = await fetch(`http://localhost:8081/Comment/questions/generate?currentNumber=${currentNumber}&filename=${filename}&SpeechID=${speechID}`, {
+    //     method: 'GET',
+    //     credentials: 'include',
+    //   })
+    //   if (!response.ok) {
+    //     alert("生成错误");
+    //   } else {
+    //     alert("发布完成");
+    //   }
+    //   // alert(`AI已根据${progress}%的进度生成题目！`);
+    // }
 
     // 点击模态框外部关闭
     window.onclick = function (event) {
@@ -1286,7 +1337,7 @@
       Difference: ${timeDiff.toFixed(2)} minutes
     `);
 
-          if (timeDiff > 0.50) { // 如果超过1分钟
+          if (timeDiff > 0.51) { // 如果超过1分钟
             console.log(`Question ${question.questionID} has exceeded the time limit`);
 
             try {

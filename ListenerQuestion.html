@@ -490,26 +490,7 @@
                 </div>
 
                 <div class="chat-messages" id="messages">
-                    <div class="message message-received">
-                        <div class="message-sender">系统消息</div>
-                        <div class="message-text">欢迎来到演讲练习反馈区！在这里您可以与其他参与者交流讨论。</div>
-                        <div class="message-time">10:00</div>
-                    </div>
-                    <div class="message message-received">
-                        <div class="message-sender">李明 (演讲者)</div>
-                        <div class="message-text">大家好，今天我们的主题是"如何克服演讲紧张"，欢迎大家提问交流！</div>
-                        <div class="message-time">10:05</div>
-                    </div>
-                    <div class="message message-sent">
-                        <div class="message-sender">我</div>
-                        <div class="message-text">我经常在台上忘词，有什么好的解决方法吗？</div>
-                        <div class="message-time">10:07</div>
-                    </div>
-                    <div class="message message-received">
-                        <div class="message-sender">张华</div>
-                        <div class="message-text">可以试试把演讲稿的关键词写在卡片上，不要背整篇稿子。</div>
-                        <div class="message-time">10:08</div>
-                    </div>
+
                 </div>
 
                 <div class="input-area">
@@ -715,13 +696,14 @@
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function() {
                 connected = true;
-                displayMessage('已连接到聊天室', false);
+                //displayMessage('已连接到聊天室', false);
 
                 // 订阅消息，接收消息并过滤不属于自己的消息
                 stompClient.subscribe(`/topic/chat/${speechID}`, function(message) {
                     console.log(message);
                         if(message.body === 'QUESTION_PUBLISH'){
                             getquestion();
+                            window.location.reload();
 
                         }else if(message.body === 'SPEECH_END'){
                             alert("演讲已经结束");
@@ -766,16 +748,6 @@
 
         window.location.reload();
     }
-    function time(){
-        const now = new Date();
-        if(now-nowtime<3000){
-        setTimeout(time, 1000);
-        }
-        else{
-            alert("时间到了")
-        }
-        //console.log(nowtime);
-    }
 
     // async function timeset(){
     //
@@ -787,8 +759,7 @@
 
 
     function sendMessage() {
-        nowtime = new Date();
-        time();
+
         const message = messageInput.value.trim();
         if (!message) return;
 
@@ -913,7 +884,7 @@
       Difference: ${timeDiff.toFixed(2)} minutes
     `);
 
-                if (timeDiff > 0.52) { // 如果超过1分钟
+                if (timeDiff > 0.50) { // 如果超过1分钟
                     window.location.reload();
                 }
             }, 1000);  // 每5秒检查一次

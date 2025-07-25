@@ -35,12 +35,19 @@ public class SpeechController {
     // 获取正在进行中的演讲
     @GetMapping("Listener/ongoing")
     public List<Speech> getOngoingSpeechesByListenerID(@RequestParam("ListenerID") Integer ListenerID) {
-        return speechService.getOngoingSpeechesByListenerID(ListenerID);
+        List<Speech> speeches = speechService.getOngoingSpeechesByListenerID(ListenerID);
+        for(Speech speech:speeches){
+            // System.out.println(speeches);
+            Integer i = speech.getSpeechID();
+            String code =  speechService.getCodeBySpeechID(i);
+            speech.setCode(code);
+        }
+        return speeches;
     }
     @GetMapping("Comment/Speaker/ongoing")
     public List<Speech> getOngoingSpeechesBySpeakerID(@Param("SpeakerID") Integer SpeakerID) {
        List<Speech> speeches = speechService.getOngoingSpeechesBySpeakerID(SpeakerID);
-        System.out.println("speeches"+speeches.size());
+        //System.out.println("speeches"+speeches.size());
        for(Speech speech:speeches){
           // System.out.println(speeches);
            Integer i = speech.getSpeechID();
@@ -53,11 +60,27 @@ public class SpeechController {
     // 获取已结束的演讲
     @GetMapping("Listener/ended")
     public List<Speech> getEndedSpeechesByListenerID(@Param("ListenerID") Integer ListenerID) {
-        return speechService.getEndedSpeechesByListenerID(ListenerID);
+        List<Speech> speeches = speechService.getEndedSpeechesByListenerID(ListenerID);
+        //System.out.println("speeches"+speeches.size());
+        for(Speech speech:speeches){
+            // System.out.println(speeches);
+            Integer i = speech.getSpeechID();
+            String code =  speechService.getCodeBySpeechID(i);
+            speech.setCode(code);
+        }
+        return speeches;
     }
     @GetMapping("Comment/Speaker/ended")
     public List<Speech> getEndedSpeechesBySpeakerID(@Param("SpeakerID") Integer SpeakerID) {
-        return speechService.getEndedSpeechesBySpeakerID(SpeakerID);
+        List<Speech> speeches =speechService.getEndedSpeechesBySpeakerID(SpeakerID);
+        //System.out.println("speeches"+speeches.size());
+        for(Speech speech:speeches){
+            // System.out.println(speeches);
+            Integer i = speech.getSpeechID();
+            String code =  speechService.getCodeBySpeechID(i);
+            speech.setCode(code);
+        }
+        return speeches;
     }
     @PostMapping("Speaker/addfile")
     public ResponseEntity<String> addFile(@Param("title") String title,

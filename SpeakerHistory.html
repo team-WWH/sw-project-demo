@@ -168,13 +168,13 @@
             <div class="card-name">${speech.speechname}</div>
         <div class="card-body" style="margin-top:30px">
             <div class="card-info" >
-               <div class="card-invite-code"  style="">${speech.inviteCode}</div>
-                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
+               <div class="card-invite-code"  style="">${speech.code}</div>
+                <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.code}')"  style="width:5px;border: 1px solid #ddd;
              border-radius: 3px;margin-left:10px;height:15px;color:grey">↓</button>
             </div>
         </div>
         <div class="card-footer" style="display: flex; justify-content: center; gap: 20px; padding-top: 15px;">
-    <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="
+    <button class="btn btn-primary card-btn" onclick="view(${speech.speechID},'${speech.filename}')" style="
         margin-left: 140px;
         height: 30px;
         font-size: 10px;
@@ -205,9 +205,9 @@
     }
 
 
-    function view(SpeechID) {
+    function view(SpeechID,filename) {
         const speechID = SpeechID;  // 获取当前演讲的 SpeechID
-        const url = `SpeakHistoryDetail.html?SpeakerID=${speakerID}&SpeechID=${speechID}`;
+        const url = `SpeakHistoryDetail.html?SpeakerID=${speakerID}&SpeechID=${speechID}&filename=${filename}`;
         window.location.href = url;
     }
 

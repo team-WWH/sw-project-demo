@@ -589,10 +589,9 @@
 <header>
     <div class="brand">泰拉演讲团</div>
     <nav>
-        <a href="OtoSpeakerHomepage.html">演讲者首页</a>
-        <a href="OtoSpeakerHistory.html">历史演讲</a>
-        <a href="OtoSpeakerInfo.html">演讲者个人信息</a>
-        <a href="OrganizerHomepage.html">返回组织者首页</a>
+        <a href="SpeakerHomepage.html">首页</a>
+        <a href="SpeakerHistory.html">历史演讲</a>
+        <a href="SpeakerInfo.html">个人信息</a>
     </nav>
 </header>
 
@@ -728,7 +727,6 @@
 
 
 
-    /* 3. 组装预览地址（本地相对路径或在线预览） */
     let pptUrl   = '';       // 本地相对路径
     let viewerSrc = '';
 
@@ -748,25 +746,22 @@
 
 
     function getPPTPreviewUrl(filename) {
-        console.log("url是：",pptUrl);
+        console.log("url是：", pptUrl);
         /* 3.1 如果是 pdf，直接用浏览器 iframe 即可 */
         if (filename.toLowerCase().endsWith('.pdf')) {
             viewerSrc = pptUrl;
         }
         /* 3.2 如果是 pptx，使用微软在线预览（支持外链） */
         else if (filename.toLowerCase().endsWith('.pptx') || filename.toLowerCase().endsWith('.ppt')) {
-            // viewerSrc = `https://docs.google.com/gview?url=${pptUrl}&embedded=true`;
+            //viewerSrc = `https://docs.google.com/gview?url=${pptUrl}&embedded=true`;
             const encodedUrl = encodeURIComponent(encodeURIComponent(pptUrl));
             viewerSrc = `https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`;
-            console.log("ceshishishis" , viewerSrc);
+            console.log("ceshishishis", viewerSrc);
         }
         /* 3.3 兜底：Google Docs 预览 */
         else {
             viewerSrc = `https://docs.google.com/gview?url=${pptUrl}&embedded=true`;
         }
-
-
-        /* 4. 加载到 iframe */
         document.getElementById('pptFrame').src = viewerSrc;
     }
     /* 右侧按钮事件 */

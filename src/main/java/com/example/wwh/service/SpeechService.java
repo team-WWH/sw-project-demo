@@ -80,7 +80,9 @@ public class SpeechService {
         List<Integer> speechid = speechMapper.getSpeechidBySpeakerID(SpeakerID);
         List<Speech> speechList = new ArrayList<>();
         for (int i : speechid) {
-            speechList.add(speechMapper.getEndedSpeechesByID(i));
+            Speech speech = speechMapper.getEndedSpeechesByID(i);
+            if(speech!=null)
+                speechList.add(speech);
         }
 
         return speechList;
@@ -91,10 +93,12 @@ public class SpeechService {
     public List<Speech> getEndedSpeechesByListenerID(Integer ListenerID) {
         List<Integer> speechid = speechMapper.getSpeechidByListenerID(ListenerID);
         List<Speech> speechList = new ArrayList<>();
-        for (int i : speechid) {
-            speechList.add(speechMapper.getEndedSpeechesByID(i));
+        for (Integer i : speechid) {
+            Speech speech = speechMapper.getEndedSpeechesByID(i);
+            if(speech!=null)
+                speechList.add(speech);
         }
-
+        System.out.println(speechList);
         return speechList;
     }
 

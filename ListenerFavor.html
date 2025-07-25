@@ -56,10 +56,15 @@
 </div>
 
 <script>
-
+    let isRendering = false;
     // 获取 listenerID，假设从 URL 或其他地方获取
     const listenerID = localStorage.getItem('listenerID');
     function renderFav() {
+        console.log("渲染函数被调用"); // 查看调用次数
+
+
+        if (isRendering) return;
+        isRendering = true;
         const wrap = document.getElementById('favList');
         wrap.innerHTML = '';  // 清空容器
 
@@ -69,14 +74,16 @@
         fetch(`http://localhost:8081/Comment/questions/listener/collect?listenerID=${listenerID}`, {credentials: 'include'})
             .then(response => response.json())  // 解析返回的 JSON 数据
             .then(questions => {
+                const uniqueQuestions = removeDuplicateQuestions(questions);
                 if (questions.length === 0) {
                     wrap.innerHTML = '<div class="text-center text-muted mt-5">暂无收藏</div>';
                     return;  // 如果没有题目，直接返回
                 }
 
                 // 遍历返回的题目数据
-                questions.forEach((question, i) => {
+                uniqueQuestions.forEach((question, i) => {
                     // 渲染所有题目
+                    console.log(question);
                     const div = document.createElement('div');
                     div.className = 'fav-item';
                     div.innerHTML = `
@@ -97,6 +104,7 @@
                 console.error('Error fetching favorite questions:', error);
                 wrap.innerHTML = '<div class="text-center text-muted mt-5">加载失败，请重试</div>';
             });
+        isRendering = false;
     }
 
     // 保存数据到 sessionStorage 并跳转到不同页面
@@ -115,7 +123,24 @@
     }
 
 
+    // 数据去重函数
+    function removeDuplicateQuestions(questions) {
+        // 使用 Map 对象根据 questionID 去重
+        const questionMap = new Map();
 
+        questions.forEach(question => {
+            // 如果题目没有ID，使用内容作为备用键
+            const key = question.questionID || question.questioncontent;
+
+            // 只保留首次出现的题目
+            if (!questionMap.has(key)) {
+                questionMap.set(key, question);
+            }
+        });
+
+        // 返回去重后的题目数组
+        return Array.from(questionMap.values());
+    }
 
 
 
