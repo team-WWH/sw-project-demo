@@ -528,6 +528,7 @@
 
 <script>
     // 静态题目数据
+    let nowtime = 0;
     const ongoingQuestions = [
         { id: 1, questioncontent: "如何提高演讲技巧？", createTime: "2025-07-20T00:00:00", endTime: "2025-07-20T00:00:30" },
         { id: 2, questioncontent: "如何克服演讲中的紧张情绪？", createTime: "2025-07-19T00:00:00", endTime: "2025-07-19T00:00:30" },
@@ -619,6 +620,16 @@
                 speechID: null,   // 状态消息没有实际的 speechID
                 fcontent: message // 纯文本内容
             };
+            if(message === "QUESTION_PUBLISH"){
+               const response = fetch(`http://localhost:8081/Comment/questions/getnowquestion?SpeechID=${speechID}&ListenerID=${listenerID}`,{credentials: 'include',})
+                    //.then(response => response.json())
+                    //.then(data => renderQuestions(data, 'ongoingQuestions'))  // 渲染进行中的题目
+                   // .catch(error => console.error('Error fetching ongoing questions:', error));
+                if(!response.ok){
+                    alert("题目获取错误");
+                }
+                window.location.reload();
+            }
 
             // 直接显示状态消息
             const messageContent = document.createElement('div');
@@ -632,7 +643,9 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         } else {
             // 处理正常的消息
+
             fetch(`http://localhost:8081/Comment/listener/${message.listenerID}`, {credentials: 'include'})
+
                 .then(response => response.json())
                 .then(listenerInfo => {
                     const messageContent = document.createElement('div');
@@ -671,7 +684,10 @@
     }
 
 
-
+    function ListenerendSpeech() {
+        alert("会议已经结束");
+        window.location.href = `ListenerHomepage.html${listenerID}`;
+    }
 
 
 
@@ -703,12 +719,18 @@
 
                 // 订阅消息，接收消息并过滤不属于自己的消息
                 stompClient.subscribe(`/topic/chat/${speechID}`, function(message) {
-                    const receivedMsg = JSON.parse(message.body);
+                    console.log(message);
+                        if(message.body === 'QUESTION_PUBLISH'){
+                            getquestion();
 
-                    // 正确过滤：只显示其他人发送的消息
-                    if (parseInt(receivedMsg.listenerID) !== parseInt(listenerID)) {
-                        displayMessage(receivedMsg, false); // 显示为接收消息
-                    }
+                        }else {
+                            const receivedMsg = JSON.parse(message.body);
+
+                            // 正确过滤：只显示其他人发送的消息
+                            if (parseInt(receivedMsg.listenerID) !== parseInt(listenerID)) {
+                                displayMessage(receivedMsg, false); // 显示为接收消息
+                            }
+                        }
                 });
 
                 loadHistory();  // 连接后加载历史消息
@@ -725,7 +747,44 @@
     }
 
 
+    function getquestion(){
+        const response = fetch(`http://localhost:8081/Comment/questions/getnowquestion?SpeechID=${speechID}&ListenerID=${listenerID}`,{
+            credentials: 'include',
+        })
+        //.then(response => response.json())
+        //.then(data => renderQuestions(data, 'ongoingQuestions'))  // 渲染进行中的题目
+        // .catch(error => console.error('Error fetching ongoing questions:', error));
+        console.log(response);
+       // if(!response.ok){
+          //  alert("题目获取错误");
+       // }
+
+
+        window.location.reload();
+    }
+    function time(){
+        const now = new Date();
+        if(now-nowtime<3000){
+        setTimeout(time, 1000);
+        }
+        else{
+            alert("时间到了")
+        }
+        //console.log(nowtime);
+    }
+
+    // async function timeset(){
+    //
+    //     if(now-nowtime > 30){
+    //         console.log("asdadasdadasdasd");
+    //         alert("时间到了");
+    //     }
+    // }
+
+
     function sendMessage() {
+        nowtime = new Date();
+        time();
         const message = messageInput.value.trim();
         if (!message) return;
 
@@ -753,6 +812,7 @@
         }));
 
         messageInput.value = '';
+
     }
 
 
@@ -771,13 +831,18 @@
 
     //-----------------------------------------------------------------------
     // 获取进行中的题目
+
     fetch(`http://localhost:8081/Comment/questions/listener/getOpeningQuestions?speechID=${speechID}&listenerID=${listenerID}`, {credentials: 'include'})
+
+
         .then(response => response.json())
         .then(data => renderQuestions(data, 'ongoingQuestions'))  // 渲染进行中的题目
         .catch(error => console.error('Error fetching ongoing questions:', error));
 
     // 获取已结束的题目
+
     fetch(`http://localhost:8081/Comment/questions/listener/getfinishedQuestions?speechID=${speechID}&listenerID=${listenerID}`, {credentials: 'include'})
+
         .then(response => response.json())
         .then(data => renderQuestions(data, 'finishedQuestions'))  // 渲染已结束的题目
         .catch(error => console.error('Error fetching finished questions:', error));
@@ -817,13 +882,14 @@
             // 根据题目状态跳转到不同的页面
             if (parseInt(question.qstatus) === 1) {
                 // 进行中的题目跳转到 ongoingQuestionDetail.html
-                window.location.href = `QuestionDetail.html?listenerID=${listenerID}`;
+                window.location.href = `QuestionDetail.html?listenerID=${listenerID}&${nowtime}`;
             } else if (parseInt(question.qstatus) === 2) {
                 // 已结束的题目跳转到 endedQuestionDetail.html
                 window.location.href = `EndQuestionDetail.html?listenerID=${listenerID}`;
             }
         }
     }
+
 
 
 

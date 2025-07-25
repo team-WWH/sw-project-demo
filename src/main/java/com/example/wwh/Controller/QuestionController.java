@@ -10,6 +10,7 @@ import com.example.wwh.pojo.Question;
 import com.example.wwh.pojo.Comment;
 import com.example.wwh.pojo.Stuanswers;
 import com.example.wwh.service.*;
+import org.apache.ibatis.annotations.Param;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,8 +66,10 @@ public class QuestionController {
     private StuAnswerService stuAnswerService;
     //调用ai生成题目
     @GetMapping("/generate")
-    public ResponseEntity<?> generateQuestions(Integer currentNumber, String title, Integer SpeakerID, String type,Integer SpeechID) {
-        String name = title + SpeakerID + '.' + type;
+    public ResponseEntity<?> generateQuestions(@Param("currentNumber") Integer currentNumber,
+                                               @Param("filename") String filename,
+                                               @Param("SpeechID") Integer SpeechID) {
+        String name = filename;
         try {
             List<String> urls = fileSplitService.splitFile(name, currentNumber);
             Integer page = 0;
@@ -83,7 +86,7 @@ public class QuestionController {
             else{
                 length =  currentNumber/page;
             }
-            System.out.println("查看一下长度：******"+length);
+           // System.out.println("查看一下长度：******"+length);
             List<CompletableFuture<List<Question>>> futures = new ArrayList<>();
             Random random = new Random();
 
@@ -132,9 +135,13 @@ public class QuestionController {
 
             for (Question question : questionsList) {
                 questionService.addQuestion(question);
-                questionService.addqueconspe(SpeechID,question.getQuestionID());
+                System.out.println("这里是questionid"+question.getQuestionID());
             }
-            messagingTemplate.convertAndSend("/topic/chat", "QUESTION_PUBLISH");
+            for (Question question : questionsList) {
+            questionService.addqueconspe(SpeechID,question.getQuestionID());
+            }
+            String topic = "/topic/chat/" + SpeechID;
+            messagingTemplate.convertAndSend(topic, "QUESTION_PUBLISH");
             return ResponseEntity.ok(questionsList);
 
         } catch (InterruptedException | ExecutionException e) {
@@ -149,8 +156,9 @@ public class QuestionController {
         }
     }
     //获得现在的刚刚发布的题目
-    @GetMapping("api/getnowquestion")
-    public ResponseEntity<String> getnowQuestion(Integer SpeechID,Integer ListenerID){
+    @GetMapping("/getnowquestion")
+    public ResponseEntity<String> getnowQuestion(@Param("SpeechID") Integer SpeechID,
+                                                 @Param("ListenerID") Integer ListenerID){
         List<Question>  questions =  questionService.getAllQuestionStatus1(SpeechID);
         List<Stuanswers> stuanswersList = new ArrayList<>();
         for(Question question:questions){

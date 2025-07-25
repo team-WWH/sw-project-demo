@@ -28,7 +28,7 @@ public interface QuestionMapper {
 
     @Select("SELECT q.* FROM Question q "+
             "JOIN queconspe qs ON q.QuestionID = qs.QuestionID "+
-            "WHERE qs.SpeechID = #{speechID} AND q.Qstatus = 1")
+            "WHERE qs.SpeechID = #{SpeechID} AND q.Qstatus = 1")
     List<Question> getOningQuestionBySpeechID(Integer SpeechID);
 
     //获取听众个人本次演讲没有抽到的题目
@@ -66,6 +66,7 @@ public interface QuestionMapper {
     int countCollectByQuestionAndListener(@Param("questionID") int questionID, @Param("listenerID") int listenerID);
 
     @Insert("INSERT INTO question (A,B,C,D,Answer,Questioncontent,Answercon,Qstatus) VALUES (#{A},#{B},#{C},#{D},#{Answer},#{Questioncontent},#{Answercon},1)")
+    @Options(useGeneratedKeys = true, keyProperty = "QuestionID")
     void addquestion(Question question);
 
 

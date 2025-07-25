@@ -48,11 +48,20 @@ public class SpeechController {
         return speechService.getEndedSpeechesBySpeakerID(SpeakerID);
     }
     @PostMapping("Speaker/addfile")
-    public ResponseEntity<String> addFile(String title, Integer SpeakerID, MultipartFile file,String type) throws Exception {
+    public ResponseEntity<String> addFile(@Param("title") String title,
+                                          @Param("SpeakerID") Integer SpeakerID,
+                                          @Param("file") MultipartFile file,
+                                          @Param("type") String type) throws Exception {
         String filename = title + SpeakerID+'.'+type;
         minioService.uploadFile(file,filename);
         return ResponseEntity.ok("文件添加成功");
     }
+    @GetMapping("Comment/getfile")
+    public ResponseEntity<String> getFile(@Param("filename") String filename) throws Exception {
+        byte[] file = minioService.downloadFile(filename);
+        return ResponseEntity.ok("获取成功");
+    }
+
     @PutMapping("Speaker/createSpeech")
     public ResponseEntity<CreateResponse> CreateSpeech(@RequestParam("title") String title,@RequestParam("SpeakerID") Integer SpeakerID) throws Exception {
         System.out.println("调用");
@@ -84,6 +93,14 @@ public class SpeechController {
     @GetMapping("Comment/Speaker/AllListener")
     public List<Listener> AllListenerOfSpeech(Integer speechID){
         return speechService.getAllListenerBySpeech(speechID);
+    }
+    @GetMapping("/Comment/getfileurl")
+    public String getPresignedUrl( @Param("filename") String filename) {
+        System.out.println("#####################################################");
+        int expiryTimeInSeconds = 36000; // URL 有效期为 1 小时
+        String url =  minioService.getPresignedUrl( filename, expiryTimeInSeconds);
+        System.out.println(url);
+        return url;
     }
 
 

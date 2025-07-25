@@ -218,7 +218,13 @@
 </div>
 
 <script>
+
     const speakerID = localStorage.getItem('speakerID');
+
+
+    const params = new URLSearchParams(location.search);
+    //const speakerID = 1;
+    let filename = params.get("filename");
 
     //===================================================================================
     // 获取正在进行中的演讲数据
@@ -259,6 +265,7 @@
 
         if (Array.isArray(data)) {
             data.forEach(speech => {
+                //filename = speechname + speakerID + '.' +
                 if (speech && speech.speechname && speech.speechID) {
                     renderSpeechCard(speech);  // 渲染有效的演讲数据
                 } else {
@@ -271,7 +278,9 @@
     }
 
     function view(SpeechID) {
-        const url = `/SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${SpeechID}`;
+
+        const url = `SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${SpeechID}&filename=${filename}`;
+
         window.location.href = url;
     }
     //===========================================================================================
@@ -292,15 +301,29 @@ function createSpeech() {
     const name = document.getElementById('speechName').value.trim();
     const fileInput = document.getElementById('speechFile');
     const file = fileInput.files[0];
-
+    const fileName = file.name;
     if (!name) {
         alert('请输入演讲名称');
         return;
     }
+    const fileExtension = fileName.split('.').pop().toLowerCase(); // 转换为小写
+
+    console.log('文件后缀名:', fileExtension);
+
     console.log(name);
     const formData = new FormData();
     formData.append('title',name);
     formData.append('SpeakerID',speakerID);
+    const fileData = new FormData();
+    //const fileType = file.type;
+    fileData.append('title',name);
+    fileData.append('SpeakerID',speakerID);
+    fileData.append('file',file);
+    fileData.append('type',fileExtension);
+    //console.log(fileType);
+    filename = name + speakerID+'.'+fileExtension;
+    const url = `SpeakerHomepage.html?SpeakerID=${speakerID}&filename=${filename}`;
+
     console.log(formData)
         fetch('http://localhost:8081/Speaker/createSpeech', {
             method: 'PUT',
@@ -309,8 +332,17 @@ function createSpeech() {
         })
         .then(response => response.json())
         .then(data => {
-            alert('上传成功');
-            window.location.href="SpeakerHomepage.html";
+            const code = data.code;
+            fetch('http://localhost:8081/Speaker/addfile', {
+                method: 'POST',
+                credentials: 'include',
+                body: fileData
+            }).then(response => response)
+                .then(data => {
+                    alert("创建成功,唯一识别码为："+code);
+                    window.location.href = url;
+                })
+            //window.location.href="SpeakerHomepage.html";
             // newSpeech.filePath = data.filePath; // 保存文件路径
             // list.push(newSpeech);
             // render(list);
