@@ -13,14 +13,14 @@ public interface QuestionMapper {
 
 
     //听众个人的进行中的题目
-    @Select("SELECT q.* FROM Question q " +
+    @Select("SELECT q.* , sa.StuanswersID FROM Question q " +
             "JOIN QueconSpe qs ON q.QuestionID = qs.QuestionID " +
             "JOIN Stuanswers sa ON q.QuestionID = sa.QuestionID " +
             "WHERE qs.SpeechID = #{speechID} AND sa.ListenerID = #{listenerID} AND q.Qstatus = 1 AND sa.QS = 1")
-    List<Question> findQuestionsBySpeechAndListener1(@Param("speechID") int speechID, @Param("listenerID") int listenerID);
+    List<QuestionDTO> findQuestionsBySpeechAndListener1(@Param("speechID") int speechID, @Param("listenerID") int listenerID);
 
     //听众个人的已经结束的题目
-    @Select("SELECT q.* ,sa.State ,sa.Sanscontent FROM Question q " +
+    @Select("SELECT q.* ,sa.State ,sa.Sanscontent,sa.StuanswersID FROM Question q " +
             "JOIN QueconSpe qs ON q.QuestionID = qs.QuestionID " +
             "JOIN Stuanswers sa ON q.QuestionID = sa.QuestionID " +
             "WHERE qs.SpeechID = #{speechID} AND sa.ListenerID = #{listenerID} AND q.Qstatus = 2 AND sa.QS IN (1,2) ")
@@ -32,7 +32,7 @@ public interface QuestionMapper {
     List<Question> getOningQuestionBySpeechID(Integer SpeechID);
 
     //获取听众个人本次演讲没有抽到的题目
-    @Select("SELECT q.* ,sa.State ,sa.Sanscontent FROM Question q " +
+    @Select("SELECT q.* ,sa.State ,sa.Sanscontent ,sa.StuanswersID FROM Question q " +
             "JOIN QueconSpe qs ON q.QuestionID = qs.QuestionID " +
             "JOIN Stuanswers sa ON q.QuestionID = sa.QuestionID " +
             "WHERE qs.SpeechID = #{speechID} AND sa.ListenerID = #{listenerID} AND q.Qstatus = 2 AND sa.QS = 0 ")
@@ -65,7 +65,7 @@ public interface QuestionMapper {
     @Select("SELECT COUNT(*) FROM collect WHERE QuestionID = #{questionID} AND ListenerID = #{listenerID}")
     int countCollectByQuestionAndListener(@Param("questionID") int questionID, @Param("listenerID") int listenerID);
 
-    @Insert("INSERT INTO question (A,B,C,D,Answer,Questioncontent,Answercon,Qstatus) VALUES (#{A},#{B},#{C},#{D},#{Answer},#{Questioncontent},#{Answercon},1)")
+    @Insert("INSERT INTO question (A,B,C,D,Answer,Questioncontent,Answercon,Qstatus,Qtime) VALUES (#{A},#{B},#{C},#{D},#{Answer},#{Questioncontent},#{Answercon},1,NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "QuestionID")
     void addquestion(Question question);
 
@@ -95,5 +95,10 @@ public interface QuestionMapper {
 
     @Insert("INSERT INTO queconspe (SpeechID,QuestionID) VALUES (#{SpeechID},#{QuestionID})")
     void addqueconspe(Integer SpeechID,Integer QuestionID);
+
+//更改题目状态
+    @Update("UPDATE question SET Qstatus = 2 WHERE QuestionID = #{questionID}")
+    void updateQstatus(@Param("questionID") int questionID);
+
 
 }

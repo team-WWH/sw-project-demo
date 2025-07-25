@@ -18,7 +18,7 @@ public class QuestionService {
 
 
     //获取听众个人的进行中的题目
-    public List<Question> getQuestions(int speechID, int listenerID) {
+    public List<QuestionDTO> getQuestions(int speechID, int listenerID) {
         return questionMapper.findQuestionsBySpeechAndListener1(speechID, listenerID);
     }
 
@@ -82,4 +82,12 @@ public class QuestionService {
             questionMapper.addqueconspe(SpeechID, QuestionID);
 
         }
+
+
+    public void updateQstatus(int questionID) {
+        questionMapper.updateQstatus(questionID);
+    }
+
+
+
     }
