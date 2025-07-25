@@ -119,6 +119,7 @@
 
   <!-- 右侧按钮区域 -->
   <div style="width:300px;position:sticky;top:40px;align-self:flex-start;">
+
     <div style="display:flex;gap:10px;align-items:center;">
       <button class="btn-primary" style="flex:1;height: 30px;" onclick="publishQuestion()">
         发布题目
@@ -127,6 +128,7 @@
         结束演讲
       </button>
     </div>
+
 
     <!-- 听众展示列表 -->
     <div class="audience-list" style="margin-top: 20px; overflow-y: auto; height: 150px; border: 1px solid #ddd; border-radius: 6px;">
@@ -229,6 +231,7 @@
   });
 
 
+
   function getPPTPreviewUrl(pptUrl) {
     console.log("url是：",pptUrl);
     /* 3.1 如果是 pdf，直接用浏览器 iframe 即可 */
@@ -243,6 +246,7 @@
     else {
       viewerSrc = `https://docs.google.com/gview?url=${location.origin}/${pptUrl}&embedded=true`;
     }
+
 
     /* 4. 加载到 iframe */
     document.getElementById('pptFrame').src = pptUrl;
@@ -287,6 +291,7 @@
       messageDiv.className = 'message message-received';
     }
 
+
     // 判断消息是否是状态消息
     if (typeof message === 'string') {
       // 如果是字符串消息，创建一个简化的消息对象
@@ -295,6 +300,11 @@
         speechID: null,   // 状态消息没有实际的 speechID
         fcontent: message // 纯文本内容
       };
+
+
+function displayMessage(message, isSent) {
+  const messageDiv = document.createElement('div');
+
 
       // 直接显示状态消息
       const messageContent = document.createElement('div');
@@ -454,6 +464,54 @@
     alert(`题目已发布，进度：${progress}%`);
     closePublishModal();
   }
+
+
+//-------------------------------------------------------------------------------------
+//听众展示区============================================================================
+// 发起 GET 请求获取所有 Listener 信息
+fetch(`http://localhost:8081/Speaker/AllListener?speechID=${speechID}`)
+        .then(response => response.json())
+        .then(data => {
+          // 在成功获取到数据后，动态更新听众列表
+          displayAudience(data);
+        })
+        .catch(error => console.error('获取 Listener 信息失败:', error));
+function displayAudience(listeners) {
+  // 获取容器元素
+  const audienceList = document.querySelector('.audience-list');
+
+  // 清空现有的内容
+  audienceList.innerHTML = '';
+
+  // 遍历所有 listener，创建新的项
+  listeners.forEach(listener => {
+    const item = document.createElement('div');
+    item.classList.add('audience-item');
+    item.style.padding = '5px';
+    item.style.borderBottom = '1px solid #eee';
+
+    const span = document.createElement('span');
+
+    // 根据 anonymous 字段判断是否显示匿名
+    if (listener.anonymous === 1) {
+      span.textContent = '匿名';  // 显示匿名
+    } else {
+      span.textContent = listener.uname;  // 显示真实用户名
+    }
+
+    item.appendChild(span);
+    audienceList.appendChild(item);
+  });
+}
+
+
+//===================================================================================
+function confirmPublish() {
+  const progress = document.getElementById('progressSelect').value;
+  alert(`题目已发布，进度：${progress}%`);
+  closePublishModal();
+}
+
 
 
 
@@ -616,6 +674,7 @@
 
 
 
+
   // pptUrl = 'http://192.168.1.106:52600/browser/speechfile/'+filename;
   // 加载演讲内容
   async function loadSpeechContent() {
@@ -639,6 +698,23 @@
     } catch (error) {
       console.error('Error loading speech content:', error);
       alert('加载演讲内容失败');
+
+}
+//===================================================================///
+// 加载题目详情
+// 在页面加载时自动加载题目信息
+window.addEventListener('DOMContentLoaded', async function() {
+  await loadQuestionDetails();  // 页面加载完成后自动调用
+});
+
+// 自动加载题目详情的函数
+async function loadQuestionDetails() {
+  try {
+    // 检查页面中是否已有题目容器，如果有，先清除
+    const existingContainer = document.getElementById('questionContainer');
+    if (existingContainer) {
+      existingContainer.remove(); // 删除现有的题目容器
+
     }
   }
 
