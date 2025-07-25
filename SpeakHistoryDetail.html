@@ -615,7 +615,7 @@
             <!-- 听众展示列表 -->
             <div class="panel-card">
                 <div class="panel-header">
-                    <i class="bi bi-people-fill"></i> 在线听众
+                    <i class="bi bi-people-fill"></i> 历史听众
                 </div>
                 <div class="panel-content">
                     <div class="audience-list">
@@ -667,9 +667,7 @@
         <div class="questions-container">
 
 
-            <h3 style="margin-top: 30px;">进行中的题目</h3>
-            <div class="question-grid" id="ongoingQuestions">
-            </div>
+
 
             <h3 style="margin-top: 30px;">已结束的题目</h3>
             <div class="question-grid" id="finishedQuestions">
@@ -1206,11 +1204,7 @@
                 .then(data => renderQuestions(data, 'finishedQuestions'))  // 渲染已结束的题目
                 .catch(error => console.error('Error fetching finished questions:', error));
 
-            // 获取进行中的题目
-            await fetch(`http://localhost:8081/Comment/questions/speaker/getSpeechOpeningQuestions?speechID=${speechID}`, {credentials: 'include',})
-                .then(response => response.json())
-                .then(data => renderQuestions(data, 'ongoingQuestions'))  // 渲染进行中的题目
-                .catch(error => console.error('Error fetching ongoing questions:', error));
+
             // 渲染题目的函数
 
             function renderQuestions(questions, containerId) {
@@ -1235,10 +1229,6 @@
 
                     console.log(question);
 
-                    // 只有当 qstatus 为 1 时才调用 checkAndRefresh
-                    if (containerId === "ongoingQuestions") {
-                        checkAndRefresh(question);
-                    }
 
 
                     //checkAndRefresh(question);
