@@ -57,7 +57,7 @@ public interface UserMapper {
     @Insert("INSERT INTO speaker (Sname,Spassword,Smail,Sphone,Ssex) VALUES (#{Sname},#{Spassword},#{Smail},#{Sphone},#{Ssex})")
     void addSpeaker(Speaker speaker);
 
-    @Insert("INSERT INTO orgnizer (Oname,Opassword,Omail,Ophone,Osex) VALUES (#{Oname},#{Opassword},#{Omail},#{Ophone},#{Osex})")
+    @Insert("INSERT INTO organizer (Oname,Opassword,Omail,Ophone,Osex) VALUES (#{Oname},#{Opassword},#{Omail},#{Ophone},#{Osex})")
     void addOrganizer(Organizer organizer);
 
     // 根据 OrganizerID 获取所有对应的 Speaker 信息
@@ -65,7 +65,7 @@ public interface UserMapper {
             "FROM speaker s " +
             "JOIN orgconspe os ON s.SpeakerID = os.SpeakerID " +
             "WHERE os.OrganizerID = #{organizerID}")
-    List<Speaker> getSpeakersByOrganizerID(@Param("organizerID") int organizerID)
+    List<Speaker> getSpeakersByOrganizerID(@Param("organizerID") int organizerID);
       
     // 根据 Smail 获取 SpeakerID
     @Select("SELECT SpeakerID FROM speaker WHERE Smail = #{smail}")
@@ -76,5 +76,7 @@ public interface UserMapper {
     void insertOrgconspe(@Param("organizerID") int organizerID, @Param("speakerID") int speakerID);
 
 
+    @Update("UPDATE listener SET Anonymous = #{anonymous} WHERE ListenerID = #{listenerID}")
+    void updateAnonymous(@Param("listenerID") int listenerID, @Param("anonymous") int anonymous);
 
 }

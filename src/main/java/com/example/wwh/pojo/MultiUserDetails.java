@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class MultiUserDetails implements UserDetails {
+
     private String username;
     private String password;
     private String roleType;

@@ -24,13 +24,13 @@ public class AnalysisController {
         return analysisService.getlistenerAccuracy(ListenerID,SpeechID);
     }
     //Speech全部Listener的正确率
-    @GetMapping("Speaker/AllListenerAccuracy")
+    @GetMapping("Comment/Speaker/AllListenerAccuracy")
     public List<ListenerAccuracyResponse> getAllListenerAccuracyAndNumber(@Param("speechID") Integer SpeechID){
         System.out.println(SpeechID);
         return analysisService.getspeechAccuracy(SpeechID);
     }
     //题目正确率分布
-    @GetMapping("Speaker/QuestionAnalysis")
+    @GetMapping("Comment/Speaker/QuestionAnalysis")
     public SpeechQuestionAnalysis getspeechQuestionAnalysis(@Param("SpeechID") Integer SpeechID){
         List<QuetionAccuracy> quetionAccuracies = analysisService.getQueationAccuracy(SpeechID);
         SpeechQuestionAnalysis speechQuestionAnalysis = new SpeechQuestionAnalysis();
@@ -53,7 +53,7 @@ public class AnalysisController {
         return speechQuestionAnalysis;
     }
     //演讲平均正确率
-    @GetMapping("Speaker/SpeechAccuracy")
+    @GetMapping("Comment/Speaker/SpeechAccuracy")
     public double getSpeechAccuracy(@Param("SpeechID") Integer SpeechID){
         return analysisService.getSpeechTotalAccuracy(SpeechID);
     }

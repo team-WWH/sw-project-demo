@@ -52,13 +52,13 @@ public class UserController {
         return listener;
     }
 
-    // 根据 SpeakerMail 获取听众信息
+    // 根据 SpeakerMail 获取演讲者信息
     @GetMapping("/speaker/mail/{smail}")
     public Speaker getSpeakerBySmail(@PathVariable String smail) {
         return userService.getSpeakerInfoMail(smail);
     }
 
-    // 根据 ListenerMail 获取听众信息
+    // 根据 ListenerMail 获取组织者信息
     @GetMapping("/organizer/mail/{omail}")
     public Organizer getOrganizerByOmail(@PathVariable String omail) {
         return userService.getOrganizerInfoMail(omail);
@@ -80,5 +80,11 @@ public class UserController {
         return "Data added successfully!";
     }
 
+    // 更新 Anonymous 值
+    @GetMapping("/listener/updateAnonymous")
+    public String updateAnonymous(@RequestParam("ListenerID") int listenerID, @RequestParam("Anonymous") int anonymous) {
+        userService.updateAnonymous(listenerID, anonymous);
+        return "更新成功";
+    }
 
 }

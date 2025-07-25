@@ -126,8 +126,8 @@
     <nav>
         <a href="OtoSpeakerHomepage.html">演讲者首页</a>
         <a href="OtoSpeakerHistory.html"class="active">历史演讲</a>
-        <a href="OtoSpeakerInfo.html">演讲者个人信息</a>
-        <a href="OrganizerHomepage.html">返回组织者首页</a>
+        <a href="OtoSpeakerInfo.html">个人信息</a>
+        <a href="OrganizerHomepage.html">组织者首页</a>
     </nav>
 </header>
 
@@ -145,10 +145,10 @@
 </div>
 
 <script>
-    const speakerID = 1;
 
+    const speakerID = localStorage.getItem('speakerID');
     // 获取历史的演讲数据
-    fetch(`http://localhost:8081/Speaker/ended?SpeakerID=${speakerID}`)
+    fetch(`http://localhost:8081/Comment/Speaker/ended?SpeakerID=${speakerID}`, {credentials: 'include'})
         .then(response => response.json())
         .then(data => {
             render(data);  // 调用渲染函数将数据展示到页面
@@ -171,12 +171,26 @@
             <div class="card-info" >
                <div class="card-invite-code"  style="">${speech.inviteCode}</div>
                 <button class="btn btn-secondary card-copy-btn" onclick="copyInviteCode('${speech.inviteCode}')"  style="width:5px;border: 1px solid #ddd;
-            border-radius: 2px;">☇</button>
+            border-radius: 3px;margin-left:10px;height:15px;color:grey">↓</button>
             </div>
         </div>
         <div class="card-footer">
-            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="height:30px;margin-left:190px">进入</button>
-            <button class="btn btn-primary card-btn" onClick="ASpeech(${speech.speechID})" style="height:30px;">查看</button>
+            <button class="btn btn-primary card-btn" onclick="view(${speech.speechID})" style="
+        margin-left: 140px;
+        height: 30px;
+        font-size: 10px;
+        border-radius: 5px;
+       ">
+        进入
+    </button>
+
+    <button class="btn btn-danger card-btn" onClick="ASpeech(${speech.speechID})" style="
+        height: 30px;
+        font-size: 10px;
+        border-radius: 5px;
+       ">
+        查看分析
+    </button>
         </div>
     `;
         container.appendChild(card);
@@ -193,14 +207,14 @@
 
     function view(SpeechID) {
         const speechID = SpeechID;  // 获取当前演讲的 SpeechID
-        const url = `http://localhost:8080/SpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${speechID}`;
+        const url = `http://localhost:8080/OtoSpeakDetail.html?SpeakerID=${speakerID}&SpeechID=${speechID}`;
         window.location.href = url;
     }
 
     //查看演讲分析
     function ASpeech(SpeechID) {
         const speechID = SpeechID;  // 获取当前演讲的 SpeechID
-        const url = `http://localhost:8080/SpeakAnalysis.html?SpeakerID=${speakerID}&SpeechID=${speechID}`;
+        const url = `http://localhost:8080/OtoSpeakAnalysis.html?SpeakerID=${speakerID}&SpeechID=${speechID}`;
         window.location.href = url;
 
     }

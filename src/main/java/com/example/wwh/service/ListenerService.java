@@ -22,6 +22,7 @@ public class ListenerService implements UserDetailsService {
 
 
         return new MultiUserDetails(
+
                 listener.getMail(),
                 listener.getPassword(),
                 "LISTENER"// 标识角色类型

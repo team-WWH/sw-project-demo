@@ -317,7 +317,7 @@
             return;
         }
         const q = questionData;
-        fetch(`http://localhost:8081/api/questions/listener/getcomments?questionID=${q.questionID}`)
+        fetch(`http://localhost:8081/Comment/questions/listener/getcomments?questionID=${q.questionID}`)
             .then(response => response.json())
             .then(data => {
                 console.log("评论数据：", data);
@@ -359,7 +359,7 @@
 
     // 获取用户信息的函数
     function getListenerInfo(listenerID) {
-        return fetch(`http://localhost:8081/users/listener/${listenerID}`)
+        return fetch(`http://localhost:8081/Comment/listener/${listenerID}`)
             .then(response => response.json())
             .then(data => {
                 return data; // 返回获取到的用户信息

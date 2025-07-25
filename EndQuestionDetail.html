@@ -97,6 +97,7 @@
         <a href="ListenerHomepage.html">首页</a>
         <a href="History.html">历史演讲</a>
         <a href="PersonInfo.html" >个人信息</a>
+        <a href="ListenerFavor.html">我的收藏</a>
     </nav>
 </header>
 <!-- 顶部返回栏 -->
@@ -135,11 +136,6 @@
 
 
 
-<!-- 底部导航 -->
-<!--<div class="d-flex justify-content-between px-3 py-2 bg-white fixed-bottom border-top">-->
-<!--    <button class="btn btn-outline-secondary" onclick="prev()" style="margin-left: 500px ;">上一题</button>-->
-<!--    <button class="btn btn-outline-secondary" onclick="next()" style="margin-right: 500px;">下一题</button>-->
-<!--</div>-->
 
 
 <script>
@@ -376,7 +372,7 @@
             return;
         }
         const q = questionData;
-        fetch(`http://localhost:8081/api/questions/listener/getcomments?questionID=${q.questionID}`)
+        fetch(`http://localhost:8081/Comment/questions/listener/getcomments?questionID=${q.questionID}`, {credentials: 'include'})
             .then(response => response.json())
             .then(data => {
                 console.log("评论数据：", data);
@@ -418,7 +414,7 @@
 
     // 获取用户信息的函数
     function getListenerInfo(listenerID) {
-        return fetch(`http://localhost:8081/users/listener/${listenerID}`)
+        return fetch(`http://localhost:8081/Comment/listener/${listenerID}`, {credentials: 'include'})
             .then(response => response.json())
             .then(data => {
                 return data; // 返回获取到的用户信息
@@ -447,8 +443,9 @@
         }
 
         // 调用插入评论的接口
-        fetch(`http://localhost:8081/api/questions/listener/addComment?listenerID=${listenerID}&questionID=${q.questionID}&comcontent=${encodeURIComponent(txt)}`, {
+        fetch(`http://localhost:8081/Comment/questions/listener/addComment?listenerID=${listenerID}&questionID=${q.questionID}&comcontent=${encodeURIComponent(txt)}`, {
             method: 'POST',
+            credentials: 'include'
         })
             .then(response => response.text())
             .then(data => {
@@ -510,8 +507,9 @@
 
         try {
             // 检查收藏状态
-            const checkResponse = await fetch(`http://localhost:8081/api/questions/listener/checktocollect?questionID=${questionID}&listenerID=${listenerID}`, {
+            const checkResponse = await fetch(`http://localhost:8081/Comment/questions/listener/checktocollect?questionID=${questionID}&listenerID=${listenerID}`, {
                 method: 'GET',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' }
             });
 
@@ -529,8 +527,9 @@
                 console.log("题目已收藏");
             } else {
                 // 未收藏 - 执行收藏操作
-                const addResponse = await fetch(`http://localhost:8081/api/questions/listener/addtocollect?listenerID=${listenerID}&questionID=${questionID}`, {
+                const addResponse = await fetch(`http://localhost:8081/Comment/questions/listener/addtocollect?listenerID=${listenerID}&questionID=${questionID}`, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
                     //body: JSON.stringify({ listenerID, questionID })  // 确保传递整数类型的参数
                 });
@@ -565,7 +564,7 @@
         const questionID = questionData.questionID;
 
         try {
-            const response = await fetch(`http://localhost:8081/api/questions/listener/checktocollect?questionID=${questionID}&listenerID=${listenerID}`);
+            const response = await fetch(`http://localhost:8081/Comment/listener/checktocollect?questionID=${questionID}&listenerID=${listenerID}`, {credentials: 'include'});
 
             if (response.ok) {
                 const result = await response.text();

@@ -85,7 +85,7 @@
 </div>
 
 <script>
-    const organizerID = 1;  // 替换为实际的 OrganizerID，或从 URL 中获取
+    const organizerID = localStorage.getItem('organizerID');
 
     // 渲染表格函数
     function render(list) {
@@ -112,7 +112,7 @@
 
     // 从后端接口获取所有演讲者数据
     function getSpeakers() {
-        fetch(`http://localhost:8081/users/organizer/getSpeakers?OrganizerID=${organizerID}`)
+        fetch(`http://localhost:8081/Comment/organizer/getSpeakers?OrganizerID=${organizerID}`, {credentials: 'include'})
             .then(response => response.json())
             .then(data => {
                 render(data);  // 渲染返回的演讲者数据
@@ -122,7 +122,8 @@
 
     // 查看演讲者详细信息
     function view(id) {
-        window.location.href = `OtoSpeakerHomepage.html?SpeakerID=${id}`;
+        window.location.href = `OtoSpeakerHomepage.html`;
+        localStorage.setItem('speakerID', id); // 假设返回的数据包含 speakerID
     }
 
     // 添加演讲者的弹窗
@@ -145,13 +146,14 @@
         }
 
         // 构建带查询参数的URL
-        const url = new URL('http://localhost:8081/users/organizer/actions/addOrgconspe');
+        const url = new URL('http://localhost:8081/Comment/organizer/actions/addOrgconspe');
         url.searchParams.append('OrganizerID', organizerID);  // 确保organizerID已定义
         url.searchParams.append('Smail', mail);
 
         // 改为GET请求
         fetch(url.toString(), {
-            method: 'GET'  // 重要：改为GET请求
+            method: 'GET' , // 重要：改为GET请求
+            credentials: 'include'
         })
             .then(response => {
                 if (!response.ok) {

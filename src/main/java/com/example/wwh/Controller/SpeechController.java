@@ -34,7 +34,7 @@ public class SpeechController {
     public List<Speech> getOngoingSpeechesByListenerID(@RequestParam("ListenerID") Integer ListenerID) {
         return speechService.getOngoingSpeechesByListenerID(ListenerID);
     }
-    @GetMapping("Speaker/ongoing")
+    @GetMapping("Comment/Speaker/ongoing")
     public List<Speech> getOngoingSpeechesBySpeakerID(@Param("SpeakerID") Integer SpeakerID) {
         return speechService.getOngoingSpeechesBySpeakerID(SpeakerID);
     }
@@ -43,7 +43,7 @@ public class SpeechController {
     public List<Speech> getEndedSpeechesByListenerID(@Param("ListenerID") Integer ListenerID) {
         return speechService.getEndedSpeechesByListenerID(ListenerID);
     }
-    @GetMapping("Speaker/ended")
+    @GetMapping("Comment/Speaker/ended")
     public List<Speech> getEndedSpeechesBySpeakerID(@Param("SpeakerID") Integer SpeakerID) {
         return speechService.getEndedSpeechesBySpeakerID(SpeakerID);
     }
@@ -90,7 +90,7 @@ public class SpeechController {
         speechService.UpdateEndStatus(SpeechID);
         return ResponseEntity.ok("已经结束");
     }
-    @GetMapping("Speaker/AllListener")
+    @GetMapping("Comment/Speaker/AllListener")
     public List<Listener> AllListenerOfSpeech(Integer speechID){
         return speechService.getAllListenerBySpeech(speechID);
     }

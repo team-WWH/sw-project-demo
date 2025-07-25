@@ -410,8 +410,7 @@
     <div class="container">
         <div class="header">
             <div>
-                <h3>——————————</h3>
-                <h1>演讲分析</h1>
+                <h1 style="margin-top: 30px">演讲分析</h1>
             </div>
 
         </div>
@@ -553,7 +552,7 @@
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             } else {
                 // 处理正常的消息
-                fetch(`http://localhost:8081/users/listener/${message.listenerID}`)
+                fetch(`http://localhost:8081/Comment/listener/${message.listenerID}`,{credentials: 'include',})
                     .then(response => response.json())
                     .then(listenerInfo => {
                         const messageContent = document.createElement('div');
@@ -598,7 +597,7 @@
 
         // 加载历史消息
         function loadHistory() {
-            fetch(`http://localhost:8081/feedback/history?speechID=${speechID}`)
+            fetch(`http://localhost:8081/Comment/feedback/history?speechID=${speechID}`,{credentials: 'include',})
                 .then(response => response.json())
                 .then(messages => {
                     messages.forEach(msg => {
@@ -652,7 +651,7 @@
         //-------------------------------------------------------------------------------------
         //人数和正确率
         // 获取所有听众信息
-        fetch(`http://localhost:8081/Speaker/AllListener?speechID=${speechID}`)
+        fetch(`http://localhost:8081/Comment/Speaker/AllListener?speechID=${speechID}`,{credentials: 'include',})
             .then(response => response.json())
             .then(data => {
                 console.log(data.length);
@@ -662,7 +661,7 @@
             .catch(error => console.error('获取 Listener 信息失败:', error));
 
         // 获取演讲的平均正确率
-        fetch(`http://localhost:8081/Speaker/SpeechAccuracy?SpeechID=${speechID}`)
+        fetch(`http://localhost:8081/Comment/Speaker/SpeechAccuracy?SpeechID=${speechID}`,{credentials: 'include',})
             .then(response => response.json())
             .then(accuracy => {
                 console.log(accuracy);
@@ -674,7 +673,7 @@
 
 
         // 请求所有听众的准确率数据
-        fetch(`http://localhost:8081/Speaker/AllListenerAccuracy?SpeechID=${speechID}`)
+        fetch(`http://localhost:8081/Comment/Speaker/AllListenerAccuracy?SpeechID=${speechID}`,{credentials: 'include',})
             .then(response => response.json())
             .then(data => {
                 const sortedNames = data.map(listener => listener.uname); // 获取所有听众的姓名
@@ -732,7 +731,7 @@
             })
             .catch(error => console.error('获取正确率数据失败:', error));
         // 请求题目正确率分析数据
-        fetch(`http://localhost:8081/Speaker/QuestionAnalysis?SpeechID=${speechID}`)
+        fetch(`http://localhost:8081/Comment/Speaker/QuestionAnalysis?SpeechID=${speechID}`,{credentials: 'include',})
             .then(response => response.json())
             .then(data => {
                 const questionAnalysis = data;
@@ -779,7 +778,7 @@
 
 
             // 请求所有听众的准确率数据
-            fetch(`http://localhost:8081/Speaker/AllListenerAccuracy?SpeechID=${speechID}`)
+            fetch(`http://localhost:8081/Comment/Speaker/AllListenerAccuracy?SpeechID=${speechID}`,{credentials: 'include',})
                 .then(response => response.json())
                 .then(data => {
                     // 提取 uname 和 number

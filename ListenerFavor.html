@@ -58,7 +58,7 @@
 <script>
 
     // 获取 listenerID，假设从 URL 或其他地方获取
-    const listenerID = 1;  // 示例ID，实际应根据用户登录等获取
+    const listenerID = localStorage.getItem('listenerID');
     function renderFav() {
         const wrap = document.getElementById('favList');
         wrap.innerHTML = '';  // 清空容器
@@ -66,7 +66,7 @@
 
 
         // 发送 GET 请求调用接口
-        fetch(`http://localhost:8081/api/questions/listener/collect?listenerID=${listenerID}`)
+        fetch(`http://localhost:8081/Comment/questions/listener/collect?listenerID=${listenerID}`, {credentials: 'include'})
             .then(response => response.json())  // 解析返回的 JSON 数据
             .then(questions => {
                 if (questions.length === 0) {
