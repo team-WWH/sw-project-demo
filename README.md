@@ -16,7 +16,7 @@ WWH（智慧演讲系统）是一个基于Spring Boot的在线演讲管理平台
 - **Redis** - 缓存和会话存储
 - **WebSocket** - 实时通信
 - **MinIO** - 对象存储服务
-- **Apache POI** - Excel文件处理
+- **Apache POI** - Excel和ppt文件处理
 - **PDFBox** - PDF文件处理
 
 ### 开发工具
