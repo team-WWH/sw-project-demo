@@ -133,9 +133,9 @@ wwh/
    spring.data.redis.port=6379
    
    # MinIO配置
-   minio.endpoint=http://your-minio-server:9000
-   minio.access-key=your-access-key
-   minio.secret-key=your-secret-key
+   minio.endpoint=[http://your-minio-server:9000]或我们的(http://wwhapi.f1.luyouxia.net:19579)
+   minio.access-key=minioadmin
+   minio.secret-key=minioadmin
    ```
 
 4. **启动应用**
@@ -145,7 +145,6 @@ wwh/
 
 5. **访问应用**
    - 应用地址：http://localhost:8081
-   - API文档：http://localhost:8081/swagger-ui.html（如果配置了Swagger）
 
 ## API接口
 
