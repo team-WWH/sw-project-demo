@@ -11,7 +11,7 @@
  Target Server Version : 80042 (8.0.42)
  File Encoding         : 65001
 
- Date: 23/07/2025 11:37:04
+ Date: 26/07/2025 10:31:13
 */
 
 SET NAMES utf8mb4;
@@ -56,11 +56,14 @@ CREATE TABLE `collect`  (
   `QuestionID` int NULL DEFAULT NULL COMMENT '题目ID',
   `ListenerID` int NULL DEFAULT NULL COMMENT '听众ID',
   PRIMARY KEY (`CollectID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of collect
 -- ----------------------------
+INSERT INTO `collect` VALUES (2, 2, 1);
+INSERT INTO `collect` VALUES (3, 3, 1);
+INSERT INTO `collect` VALUES (6, 1, 1);
 
 -- ----------------------------
 -- Table structure for comconque
@@ -109,7 +112,7 @@ CREATE TABLE `feedback`  (
   `SpeechID` int NULL DEFAULT NULL COMMENT '演讲ID',
   `Fcontent` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '反馈内容',
   PRIMARY KEY (`FeedbackID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 41 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 42 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of feedback
@@ -154,6 +157,7 @@ INSERT INTO `feedback` VALUES (37, 1, 2, 'o((>ω< ))o');
 INSERT INTO `feedback` VALUES (38, 2, 2, '娃娃亲');
 INSERT INTO `feedback` VALUES (39, 1, 2, '可以把');
 INSERT INTO `feedback` VALUES (40, 1, 2, '怎么说');
+INSERT INTO `feedback` VALUES (41, 1, 2, '1323');
 
 -- ----------------------------
 -- Table structure for lisconspe
@@ -188,13 +192,13 @@ CREATE TABLE `listener`  (
   `Sex` int NULL DEFAULT NULL COMMENT '1男  0女',
   `CollectID` int NULL DEFAULT NULL COMMENT '收藏题目库ID',
   PRIMARY KEY (`ListenerID` DESC, `Uname`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of listener
 -- ----------------------------
 INSERT INTO `listener` VALUES (2, '8酷酷酷', '111111', '775275s', '7775', 0, 0, 1);
-INSERT INTO `listener` VALUES (1, '鸡然', '112233', '67777777s', '959423', 1, 1, 2);
+INSERT INTO `listener` VALUES (1, '鸡然', '$2a$10$nQFrX77w..8W4YVnSB7bsuQVXtxjAi/HRcyjjNJGnK5DDE6BjEeJq', 'ropamad@mail.com', '1577411', 1, 0, NULL);
 
 -- ----------------------------
 -- Table structure for organizer
@@ -208,12 +212,12 @@ CREATE TABLE `organizer`  (
   `Ophone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   `Osex` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   PRIMARY KEY (`OrganizerID` DESC, `Oname`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of organizer
 -- ----------------------------
-INSERT INTO `organizer` VALUES (1, '零零零零', '111111', '98640', '852410', '1');
+INSERT INTO `organizer` VALUES (1, '零零零零', '$2a$10$ZSgx8n3PxArk8drh5NZkfu1F6M0dwC1Zh2yLj.QwlYB/CZaSVBQm6', 'ropamkkkk@mail.com', '1577411', '1');
 
 -- ----------------------------
 -- Table structure for orgconspe
@@ -224,11 +228,14 @@ CREATE TABLE `orgconspe`  (
   `OrganizerID` int NULL DEFAULT NULL,
   `SpeakerID` int NULL DEFAULT NULL,
   PRIMARY KEY (`OrgconSpeID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of orgconspe
 -- ----------------------------
+INSERT INTO `orgconspe` VALUES (1, 1, 1);
+INSERT INTO `orgconspe` VALUES (4, 1, 2);
+INSERT INTO `orgconspe` VALUES (5, 1, 4);
 
 -- ----------------------------
 -- Table structure for pranking
@@ -300,19 +307,20 @@ CREATE TABLE `question`  (
   `Qstatus` int UNSIGNED NOT NULL COMMENT '题目状态1-未结束，2-已结束',
   `Answercon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '答案解析',
   `Answer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '答案ABCD',
+  `Qtime` datetime NULL DEFAULT NULL COMMENT '开始时间',
   PRIMARY KEY (`QuestionID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of question
 -- ----------------------------
-INSERT INTO `question` VALUES (1, 'ervHLBOrDX', 'Ar9EiZn2CO', '05r7B0i4oG', 'Us2stHKFIm', 'FTD5svO3fJ', 1, 1, 1, 2, 'Wof23ylmUj', 'B');
-INSERT INTO `question` VALUES (2, 'duW6iMBTs8', 'QaAjVYSFwm', 'FUobr6MRW8', 'kiufPGQRJo', '4KYLuaeQFc', 2, 2, 2, 2, 'PhLLHx8m7j', 'B');
-INSERT INTO `question` VALUES (3, 'pBYCbAlwyv', '34h1NpsEZ5', 'Fw8E6t1ReH', 'biQPUEcqzt', 'OPkTZNZYrG', 3, 3, 3, 2, 'mnxMWdmdBn', 'C');
-INSERT INTO `question` VALUES (4, 'Klg6yxlw3e', 'oR4ShxNO6f', 't8k6QDJF4V', 'tLWoUzyZER', 'Q0gnGYazGV', 4, 4, 4, 1, '46KhVmE7Bf', 'D');
-INSERT INTO `question` VALUES (5, 'gRBc5JXXTB', 'uoqcZ5ox0e', 'xHlNXWwyvu', 'VPoWKYac88', 'HynWmW86i7', 5, 5, 5, 2, 'PyHClzrcV3', 'A');
-INSERT INTO `question` VALUES (6, '请求', '请', '去', '的', ' 吧', 6, 6, 6, 2, '对都都', 'A');
-INSERT INTO `question` VALUES (7, '看', '可', '卡', '快看', '克', 7, 7, 7, 2, 'の', 'B');
+INSERT INTO `question` VALUES (1, 'ervHLBOrDX', 'Ar9EiZn2CO', '05r7B0i4oG', 'Us2stHKFIm', 'FTD5svO3fJ', 1, 1, 1, 2, 'Wof23ylmUj', 'B', '2025-07-25 10:46:32');
+INSERT INTO `question` VALUES (2, 'duW6iMBTs8', 'QaAjVYSFwm', 'FUobr6MRW8', 'kiufPGQRJo', '4KYLuaeQFc', 2, 2, 2, 2, 'PhLLHx8m7j', 'B', '2025-07-25 10:46:35');
+INSERT INTO `question` VALUES (3, 'pBYCbAlwyv', '34h1NpsEZ5', 'Fw8E6t1ReH', 'biQPUEcqzt', 'OPkTZNZYrG', 3, 3, 3, 2, 'mnxMWdmdBn', 'C', '2025-07-25 10:46:37');
+INSERT INTO `question` VALUES (4, 'Klg6yxlw3e', 'oR4ShxNO6f', 't8k6QDJF4V', 'tLWoUzyZER', 'Q0gnGYazGV', 4, 4, 4, 2, '46KhVmE7Bf', 'D', '2025-07-25 14:01:00');
+INSERT INTO `question` VALUES (5, 'gRBc5JXXTB', 'uoqcZ5ox0e', 'xHlNXWwyvu', 'VPoWKYac88', 'HynWmW86i7', 5, 5, 5, 2, 'PyHClzrcV3', 'A', '2025-07-25 12:22:39');
+INSERT INTO `question` VALUES (6, '请求', '请', '去', '的', ' 吧', 6, 6, 6, 2, '对都都', 'A', '2025-07-25 10:46:41');
+INSERT INTO `question` VALUES (7, '看', '可', '卡', '快看', '克', 7, 7, 7, 2, 'の', 'B', '2025-07-25 10:46:43');
 
 -- ----------------------------
 -- Table structure for speaker
@@ -326,12 +334,13 @@ CREATE TABLE `speaker`  (
   `Sphone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   `Ssex` int NULL DEFAULT NULL COMMENT '1男',
   PRIMARY KEY (`SpeakerID` DESC, `Sname` DESC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of speaker
 -- ----------------------------
-INSERT INTO `speaker` VALUES (1, '鸡然', '112233', '鸡然@qq.com', '115511', 1);
+INSERT INTO `speaker` VALUES (4, 'kkkk', '$2a$10$w1Cqupl.WwXmqF45UohWz.QPOKn6H6yxFjWoNQ4EmucEimf/Adune', 'kkkk@mail.com', '1577411', 1);
+INSERT INTO `speaker` VALUES (1, '鸡然', '$2a$10$3KH/xuG15XjlQj4do.CEcuBE8s6IRz90h7VEudq7izacVMuY1UkH.', 'ropamadsola@mail.com', '777777777', 1);
 
 -- ----------------------------
 -- Table structure for speech
@@ -349,15 +358,22 @@ CREATE TABLE `speech`  (
   `Stime` datetime NULL DEFAULT NULL COMMENT '结束时间',
   `Sstatus` int NULL DEFAULT NULL COMMENT '1进行中   0已结束',
   `Speechname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '演讲名称',
+  `filename` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
   PRIMARY KEY (`SpeechID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of speech
 -- ----------------------------
-INSERT INTO `speech` VALUES (1, 1, 1, 1, 1, 1, 1, '2025-07-16 16:28:14', '2025-07-16 16:28:17', 0, '演讲1');
-INSERT INTO `speech` VALUES (2, 1, 1, 2, 1, 2, 2, '2025-07-16 16:31:46', '2025-07-16 16:31:48', 1, '演讲2');
-INSERT INTO `speech` VALUES (3, 1, 1, 3, 1, 3, 3, '2025-07-20 19:52:05', '2025-07-20 19:52:08', 1, '演讲3');
+INSERT INTO `speech` VALUES (1, 1, 1, 1, 1, 1, 1, '2025-07-16 16:28:14', '2025-07-16 16:28:17', 0, '演讲1', NULL);
+INSERT INTO `speech` VALUES (2, 1, 1, 2, 1, 2, 2, '2025-07-16 16:31:46', '2025-07-16 16:31:48', 1, '演讲2', NULL);
+INSERT INTO `speech` VALUES (3, 1, 1, 3, 1, 3, 3, '2025-07-20 19:52:05', '2025-07-20 19:52:08', 1, '演讲3', NULL);
+INSERT INTO `speech` VALUES (4, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-25 09:46:52', 1, '666666', NULL);
+INSERT INTO `speech` VALUES (5, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-25 09:51:19', 1, '666666问问', NULL);
+INSERT INTO `speech` VALUES (6, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-25 10:04:17', 1, '请求', NULL);
+INSERT INTO `speech` VALUES (7, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-25 15:35:32', 1, '666666', NULL);
+INSERT INTO `speech` VALUES (8, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-25 15:41:11', 1, '666666', NULL);
+INSERT INTO `speech` VALUES (9, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-25 15:41:42', 1, '666666', NULL);
 
 -- ----------------------------
 -- Table structure for sresults
@@ -392,10 +408,10 @@ CREATE TABLE `stuanswers`  (
 -- Records of stuanswers
 -- ----------------------------
 INSERT INTO `stuanswers` VALUES (1, '0', 1, 1, 2, 1);
-INSERT INTO `stuanswers` VALUES (2, 'B', 2, 0, 2, 1);
-INSERT INTO `stuanswers` VALUES (3, 'A', 3, 0, 0, 1);
-INSERT INTO `stuanswers` VALUES (4, '0', 4, 0, 1, 1);
-INSERT INTO `stuanswers` VALUES (5, '0', 6, 0, 0, 1);
+INSERT INTO `stuanswers` VALUES (2, 'B', 2, 1, 2, 1);
+INSERT INTO `stuanswers` VALUES (3, 'A', 3, 1, 0, 1);
+INSERT INTO `stuanswers` VALUES (4, 'B', 4, 0, 1, 1);
+INSERT INTO `stuanswers` VALUES (5, '0', 6, 1, 1, 1);
 INSERT INTO `stuanswers` VALUES (6, 'A', 7, 0, 2, 1);
 
 -- ----------------------------
@@ -408,7 +424,7 @@ CREATE TABLE `stuconque`  (
   `QuestionID` int NULL DEFAULT NULL,
   `ListenerID` int NULL DEFAULT NULL,
   PRIMARY KEY (`StuconQueID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of stuconque
